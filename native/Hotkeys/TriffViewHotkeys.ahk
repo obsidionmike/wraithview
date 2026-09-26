@@ -27,9 +27,8 @@ ClientHandles := Map()
 Bindings := []
 RegisteredNames := Map()
 RegisteredNames.CaseSense := false
-ActivateHwnd := 0
-AlwaysMaximize := false
-ActivationBusy := false
+ActivationQueue := []
+ActivationDraining := false
 
 ; Deliberately normal hotkeys for every modifier combination, as in EVE-X.
 ; Making this internal key wildcarded would change the synthetic-event/hook path.
@@ -48,7 +47,7 @@ HotkeyScope(*) {
 }
 
 Configure(sender, packet, *) {
-    global Generation, Enabled, RequireForeground, ClientHandles, Bindings, RegisteredNames
+    global Generation, Enabled, RequireForeground, ClientHandles, Bindings, RegisteredNames, ActivationQueue
     if sender != HostWindow || NumGet(packet, 0, "UPtr") != 0x54564132
         return 0
     size := NumGet(packet, A_PtrSize, "UInt")
@@ -60,6 +59,7 @@ Configure(sender, packet, *) {
         switch parts[1] {
             case "RESET":
                 Enabled := false
+                ActivationQueue := []
                 HotIf(HotkeyScope)
                 for key in Bindings
                     Hotkey(key, "Off")
@@ -80,11 +80,16 @@ Configure(sender, packet, *) {
                     return 0
                 HotIf(HotkeyScope)
                 callback := Trigger.Bind(Integer(parts[2]), Generation, Integer(parts[3]))
-                Hotkey(key, callback, "On P1")
+                ; OnMessage callbacks run at P0. A P1 trigger waiting in KeyWait
+                ; would reject the host's activation request while NoRepeat is held.
+                ; Only the internal foreground bridge needs elevated priority.
+                Hotkey(key, callback, "On P0")
                 RegisteredNames[key] := true
                 Bindings.Push(key)
             case "COMMIT":
                 Enabled := Integer(parts[2]) != 0
+                if !Enabled
+                    ActivationQueue := []
             default:
                 return 0
         }
@@ -106,42 +111,70 @@ Trigger(id, generation, noRepeat, thisHotkey) {
 }
 
 ActivateWindow(hwnd, maximize, *) {
-    global ActivateHwnd, AlwaysMaximize, ActivationBusy
-    if ActivationBusy || !Enabled || !ClientHandles.Has(hwnd) || !DllCall("IsWindow", "Ptr", hwnd)
+    global ActivationQueue, ActivationDraining
+    if !Enabled || !ClientHandles.Has(hwnd) || !DllCall("IsWindow", "Ptr", hwnd)
         return 0
-    ActivationBusy := true
-    try {
-        ActivateHwnd := hwnd
-        AlwaysMaximize := maximize != 0
+
+    if !ActivationDraining && !ActivationQueue.Length {
         if DllCall("GetForegroundWindow", "Ptr") = hwnd
             return 1
-        if DllCall("IsIconic", "Ptr", hwnd)
-            DllCall("ShowWindowAsync", "Ptr", hwnd, "Int", AlwaysMaximize ? 3 : 9)
-        else
-            SendEvent("{Blind}{vkE8}")
-        ; Yield so the P1 vkE8 hotkey can run, then report observed foreground to C#.
-        ; No AttachThreadInput, modifier release/re-press, WinActivate or synthetic Alt.
-        deadline := A_TickCount + 600
-        loop {
-            Sleep(10)
-            if DllCall("GetForegroundWindow", "Ptr") = hwnd
-                return 1
-        } until A_TickCount >= deadline
-        return 0
+        if DllCall("IsIconic", "Ptr", hwnd) {
+            DllCall("ShowWindowAsync", "Ptr", hwnd, "Int", maximize ? 3 : 9)
+            return 1
+        }
     }
-    finally {
-        ActivateHwnd := 0
-        ActivationBusy := false
+
+    ; Accept the request, not a foreground-confirmation result. Keep each target
+    ; until the internal hotkey consumes it, even if that callback arrives later.
+    ActivationQueue.Push({Hwnd: hwnd, Maximize: maximize != 0, Generation: Generation})
+    if !ActivationDraining {
+        ; This sent-message callback otherwise starts briefly uninterruptible.
+        ; Pump the bridge once, without sleeping or polling Windows for success.
+        Critical "Off"
+        SetKeyDelay -1
+        SendEvent("{Blind}{vkE8}")
+        Sleep(-1)
     }
+    return 1
 }
 
 ActivateForegroundWindow(*) {
-    if !ActivateHwnd
+    global ActivationQueue, ActivationDraining
+    if ActivationDraining
         return
-    if !DllCall("SetForegroundWindow", "Ptr", ActivateHwnd)
-        DllCall("SetForegroundWindow", "Ptr", ActivateHwnd)
-    if AlwaysMaximize && WinGetMinMax("ahk_id " ActivateHwnd) = 0
-        DllCall("ShowWindowAsync", "Ptr", ActivateHwnd, "Int", 3)
+    ActivationDraining := true
+    ; P1 enters promptly, then P0 permits new IPC requests to join the queue
+    ; instead of being rejected if a Windows call pumps messages.
+    Thread "Priority", 0
+    try {
+        loop {
+            ; Keep the empty-queue check and clearing ActivationDraining atomic
+            ; against activation IPC, so a last-moment request cannot be stranded.
+            Critical
+            queue := ActivationQueue
+            if !queue.Length
+                break
+            request := queue.RemoveAt(1)
+            Critical "Off"
+            hwnd := request.Hwnd
+            if !Enabled || request.Generation != Generation || !ClientHandles.Has(hwnd) || !DllCall("IsWindow", "Ptr", hwnd)
+                continue
+            if DllCall("IsIconic", "Ptr", hwnd) {
+                DllCall("ShowWindowAsync", "Ptr", hwnd, "Int", request.Maximize ? 3 : 9)
+                continue
+            }
+            if !DllCall("SetForegroundWindow", "Ptr", hwnd)
+                DllCall("SetForegroundWindow", "Ptr", hwnd)
+            if !Enabled || request.Generation != Generation
+                continue
+            if request.Maximize && WinGetMinMax("ahk_id " hwnd) = 0
+                DllCall("ShowWindowAsync", "Ptr", hwnd, "Int", 3)
+        }
+    }
+    finally {
+        ActivationDraining := false
+        Critical "Off"
+    }
 }
 
 CheckHost(*) {

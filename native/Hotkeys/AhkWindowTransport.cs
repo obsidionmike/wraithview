@@ -121,11 +121,13 @@ internal sealed class AhkWindowTransport : Forms.NativeWindow, IAhkTransport
         }
     }
 
+    // True means the helper accepted the request, not that Windows confirmed focus.
     public bool Activate(nint handle, bool maximize) => IsReady && Request(ActivateMessage, handle, maximize ? 1 : 0);
 
     private bool Request(int message, nint wParam, nint lParam)
     {
-        // Block reentrant hotkey dispatch while a switch completes, preserving cycle order.
+        // Serialize request submission and cursor updates; AHK does not wait for focus.
+        // This timeout detects an unresponsive helper, not a slow foreground transition.
         if (SendMessageTimeout(_helperWindow, message, wParam, lParam, 0x0001 | 0x0002, 1500, out var result) != 0)
             return result == 1;
         Failure = "AutoHotkey did not respond; restarting hotkeys";

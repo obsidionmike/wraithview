@@ -88,15 +88,15 @@ It does not broadcast input, forward input, read game memory, inject into the EV
 
 TriffView is licensed under the GNU General Public License, version 3 only (`GPL-3.0-only`). See `LICENSE`.
 
-Third-party dependency, font, WebView2, and EVE/CCP trademark notices are listed in `THIRD_PARTY_NOTICES.md`.
+Third-party dependency, font, WebView2, and EVE/CCP trademark notices are listed in `THIRD_PARTY_NOTICES.txt`.
 
 ## Release Verification
 
-Current Windows release: `v2.1.0`
+Current Windows release: `v2.1.1`
 
 - File: `TriffView.exe`
-- Size: `168,551,824 bytes` (`160.74 MiB`)
-- SHA-256: `83E617BB8665D45DA27A2AA40A6AEB828CF458818787CC05FB6DDAC54B4A2B26`
+- Size: `168,560,016 bytes` (`160.75 MiB`)
+- SHA-256: `8274A9837038F31D6EA211D64299D57BAB390D7742F6BA1807B18344BFAEF6C0`
 
 The release executable is Authenticode signed by Cooper Broderick and timestamped through Microsoft's timestamp service. The download also includes `TriffView.exe.sha256.txt` for verification.
 

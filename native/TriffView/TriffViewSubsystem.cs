@@ -41,7 +41,8 @@ internal sealed class TriffViewController : IDisposable
     private string _lastPostedStateJson = "";
     private string _autoRestoredProfileId = "";
     private readonly HashSet<string> _autoRestoredClientKeys = new(StringComparer.OrdinalIgnoreCase);
-    private nint _activeClientHandle;
+    private readonly TriffViewActivationState _activationState = new();
+    private readonly TriffViewMinimizeState _minimizeState = new();
     private int _alertDispatchScheduled;
     private int _periodicRefreshInProgress;
     private string _lastClientTopologySignature = "";
@@ -202,6 +203,7 @@ internal sealed class TriffViewController : IDisposable
         }
         else
         {
+            _minimizeState.Clear();
             _timer.Stop();
             _overlay.Hide();
             _overlay.ClearThumbnails();
@@ -212,6 +214,7 @@ internal sealed class TriffViewController : IDisposable
 
     public void SetHotkeysSuspended(bool suspended)
     {
+        if (suspended) _minimizeState.Clear();
         Settings.HotkeysSuspended = suspended;
         Settings.Save();
         _overlay.ConfigureHotkeys(Settings.ActiveProfile(), _clients, Settings.HotkeysSuspended);
@@ -278,6 +281,7 @@ internal sealed class TriffViewController : IDisposable
     {
         if (_disposed) return;
         _disposed = true;
+        _minimizeState.Clear();
         _timer.Stop();
         _switchStateTimer.Stop();
         StopForegroundTracking();
@@ -355,21 +359,22 @@ internal sealed class TriffViewController : IDisposable
     {
         var profile = Settings.ActiveProfileFast();
         var clients = SortClients(discoveredClients, profile).ToArray();
+        _minimizeState.Configure(profile.Id, Settings.Enabled && profile.MinimizeInactiveClients);
 
         if (clients.Any(client => client.Handle == foreground))
         {
-            _activeClientHandle = foreground;
+            _activationState.TryObserve(foreground, Environment.TickCount64);
         }
 
-        if (_activeClientHandle != nint.Zero
-            && clients.All(client => client.Handle != _activeClientHandle)
-            && !TriffViewNativeMethods.IsWindow(_activeClientHandle))
+        if (_activationState.ActiveHandle != nint.Zero
+            && clients.All(client => client.Handle != _activationState.ActiveHandle)
+            && !TriffViewNativeMethods.IsWindow(_activationState.ActiveHandle))
         {
-            RemoveCycleCursorHandle(_activeClientHandle);
-            _activeClientHandle = nint.Zero;
+            RemoveCycleCursorHandle(_activationState.ActiveHandle);
+            _activationState.Clear();
         }
 
-        var activeHandle = _activeClientHandle != nint.Zero ? _activeClientHandle : foreground;
+        var activeHandle = _activationState.ActiveHandle != nint.Zero ? _activationState.ActiveHandle : foreground;
         clients = clients
             .Select(client => client with { IsForeground = client.Handle == activeHandle })
             .ToArray();
@@ -457,11 +462,16 @@ internal sealed class TriffViewController : IDisposable
         _hasObservedForeground = true;
         _lastObservedForegroundWasEve = foregroundIsEve;
 
+        if (!foregroundIsEve) _minimizeState.Clear();
+
         if (!foregroundIsEve || !Settings.Enabled || !_overlay.Visible) return;
 
-        _activeClientHandle = foreground;
-        _overlay.MarkActiveClient(foreground);
-        RememberCycleCursorForActiveGroups(Settings.ActiveProfileFast(), foreground);
+        if (_activationState.TryObserve(foreground, Environment.TickCount64))
+        {
+            _overlay.MarkActiveClient(foreground);
+            RememberCycleCursorForActiveGroups(Settings.ActiveProfileFast(), foreground);
+        }
+        CompletePendingMinimizes(Settings.ActiveProfileFast());
         if (!returnedToEve) return;
 
         ApplyTopmostPolicy(force: true);
@@ -504,24 +514,33 @@ internal sealed class TriffViewController : IDisposable
         try
         {
             var previousClient = ResolvePreviousActiveClient(client.Handle);
+            var previousSelection = _clients.FirstOrDefault(item => item.Handle == _activationState.ActiveHandle);
             bool Activate() => fromHotkey
                 ? _overlay.ActivateFromHotkey(client.Handle, profile.AlwaysMaximizeClients)
                 : ActivateWindow(client, profile);
             if (!Activate()) return false;
 
-            _activeClientHandle = client.Handle;
+            _activationState.Accept(client.Handle, Environment.TickCount64, optimistic: fromHotkey);
+            _minimizeState.Configure(profile.Id, Settings.Enabled && profile.MinimizeInactiveClients);
+            _minimizeState.Accept(client, fromHotkey,
+                // Foreground reconciliation can replace the logical selection
+                // before a slow restore completes. Retain that requested client too.
+                new[] { previousClient, previousSelection, _minimizeState.Target }
+                    .OfType<EveClientWindow>()
+                    .Where(previous => ShouldMinimizePreviousClient(profile, previous, client.Handle)));
             RememberCycleCursorForActiveGroups(profile, client.Handle);
             MarkActiveClient(client.Handle);
 
-            if (ShouldMinimizePreviousClient(profile, previousClient, client.Handle))
+            if (_minimizeState.HasPending)
             {
                 if (SwitchSettleBeforeMinimizeMs > 0)
                 {
                     Thread.Sleep(SwitchSettleBeforeMinimizeMs);
                 }
 
-                SendMinimizeClient(previousClient!.Handle);
-                Activate();
+                // If foreground is still catching up, its event completes this
+                // work later. No polling wait and no native minimize is queued.
+                CompletePendingMinimizes(profile);
             }
 
             return true;
@@ -665,7 +684,7 @@ internal sealed class TriffViewController : IDisposable
         var foregroundClient = _clients.FirstOrDefault(client => client.Handle == foreground && client.Handle != nextHandle);
         if (foregroundClient != null) return foregroundClient;
 
-        return _clients.FirstOrDefault(client => client.Handle == _activeClientHandle && client.Handle != nextHandle);
+        return _clients.FirstOrDefault(client => client.Handle == _activationState.ActiveHandle && client.Handle != nextHandle);
     }
 
     private static bool ShouldMinimizePreviousClient(TriffViewProfile profile, EveClientWindow? previousClient, nint activeHandle)
@@ -679,6 +698,48 @@ internal sealed class TriffViewController : IDisposable
     private static void SendMinimizeClient(nint handle)
     {
         TriffViewNativeMethods.SendMessage(handle, TriffViewNativeMethods.WmSysCommand, TriffViewNativeMethods.ScMinimize, nint.Zero);
+    }
+
+    private void CompletePendingMinimizes(TriffViewProfile profile)
+    {
+        _minimizeState.Configure(profile.Id, Settings.Enabled && profile.MinimizeInactiveClients);
+        var target = _minimizeState.Target;
+        if (target == null || !_minimizeState.HasPending) return;
+        if (!IsCurrentClient(target))
+        {
+            _minimizeState.Clear();
+            return;
+        }
+        var fromHotkey = _minimizeState.FromHotkey;
+        var revision = _minimizeState.Revision;
+        try
+        {
+            var minimized = _minimizeState.Drain(
+                TriffViewNativeMethods.GetForegroundWindow,
+                previous => IsCurrentClient(previous)
+                    && ShouldMinimizePreviousClient(profile, previous, target.Handle)
+                    && !TriffViewNativeMethods.IsIconic(previous.Handle),
+                previous => SendMinimizeClient(previous.Handle));
+            // Preserve the established minimize -> reassert sequence, using only
+            // the latest target. A newer accepted switch cancels this reassertion.
+            if (minimized && _minimizeState.Revision == revision)
+            {
+                if (fromHotkey) _overlay.ActivateFromHotkey(target.Handle, profile.AlwaysMaximizeClients);
+                else ActivateWindow(target, profile);
+            }
+        }
+        catch (Exception ex)
+        {
+            PostError("minimize", ex.Message);
+        }
+    }
+
+    private bool IsCurrentClient(EveClientWindow client)
+    {
+        return _clients.Any(current => current.Handle == client.Handle
+                && current.ProcessId == client.ProcessId && current.StableKey == client.StableKey)
+            && TriffViewNativeMethods.GetWindowThreadProcessId(client.Handle, out var pid) != 0
+            && pid == client.ProcessId;
     }
 
     private static bool ShouldSkipInactiveMinimize(TriffViewProfile profile, EveClientWindow client)
@@ -734,7 +795,7 @@ internal sealed class TriffViewController : IDisposable
         var nextIndex = TriffViewCycleState.NextIndex(
             candidateHandles,
             direction,
-            _activeClientHandle,
+            _activationState.ActiveHandle,
             liveForeground,
             cursorHandle,
             profile.RememberCycleGroupPositions);

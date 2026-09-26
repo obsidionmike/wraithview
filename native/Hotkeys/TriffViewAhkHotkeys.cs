@@ -10,6 +10,7 @@ internal interface IAhkTransport : IDisposable
     string? Failure { get; }
     void EnsureRunning();
     bool Send(string message);
+    // Accepted for activation; foreground observation is independent of this result.
     bool Activate(nint handle, bool maximize);
 }
 

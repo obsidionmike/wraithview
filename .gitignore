@@ -1,6 +1,10 @@
 # Local project state
 /STATE.md
 
+# Keep README files public; other Markdown notes stay local
+*.md
+!README.md
+
 # Web app dependencies and build output
 /app/node_modules/
 /app/dist/
