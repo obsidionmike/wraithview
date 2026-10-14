@@ -143,4 +143,22 @@ public class PreviewPointerGestureTests
 
         Assert.True(PreviewPointerGesture.IsLockedReleaseActivation(pressedFrame, release));
     }
+
+    [Theory]
+    [InlineData(8, 0, 60)]    // a quick click that wandered 8 px: still a click
+    [InlineData(0, 20, 120)]  // 20 px, but released fast: still a click
+    [InlineData(6, 6, 400)]   // held, but within 6 px: not a drag yet
+    public void ClicksThatMoveALittleDoNotStartADrag(int dx, int dy, long heldMs)
+    {
+        Assert.False(PreviewPointerGesture.ShouldStartDrag(new Point(500, 500), new Point(500 + dx, 500 + dy), heldMs));
+    }
+
+    [Theory]
+    [InlineData(7, 0, 180)]   // held, then moved
+    [InlineData(24, 0, 10)]   // a deliberate flick drags at once
+    [InlineData(-30, 30, 50)]
+    public void DeliberateMovementStartsADrag(int dx, int dy, long heldMs)
+    {
+        Assert.True(PreviewPointerGesture.ShouldStartDrag(new Point(500, 500), new Point(500 + dx, 500 + dy), heldMs));
+    }
 }

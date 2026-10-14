@@ -90,6 +90,28 @@ public class PreviewSnappingTests
     }
 
     [Fact]
+    public void PreviewsParkedOffTheTopStillSnapToEachOtherVertically()
+    {
+        // Reported: once previews were half off the top, they would only snap side by side.
+        var parked = new Rectangle(500, -90, 320, 180);
+        var moving = new Rectangle(100, -90, 320, 180);
+        var moved = PreviewSnapping.Move(new Rectangle(828, -96, 320, 180), new[] { parked }, OneMonitor, Screen, true, Snap, moving);
+        Assert.Equal(820, moved.Left); // side by side
+        Assert.Equal(-90, moved.Top);  // and lined up with the other parked preview
+    }
+
+    [Fact]
+    public void APreviewPushedThroughTheEdgeSnapsFromWhereItIsNotWhereTheCursorIs()
+    {
+        var breakout = PreviewSnapping.BreakoutFor(Snap);
+        var other = new Rectangle(420, -104, 320, 180);
+        // Cursor 150 px past the top; the preview sits breakout px lower than the cursor (at -110).
+        var moved = PreviewSnapping.Move(new Rectangle(100, -110 - breakout, 320, 180), new[] { other }, OneMonitor, Screen, true, Snap, new Rectangle(100, 100, 320, 180));
+        Assert.Equal(-104, moved.Top);
+        Assert.Equal(100, moved.Left);
+    }
+
+    [Fact]
     public void SomeOfThePreviewAlwaysStaysOnScreen()
     {
         var moved = Move(new Rectangle(100, -5000, 320, 180));

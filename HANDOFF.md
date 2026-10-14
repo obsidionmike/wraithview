@@ -69,6 +69,10 @@ v0.9.1 (from the user's first test, 2026-10-14):
   - The label overlay is wiped before hiding and painted on show (it used to flash the stale frame at the old position after a drag).
   - Borders, alert flashes and the outline are drawn as four filled strips (`FillFrameEdges`). The 1 px rounded path was clipped by the window region and covered by the thumbnail.
   - The Opacity field keeps a typed draft and applies it on Enter or blur (it used to clamp each keystroke to 20).
+- v0.9.4 (third test round):
+  - Off-screen snapping: `PreviewSnapping.Move` applies the screen edge (held or past) first, then snaps to other previews from that placed position. It used to measure from the raw cursor, which is off by the hold distance past the edge, so vertical snaps broke off-screen. While past an edge, other previews still snap (`Pick`: Held → 0, Past → preview delta).
+  - Click vs drag: `PreviewPointerGesture.ShouldStartDrag` needs either a hold of 180 ms and then more than 6 px, or a 24 px flick. On release, anything within 10 px still counts as a click (`ClickSlop`). It used to be the system drag size of 4 px, so clicks to switch characters moved previews.
+  - "Minimize inactive clients" lag: the minimise was `SendMessage(WM_SYSCOMMAND, SC_MINIMIZE)`, which blocks until EVE finishes minimising. It's now `PostMessage`, with one deferred focus check 150 ms later (`ScheduleFocusCheckAfterMinimize`) instead of an immediate re-activate. Restoring a minimised EVE client is still inherently slower than switching to an open one.
 - `EdgeOutline` profile option (default **off**: the user only wanted the settings window's edge, the previews were fine), with the "Edge outline" toggle in Preview layout.
 - v0.9.2: the settings window's DWM border colour (Windows 11 only; `DWMWA_BORDER_COLOR`) comes from `--tv-border-accent-soft` (Void #4b3878) instead of `--tv-border-topbar` (#241f37, invisible on dark desktops). See `currentNativeTheme` in `app/src/App.jsx`.
 - Not yet tried by the user: cycle groups, Fleet Manager, Skill Planner.

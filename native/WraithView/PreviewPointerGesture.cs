@@ -24,6 +24,29 @@ internal static class PreviewPointerGesture
             && Math.Abs(end.Y - start.Y) <= Math.Max(0, dragSize.Height);
     }
 
+    /// <summary>Within this distance of the press, a release still counts as a click, px per axis.</summary>
+    public static readonly Size ClickSlop = new(10, 10);
+
+    /// <summary>A press must be held this long before small movements start a drag.</summary>
+    public const int DragHoldMs = 180;
+
+    /// <summary>Movement that starts a drag once the hold time has passed, px.</summary>
+    public const int HeldDragDistance = 6;
+
+    /// <summary>Movement that starts a drag straight away (a deliberate flick), px.</summary>
+    public const int FlickDragDistance = 24;
+
+    /// <summary>
+    /// Whether a press on a preview has turned into a drag. Clicking to switch clients often moves the
+    /// mouse a few pixels; with only the system drag size (4 px) as the test, those clicks moved the preview
+    /// instead. A drag now needs either a short hold first or a clearly deliberate movement.
+    /// </summary>
+    public static bool ShouldStartDrag(Point start, Point current, long heldMs)
+    {
+        var distance = Math.Max(Math.Abs(current.X - start.X), Math.Abs(current.Y - start.Y));
+        return distance >= FlickDragDistance || (heldMs >= DragHoldMs && distance > HeldDragDistance);
+    }
+
     /// <summary>
     /// With previews locked there is nothing to drag, so distance travelled during the press is
     /// meaningless — a cursor moving at ordinary speed covers tens of pixels in the time a real

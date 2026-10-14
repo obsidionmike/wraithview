@@ -695,9 +695,34 @@ internal sealed class WraithViewController : IDisposable
         return !ShouldSkipInactiveMinimize(profile, previousClient);
     }
 
-    private static void SendMinimizeClient(nint handle)
+    /// <summary>
+    /// Minimise a client without waiting for it. This used to be SendMessage, which blocks until EVE has
+    /// finished minimising (it does real graphics work), so every switch with "minimise inactive clients" on
+    /// stalled until the client you were leaving had gone down.
+    /// </summary>
+    private static void PostMinimizeClient(nint handle)
     {
-        WraithViewNativeMethods.SendMessage(handle, WraithViewNativeMethods.WmSysCommand, WraithViewNativeMethods.ScMinimize, nint.Zero);
+        WraithViewNativeMethods.PostMessage(handle, WraithViewNativeMethods.WmSysCommand, WraithViewNativeMethods.ScMinimize, nint.Zero);
+    }
+
+    private const int MinimizeFocusCheckMs = 150;
+
+    /// <summary>
+    /// After a posted minimise, check once that the client we switched to still has focus, and bring it back
+    /// only if something took it (and no newer switch has happened since).
+    /// </summary>
+    private void ScheduleFocusCheckAfterMinimize(EveClientWindow target, WraithViewProfile profile, bool fromHotkey, long revision)
+    {
+        var timer = new DispatcherTimer(DispatcherPriority.Normal, _dispatcher) { Interval = TimeSpan.FromMilliseconds(MinimizeFocusCheckMs) };
+        timer.Tick += (_, _) =>
+        {
+            timer.Stop();
+            if (_disposed || _minimizeState.Revision != revision || !IsCurrentClient(target)) return;
+            if (WraithViewNativeMethods.GetForegroundWindow() == target.Handle) return;
+            if (fromHotkey) _overlay.ActivateFromHotkey(target.Handle, profile.AlwaysMaximizeClients);
+            else ActivateWindow(target, profile);
+        };
+        timer.Start();
     }
 
     private void CompletePendingMinimizes(WraithViewProfile profile)
@@ -719,13 +744,12 @@ internal sealed class WraithViewController : IDisposable
                 previous => IsCurrentClient(previous)
                     && ShouldMinimizePreviousClient(profile, previous, target.Handle)
                     && !WraithViewNativeMethods.IsIconic(previous.Handle),
-                previous => SendMinimizeClient(previous.Handle));
-            // Preserve the established minimize -> reassert sequence, using only
-            // the latest target. A newer accepted switch cancels this reassertion.
+                previous => PostMinimizeClient(previous.Handle));
+            // Minimising a background client shouldn't move focus, but if it does, put it back, once,
+            // for the latest target only. A newer accepted switch cancels the check.
             if (minimized && _minimizeState.Revision == revision)
             {
-                if (fromHotkey) _overlay.ActivateFromHotkey(target.Handle, profile.AlwaysMaximizeClients);
-                else ActivateWindow(target, profile);
+                ScheduleFocusCheckAfterMinimize(target, profile, fromHotkey, revision);
             }
         }
         catch (Exception ex)
@@ -2249,6 +2273,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
     private PreviewState? _mousePreview;
     private MouseMode _mouseMode = MouseMode.None;
     private Point _mouseDownPoint;
+    private long _mouseDownTicks;
     private Rectangle _mouseStartRect;
     private WraithViewProfile _profile = WraithViewProfile.CreateDefault("Default");
     private nint _foreground;
@@ -2616,6 +2641,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
 
         _mousePreview = state;
         _mouseDownPoint = e.Location;
+        _mouseDownTicks = Environment.TickCount64;
         _mouseStartRect = state.FrameRect;
         Capture = true;
 
@@ -2650,7 +2676,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         // the mouse was in motion — a real click covers far more than SM_CXDRAG at ordinary speed.
         if (_mouseMode == MouseMode.PendingClick
             && !_profile.LockPreviews
-            && !PreviewPointerGesture.IsClick(_mouseDownPoint, e.Location, Forms.SystemInformation.DragSize))
+            && PreviewPointerGesture.ShouldStartDrag(_mouseDownPoint, e.Location, Environment.TickCount64 - _mouseDownTicks))
         {
             _mouseMode = MouseMode.Move;
         }
@@ -2720,7 +2746,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
             // and silently nudging the preview a few pixels.
             if (mode == MouseMode.Move
                 && e.Button == Forms.MouseButtons.Left
-                && PreviewPointerGesture.IsClick(_mouseDownPoint, e.Location, Forms.SystemInformation.DragSize))
+                && PreviewPointerGesture.IsClick(_mouseDownPoint, e.Location, PreviewPointerGesture.ClickSlop))
             {
                 preview.FrameRect = _mouseStartRect;
                 _positionMemory.Remember(PreviewClientIdentity.From(preview.Client), preview.FrameRect);

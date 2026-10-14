@@ -26,13 +26,9 @@ internal static class PreviewSnapping
     /// that point doesn't hold it again (it was parked off-screen on purpose), so it moves freely there.</param>
     public static Rectangle Move(Rectangle raw, IReadOnlyList<Rectangle> others, IReadOnlyList<Rectangle> monitors, Rectangle desktop, bool snapEnabled, int snap, Rectangle? dragStart = null)
     {
-        var result = raw;
         var screen = MonitorFor(raw, monitors, desktop);
         snap = snapEnabled ? Math.Max(0, snap) : 0;
         var breakout = BreakoutFor(snap);
-
-        var dx = BestPreviewDelta(raw.Left, raw.Right, others.Where(o => Overlaps(raw.Top, raw.Bottom, o.Top, o.Bottom, snap)).SelectMany(o => new[] { o.Left, o.Right }), snap);
-        var dy = BestPreviewDelta(raw.Top, raw.Bottom, others.Where(o => Overlaps(raw.Left, raw.Right, o.Left, o.Right, snap)).SelectMany(o => new[] { o.Top, o.Bottom }), snap);
 
         // An edge with another monitor beyond it is a seam: previews cross it freely (with a light snap).
         var cx = raw.Left + raw.Width / 2;
@@ -43,15 +39,24 @@ internal static class PreviewSnapping
         var topOuter = !Beyond(cx, screen.Top - 1);
         var bottomOuter = !Beyond(cx, screen.Bottom);
 
+        // 1. Screen edges first: held at an edge, or following the cursor past it.
         var start = dragStart ?? screen; // no start given: treat the drag as having begun on-screen
         var (sx, xEdge) = ScreenDelta(raw.Left, raw.Right, screen.Left, screen.Right, leftOuter, rightOuter, snap, breakout, snapEnabled,
             startedPastStart: start.Left < screen.Left, startedPastEnd: start.Right > screen.Right);
         var (sy, yEdge) = ScreenDelta(raw.Top, raw.Bottom, screen.Top, screen.Bottom, topOuter, bottomOuter, snap, breakout, snapEnabled,
             startedPastStart: start.Top < screen.Top, startedPastEnd: start.Bottom > screen.Bottom);
+        var placed = raw;
+        if (xEdge is EdgeState.Held or EdgeState.Past) placed.X += sx ?? 0;
+        if (yEdge is EdgeState.Held or EdgeState.Past) placed.Y += sy ?? 0;
 
-        result.X += Pick(dx, sx, xEdge);
-        result.Y += Pick(dy, sy, yEdge);
-        return KeepOnDesktop(result, desktop);
+        // 2. Then other previews, measured from where the preview actually is. (Measuring from the raw cursor
+        // position broke vertical snapping off-screen, where the two differ by the edge's hold distance.)
+        var dx = BestPreviewDelta(placed.Left, placed.Right, others.Where(o => Overlaps(placed.Top, placed.Bottom, o.Top, o.Bottom, snap)).SelectMany(o => new[] { o.Left, o.Right }), snap);
+        var dy = BestPreviewDelta(placed.Top, placed.Bottom, others.Where(o => Overlaps(placed.Left, placed.Right, o.Left, o.Right, snap)).SelectMany(o => new[] { o.Top, o.Bottom }), snap);
+
+        placed.X += Pick(dx, sx, xEdge);
+        placed.Y += Pick(dy, sy, yEdge);
+        return KeepOnDesktop(placed, desktop);
     }
 
     public static Rectangle Resize(Rectangle raw, IReadOnlyList<Rectangle> others, IReadOnlyList<Rectangle> monitors, Rectangle desktop, bool snapEnabled, int snap, int minSize, int maxSize)
@@ -162,14 +167,18 @@ internal static class PreviewSnapping
         return (best, best is null ? EdgeState.None : EdgeState.Near);
     }
 
-    private static int Pick(int? previewDelta, int? screenDelta, EdgeState edge)
+    /// <summary>The extra move on one axis once the screen edge has been applied.</summary>
+    private static int Pick(int? previewDelta, int? screenDelta, EdgeState edge) => edge switch
     {
-        // Held at an edge, or pushed through it: the edge decides. Past the breakout its offset keeps the
-        // preview moving smoothly with the cursor instead of jumping when it lets go.
-        if (edge is EdgeState.Held or EdgeState.Past) return screenDelta ?? 0;
-        if (screenDelta is int s && previewDelta is int p) return Math.Abs(p) <= Math.Abs(s) ? p : s;
-        return previewDelta ?? screenDelta ?? 0;
-    }
+        // Pushed into an edge: the edge holds it there.
+        EdgeState.Held => 0,
+        // Off-screen, following the cursor: other previews still snap (two parked previews line up).
+        EdgeState.Past => previewDelta ?? 0,
+        // Near an edge on-screen: whichever of the edge and a preview is closer.
+        EdgeState.Near when screenDelta is int s && previewDelta is int p => Math.Abs(p) <= Math.Abs(s) ? p : s,
+        EdgeState.Near => screenDelta ?? previewDelta ?? 0,
+        _ => previewDelta ?? 0,
+    };
 
     private static int? Closest(int value, IEnumerable<int> lines, int snap)
     {
