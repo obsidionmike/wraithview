@@ -63,7 +63,8 @@ function currentNativeTheme(theme) {
     traySelected: cssVar(style, "--tv-accent-bg"),
     trayPressed: cssVar(style, "--tv-accent-selected-bg"),
     caption: cssVar(style, "--tv-topbar-bg"),
-    windowBorder: cssVar(style, "--tv-border-topbar"),
+    // Windows 11 draws this as the window's outer edge; it has to stay visible against dark desktops and EVE.
+    windowBorder: cssVar(style, "--tv-border-accent-soft"),
     titleText: cssVar(style, "--tv-text"),
   };
 }

@@ -24,7 +24,7 @@ internal static class WraithToolsGuiTheme
     public const string Id = "void";
     public const string Name = "Void";
     public const int DwmCaptionColor = 0x00170C0E;
-    public const int DwmBorderColor = 0x00371F24;
+    public const int DwmBorderColor = 0x0078384B;
     public const int DwmTextColor = 0x00F2E1E6;
     public static readonly Drawing.Color Background = Drawing.Color.FromArgb(9, 8, 15);
     public static readonly Drawing.Color Text = Drawing.Color.FromArgb(230, 225, 242);
@@ -51,7 +51,7 @@ internal sealed class GuiThemePalette
     public Drawing.Color TraySelected { get; init; } = WraithToolsGuiTheme.TraySelected;
     public Drawing.Color TrayPressed { get; init; } = WraithToolsGuiTheme.TrayPressed;
     public Drawing.Color Caption { get; init; } = Drawing.Color.FromArgb(14, 12, 23);
-    public Drawing.Color WindowBorder { get; init; } = Drawing.Color.FromArgb(36, 31, 55);
+    public Drawing.Color WindowBorder { get; init; } = Drawing.Color.FromArgb(75, 56, 120);
     public Drawing.Color TitleText { get; init; } = WraithToolsGuiTheme.Text;
 
     public int DwmCaptionColor => ToColorRef(Caption);

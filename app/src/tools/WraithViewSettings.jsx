@@ -1538,7 +1538,7 @@ function WraithViewSettings({ open = true }) {
             <Toggle label="Labels" checked={profile.showLabels} onChange={(value) => patchProfile({ showLabels: value })} />
             <Toggle label="Active highlight" checked={profile.showActiveHighlight} onChange={(value) => patchProfile({ showActiveHighlight: value })} />
             <Toggle label="Inactive borders" checked={profile.showInactiveBorders} onChange={(value) => patchProfile({ showInactiveBorders: value })} />
-            <Toggle label="Edge outline" checked={profile.edgeOutline !== false} onChange={(value) => patchProfile({ edgeOutline: value })} />
+            <Toggle label="Edge outline" checked={profile.edgeOutline === true} onChange={(value) => patchProfile({ edgeOutline: value })} />
             <Toggle label="Snap" checked={profile.snapEnabled} onChange={(value) => patchProfile({ snapEnabled: value })} />
             <Toggle label="Hide active preview" checked={profile.hideActivePreview} onChange={(value) => patchProfile({ hideActivePreview: value })} />
             <Toggle label="Hide outside EVE focus" checked={profile.hideOnLostFocus} onChange={(value) => patchProfile({ hideOnLostFocus: value })} />

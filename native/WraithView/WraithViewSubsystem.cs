@@ -3629,7 +3629,7 @@ internal sealed class WraithViewProfile
     public bool ShowActiveHighlight { get; set; } = true;
     public bool ShowInactiveBorders { get; set; } = true;
     /// <summary>A faint light line around every preview so its edge shows against dark EVE scenes.</summary>
-    public bool EdgeOutline { get; set; } = true;
+    public bool EdgeOutline { get; set; }
     public bool LockPreviews { get; set; }
     public int BorderThickness { get; set; } = 2;
     public bool SnapEnabled { get; set; } = true;

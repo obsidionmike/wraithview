@@ -64,7 +64,8 @@ v0.9.1 (from the user's first test, 2026-10-14):
 - Snapping rewritten as `PreviewSnapping` (pure, xunit-tested in `PreviewSnappingTests`). The old code only matched same edges (top↔top), so dragging a preview up snapped it onto the other's top. It never snapped side by side, applied the last match rather than the closest, and clamped everything to the screen.
 - Off-screen parking (a user request): outer screen edges hold for `BreakoutFor(snap)` = max(40, 3×snap) px, then follow the cursor. `KeepOnDesktop` keeps 24 px visible, including for saved layouts after a monitor change.
 - Drag smear fixed: `ApplyDragFrame` paints the GDI frame synchronously before moving the DWM thumbnail. The transparent-label overlay is hidden during a drag.
-- `EdgeOutline` profile option (default on), with the "Edge outline" toggle in Preview layout.
+- `EdgeOutline` profile option (default **off**: the user only wanted the settings window's edge, the previews were fine), with the "Edge outline" toggle in Preview layout.
+- v0.9.2: the settings window's DWM border colour (Windows 11 only; `DWMWA_BORDER_COLOR`) comes from `--tv-border-accent-soft` (Void #4b3878) instead of `--tv-border-topbar` (#241f37, invisible on dark desktops). See `currentNativeTheme` in `app/src/App.jsx`.
 - Not yet tried by the user: cycle groups, Fleet Manager, Skill Planner.
 - They asked about an unknown character (2122885899) in EVE Settings. It comes from a `core_char_<id>.dat` in their own EVE settings folder (the name is resolved via ESI). An idea, not done: show each file's last-modified date in the character list.
 
