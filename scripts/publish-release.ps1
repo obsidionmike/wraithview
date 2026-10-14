@@ -8,8 +8,8 @@ param(
   [string]$ArtifactSigningMetadataPath = "",
   [string]$ArtifactSigningDlibPath = "",
   [string]$TimestampUrl = "http://timestamp.acs.microsoft.com",
-  [string]$SigningDescription = "TriffView",
-  [string]$SigningUrl = "https://triff.tools",
+  [string]$SigningDescription = "WraithView",
+  [string]$SigningUrl = "https://tools.wraithjack.com",
   [ValidateSet("PortableZip", "SingleFile", "Both")]
   [string]$PackageMode = "SingleFile",
   [switch]$SkipSign,
@@ -23,7 +23,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$project = Join-Path $root "native\TriffView.csproj"
+$project = Join-Path $root "native\WraithView.csproj"
 $appDir = Join-Path $root "app"
 $distDir = Join-Path $appDir "dist"
 $assetDir = Join-Path $root "native\Assets"
@@ -31,8 +31,8 @@ $overlayZip = Join-Path $assetDir "overlay-dist.zip"
 $singleFilePublishDir = Join-Path $root "artifacts\publish\$Runtime-single-file"
 $portablePublishDir = Join-Path $root "artifacts\publish\$Runtime-portable"
 $releaseDir = Join-Path $root "release"
-$releaseExe = Join-Path $releaseDir "TriffView.exe"
-$releaseZip = Join-Path $releaseDir "TriffView-$Runtime-portable.zip"
+$releaseExe = Join-Path $releaseDir "WraithView.exe"
+$releaseZip = Join-Path $releaseDir "WraithView-$Runtime-portable.zip"
 $localDotnet = Join-Path $root ".dotnet\dotnet.exe"
 $dotnet = if (Test-Path $localDotnet) { $localDotnet } else { "dotnet" }
 if ($CompressSingleFile -and $NoCompression) {
@@ -49,7 +49,7 @@ function Assert-UnderRoot($path) {
   $full = [System.IO.Path]::GetFullPath($path)
   $rootWithSlash = [System.IO.Path]::GetFullPath($root + [System.IO.Path]::DirectorySeparatorChar)
   if (-not $full.StartsWith($rootWithSlash, [System.StringComparison]::OrdinalIgnoreCase)) {
-    throw "Refusing to modify path outside TriffView: $full"
+    throw "Refusing to modify path outside WraithView: $full"
   }
   return $full
 }
@@ -195,9 +195,9 @@ $env:NUGET_PLUGINS_CACHE_PATH = (Resolve-Path (Join-Path $root ".nuget-plugin-ca
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
 
 if ($SkipWebBuild) {
-  Write-Host "Skipping TriffView web UI build; using existing app\dist output."
+  Write-Host "Skipping WraithView web UI build; using existing app\dist output."
 } else {
-  Write-Host "Building TriffView web UI..."
+  Write-Host "Building WraithView web UI..."
   Push-Location $appDir
   try {
     & npm.cmd run build
@@ -247,7 +247,7 @@ if (Test-PackageMode "PortableZip") {
     -o $portablePublishDir
   Assert-NativeSuccess "dotnet publish portable"
 
-  $portableExe = Join-Path $portablePublishDir "TriffView.exe"
+  $portableExe = Join-Path $portablePublishDir "WraithView.exe"
   if (-not (Test-Path -LiteralPath $portableExe)) {
     throw "Publish completed, but $portableExe was not produced."
   }
@@ -288,7 +288,7 @@ if (Test-PackageMode "SingleFile") {
     -o $singleFilePublishDir
   Assert-NativeSuccess "dotnet publish single-file"
 
-  $publishedExe = Join-Path $singleFilePublishDir "TriffView.exe"
+  $publishedExe = Join-Path $singleFilePublishDir "WraithView.exe"
   if (-not (Test-Path -LiteralPath $publishedExe)) {
     throw "Publish completed, but $publishedExe was not produced."
   }
@@ -296,7 +296,7 @@ if (Test-PackageMode "SingleFile") {
   try {
     Copy-Item -LiteralPath $publishedExe -Destination $releaseExe -Force
   } catch [System.IO.IOException] {
-    throw "Could not replace $releaseExe because it is locked. Quit running TriffView instances from the tray, then rerun this script. The newly published exe is still available at $publishedExe"
+    throw "Could not replace $releaseExe because it is locked. Quit running WraithView instances from the tray, then rerun this script. The newly published exe is still available at $publishedExe"
   }
 
   Sign-ReleaseExecutable $releaseExe

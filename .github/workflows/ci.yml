@@ -46,13 +46,13 @@ jobs:
           dotnet-version: "8.0.421"
 
       - name: Restore .NET dependencies
-        run: dotnet restore native/TriffView.Tests/TriffView.Tests.csproj --warnaserror -p:NuGetAudit=true -p:NuGetAuditMode=all -p:NuGetAuditLevel=moderate
+        run: dotnet restore native/WraithView.Tests/WraithView.Tests.csproj --warnaserror -p:NuGetAudit=true -p:NuGetAuditMode=all -p:NuGetAuditLevel=moderate
 
       - name: Build native app and tests
-        run: dotnet build native/TriffView.Tests/TriffView.Tests.csproj --configuration Release --no-restore --warnaserror
+        run: dotnet build native/WraithView.Tests/WraithView.Tests.csproj --configuration Release --no-restore --warnaserror
 
       - name: Run native tests
-        run: dotnet test native/TriffView.Tests/TriffView.Tests.csproj --configuration Release --no-restore --no-build
+        run: dotnet test native/WraithView.Tests/WraithView.Tests.csproj --configuration Release --no-restore --no-build
 
       - name: Run alert regression harness
-        run: dotnet run --project tests/TriffAlerts.Tests/TriffAlerts.Tests.csproj --configuration Release
+        run: dotnet run --project tests/WraithAlerts.Tests/WraithAlerts.Tests.csproj --configuration Release

@@ -8,56 +8,57 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Windows;
 using Microsoft.Web.WebView2.Core;
-using TriffView.Alerts;
-using TriffView.EveSettings;
-using TriffView.Preview;
-using TriffView.TriffFleets;
+using WraithView.Alerts;
+using WraithView.EveSettings;
+using WraithView.Preview;
+using WraithView.WraithFleets;
 using Drawing = System.Drawing;
 using Forms = System.Windows.Forms;
 using Media = System.Windows.Media;
 
-namespace TriffView;
+namespace WraithView;
 
-internal static class TriffToolsGuiTheme
+internal static class WraithToolsGuiTheme
 {
-    public const string Id = "triff-tools";
-    public const string Name = "Triff.Tools";
-    public const int DwmCaptionColor = 0x00140D09;
-    public const int DwmBorderColor = 0x00231B13;
-    public const int DwmTextColor = 0x00EEE2D9;
-    public static readonly Drawing.Color Background = Drawing.Color.FromArgb(5, 7, 11);
-    public static readonly Drawing.Color Text = Drawing.Color.FromArgb(217, 226, 238);
-    public static readonly Drawing.Color Accent = Drawing.Color.FromArgb(83, 182, 255);
-    public static readonly Drawing.Color Border = Drawing.Color.FromArgb(48, 54, 64);
-    public static readonly Drawing.Color PanelBorder = Drawing.Color.FromArgb(44, 47, 54);
-    public static readonly Drawing.Color PanelDark = Drawing.Color.FromArgb(7, 9, 16);
-    public static readonly Drawing.Color TrayImageMargin = Drawing.Color.FromArgb(8, 13, 20);
-    public static readonly Drawing.Color TraySelected = Drawing.Color.FromArgb(13, 34, 53);
-    public static readonly Drawing.Color TrayPressed = Drawing.Color.FromArgb(11, 35, 53);
+    // Default "Void" theme. The web UI sends the live palette once it loads; these cover startup.
+    public const string Id = "void";
+    public const string Name = "Void";
+    public const int DwmCaptionColor = 0x00170C0E;
+    public const int DwmBorderColor = 0x00371F24;
+    public const int DwmTextColor = 0x00F2E1E6;
+    public static readonly Drawing.Color Background = Drawing.Color.FromArgb(9, 8, 15);
+    public static readonly Drawing.Color Text = Drawing.Color.FromArgb(230, 225, 242);
+    public static readonly Drawing.Color Accent = Drawing.Color.FromArgb(167, 123, 255);
+    public static readonly Drawing.Color Border = Drawing.Color.FromArgb(46, 40, 66);
+    public static readonly Drawing.Color PanelBorder = Drawing.Color.FromArgb(42, 36, 64);
+    public static readonly Drawing.Color PanelDark = Drawing.Color.FromArgb(13, 11, 22);
+    public static readonly Drawing.Color TrayImageMargin = Drawing.Color.FromArgb(14, 12, 23);
+    public static readonly Drawing.Color TraySelected = Drawing.Color.FromArgb(34, 24, 58);
+    public static readonly Drawing.Color TrayPressed = Drawing.Color.FromArgb(42, 29, 72);
 }
 
 internal sealed class GuiThemePalette
 {
-    public string Id { get; init; } = TriffToolsGuiTheme.Id;
-    public string Name { get; init; } = TriffToolsGuiTheme.Name;
-    public Drawing.Color Background { get; init; } = TriffToolsGuiTheme.Background;
-    public Drawing.Color Text { get; init; } = TriffToolsGuiTheme.Text;
-    public Drawing.Color Accent { get; init; } = TriffToolsGuiTheme.Accent;
-    public Drawing.Color Border { get; init; } = TriffToolsGuiTheme.Border;
-    public Drawing.Color PanelBorder { get; init; } = TriffToolsGuiTheme.PanelBorder;
-    public Drawing.Color PanelDark { get; init; } = TriffToolsGuiTheme.PanelDark;
-    public Drawing.Color TrayImageMargin { get; init; } = TriffToolsGuiTheme.TrayImageMargin;
-    public Drawing.Color TraySelected { get; init; } = TriffToolsGuiTheme.TraySelected;
-    public Drawing.Color TrayPressed { get; init; } = TriffToolsGuiTheme.TrayPressed;
-    public Drawing.Color Caption { get; init; } = Drawing.Color.FromArgb(9, 13, 20);
-    public Drawing.Color WindowBorder { get; init; } = Drawing.Color.FromArgb(19, 27, 35);
-    public Drawing.Color TitleText { get; init; } = TriffToolsGuiTheme.Text;
+    public string Id { get; init; } = WraithToolsGuiTheme.Id;
+    public string Name { get; init; } = WraithToolsGuiTheme.Name;
+    public Drawing.Color Background { get; init; } = WraithToolsGuiTheme.Background;
+    public Drawing.Color Text { get; init; } = WraithToolsGuiTheme.Text;
+    public Drawing.Color Accent { get; init; } = WraithToolsGuiTheme.Accent;
+    public Drawing.Color Border { get; init; } = WraithToolsGuiTheme.Border;
+    public Drawing.Color PanelBorder { get; init; } = WraithToolsGuiTheme.PanelBorder;
+    public Drawing.Color PanelDark { get; init; } = WraithToolsGuiTheme.PanelDark;
+    public Drawing.Color TrayImageMargin { get; init; } = WraithToolsGuiTheme.TrayImageMargin;
+    public Drawing.Color TraySelected { get; init; } = WraithToolsGuiTheme.TraySelected;
+    public Drawing.Color TrayPressed { get; init; } = WraithToolsGuiTheme.TrayPressed;
+    public Drawing.Color Caption { get; init; } = Drawing.Color.FromArgb(14, 12, 23);
+    public Drawing.Color WindowBorder { get; init; } = Drawing.Color.FromArgb(36, 31, 55);
+    public Drawing.Color TitleText { get; init; } = WraithToolsGuiTheme.Text;
 
     public int DwmCaptionColor => ToColorRef(Caption);
     public int DwmBorderColor => ToColorRef(WindowBorder);
     public int DwmTextColor => ToColorRef(TitleText);
 
-    public static GuiThemePalette TriffTools { get; } = new();
+    public static GuiThemePalette WraithTools { get; } = new();
 
     public static GuiThemePalette FromMessage(JsonObject? theme, GuiThemePalette fallback)
     {
@@ -105,8 +106,8 @@ internal sealed class GuiThemePalette
 
 public partial class MainWindow : Window
 {
-    private const string VirtualHostName = "app.triffview.local";
-    private const string EmbeddedOverlayResourceName = "TriffView.Assets.overlay-dist.zip";
+    private const string VirtualHostName = "app.wraithview.local";
+    private const string EmbeddedOverlayResourceName = "WraithView.Assets.overlay-dist.zip";
     private const int MaxWebMessageCharacters = 1_200_000;
     private static readonly JsonSerializerOptions WebMessageJsonOptions = new()
     {
@@ -125,23 +126,23 @@ public partial class MainWindow : Window
     private const int DwmwaTextColor = 36;
 
     private readonly string[] _args;
-    private readonly TriffViewUpdateChecker _updateChecker;
+    private readonly WraithViewUpdateChecker _updateChecker;
     private readonly System.Windows.Threading.DispatcherTimer _conflictTimer;
     private Forms.NotifyIcon? _trayIcon;
     private Forms.ContextMenuStrip? _trayMenu;
     private Drawing.Icon? _trayIconImage;
     private Forms.ToolStripMenuItem? _showHideItem;
-    private Forms.ToolStripMenuItem? _triffViewEnabledItem;
-    private Forms.ToolStripMenuItem? _triffViewHotkeysItem;
-    private TriffViewController? _triffView;
+    private Forms.ToolStripMenuItem? _wraithViewEnabledItem;
+    private Forms.ToolStripMenuItem? _wraithViewHotkeysItem;
+    private WraithViewController? _wraithView;
     private EveSettingsController? _eveSettings;
-    private TriffFleetsController? _triffFleets;
-    private TriffSkills.TriffSkillsController? _triffSkills;
+    private WraithFleetsController? _wraithFleets;
+    private WraithSkills.WraithSkillsController? _wraithSkills;
     private WebViewTrustPolicy? _webViewTrust;
     private bool _allowMissingPageNavigation;
     private InputOverlayWindow? _inputOverlay;
-    private GuiThemePalette _guiTheme = GuiThemePalette.TriffTools;
-    private TriffViewUpdateSnapshot _updateSnapshot;
+    private GuiThemePalette _guiTheme = GuiThemePalette.WraithTools;
+    private WraithViewUpdateSnapshot _updateSnapshot;
     private bool _settingsAlwaysOnTop = true;
     private bool _isClosing;
     private bool _conflictWarningShown;
@@ -152,13 +153,13 @@ public partial class MainWindow : Window
     public MainWindow(string[] args)
     {
         _args = args;
-        _updateChecker = new TriffViewUpdateChecker();
-        _updateSnapshot = TriffViewUpdateSnapshot.Idle(_updateChecker.CurrentVersion);
+        _updateChecker = new WraithViewUpdateChecker();
+        _updateSnapshot = WraithViewUpdateSnapshot.Idle(_updateChecker.CurrentVersion);
         _conflictTimer = new System.Windows.Threading.DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(2),
         };
-        _conflictTimer.Tick += (_, _) => CheckRuntimeTriffHudConflict();
+        _conflictTimer.Tick += (_, _) => CheckRuntimeWraithHudConflict();
         InitializeComponent();
         SourceInitialized += (_, _) => ApplyDarkWindowChrome();
     }
@@ -188,9 +189,9 @@ public partial class MainWindow : Window
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        InitializeTriffView();
+        InitializeWraithView();
         InitializeEveSettings();
-        InitializeTriffFleets();
+        InitializeWraithFleets();
         InitializeTray();
         await InitializeWebViewAsync();
         InitializeInputOverlay();
@@ -230,16 +231,16 @@ public partial class MainWindow : Window
         PostAppEvent(new { type = "visibility", visible = true });
     }
 
-    private void InitializeTriffView()
+    private void InitializeWraithView()
     {
-        _triffView = new TriffViewController(
+        _wraithView = new WraithViewController(
             Dispatcher,
             PostAppEvent,
             () => Dispatcher.InvokeAsync(BringSettingsAbovePreviews),
             alwaysOnTop => Dispatcher.InvokeAsync(() => ApplySettingsAlwaysOnTop(alwaysOnTop))
         );
-        _triffView.AlertNotificationRequested += OnTriffAlertNotification;
-        _triffView.Start();
+        _wraithView.AlertNotificationRequested += OnWraithAlertNotification;
+        _wraithView.Start();
     }
 
     private void InitializeEveSettings()
@@ -247,43 +248,43 @@ public partial class MainWindow : Window
         _eveSettings = new EveSettingsController(Dispatcher, PostAppEvent);
     }
 
-    private void InitializeTriffFleets()
+    private void InitializeWraithFleets()
     {
-        _triffFleets = new TriffFleetsController(Dispatcher, PostAppEvent);
+        _wraithFleets = new WraithFleetsController(Dispatcher, PostAppEvent);
     }
 
     private void InitializeTray()
     {
         _trayIconImage ??= LoadAppIcon();
         _showHideItem = new Forms.ToolStripMenuItem("Hide Settings", null, (_, _) => ToggleSettings());
-        _triffViewEnabledItem = new Forms.ToolStripMenuItem("Enable TriffView", null, (_, _) => ToggleTriffView());
-        _triffViewHotkeysItem = new Forms.ToolStripMenuItem("Suspend TriffView hotkeys", null, (_, _) => ToggleTriffViewHotkeys());
-        var openTriffViewItem = new Forms.ToolStripMenuItem("Open TriffView settings", null, (_, _) => OpenTool("triffview"));
+        _wraithViewEnabledItem = new Forms.ToolStripMenuItem("Enable WraithView", null, (_, _) => ToggleWraithView());
+        _wraithViewHotkeysItem = new Forms.ToolStripMenuItem("Suspend WraithView hotkeys", null, (_, _) => ToggleWraithViewHotkeys());
+        var openWraithViewItem = new Forms.ToolStripMenuItem("Open WraithView settings", null, (_, _) => OpenTool("wraithview"));
         var openEveSettingsItem = new Forms.ToolStripMenuItem("Open EVE Settings", null, (_, _) => OpenTool("eve-settings"));
         var openFleetManagerItem = new Forms.ToolStripMenuItem("Open Fleet Manager", null, (_, _) => OpenTool("fleet-manager"));
         var openSkillPlannerItem = new Forms.ToolStripMenuItem("Open Skill Planner", null, (_, _) => OpenTool("skill-planner"));
-        var savePreviewItem = new Forms.ToolStripMenuItem("Save preview positions", null, (_, _) => PostTriffViewNativeCommand("save-preview-layout"));
-        var saveClientsItem = new Forms.ToolStripMenuItem("Save EVE client positions", null, (_, _) => PostTriffViewNativeCommand("save-client-layouts"));
-        var restoreClientsItem = new Forms.ToolStripMenuItem("Restore EVE client positions", null, (_, _) => PostTriffViewNativeCommand("restore-client-layouts"));
+        var savePreviewItem = new Forms.ToolStripMenuItem("Save preview positions", null, (_, _) => PostWraithViewNativeCommand("save-preview-layout"));
+        var saveClientsItem = new Forms.ToolStripMenuItem("Save EVE client positions", null, (_, _) => PostWraithViewNativeCommand("save-client-layouts"));
+        var restoreClientsItem = new Forms.ToolStripMenuItem("Restore EVE client positions", null, (_, _) => PostWraithViewNativeCommand("restore-client-layouts"));
         var checkUpdatesItem = new Forms.ToolStripMenuItem("Check for updates", null, (_, _) => _ = CheckForUpdatesAsync(manual: true));
         var reloadItem = new Forms.ToolStripMenuItem("Reload UI", null, (_, _) => AppWebView.Reload());
         var quitItem = new Forms.ToolStripMenuItem("Quit", null, (_, _) => Quit());
 
         var menu = CreateTrayMenu(_guiTheme);
-        menu.Opened += (_, _) => _triffView?.SetNativeMenuOpen(true);
+        menu.Opened += (_, _) => _wraithView?.SetNativeMenuOpen(true);
         menu.Closed += (_, _) =>
         {
-            _triffView?.SetNativeMenuOpen(false);
+            _wraithView?.SetNativeMenuOpen(false);
             BringSettingsAbovePreviews();
         };
         menu.Items.Add(_showHideItem);
-        menu.Items.Add(openTriffViewItem);
+        menu.Items.Add(openWraithViewItem);
         menu.Items.Add(openEveSettingsItem);
         menu.Items.Add(openFleetManagerItem);
         menu.Items.Add(openSkillPlannerItem);
         menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add(_triffViewEnabledItem);
-        menu.Items.Add(_triffViewHotkeysItem);
+        menu.Items.Add(_wraithViewEnabledItem);
+        menu.Items.Add(_wraithViewHotkeysItem);
         menu.Items.Add(savePreviewItem);
         menu.Items.Add(saveClientsItem);
         menu.Items.Add(restoreClientsItem);
@@ -295,13 +296,13 @@ public partial class MainWindow : Window
 
         _trayIcon = new Forms.NotifyIcon
         {
-            Text = "TriffView",
+            Text = "WraithView",
             Icon = _trayIconImage ?? Drawing.SystemIcons.Application,
             Visible = true,
         };
         _trayMenu = menu;
         _trayIcon.MouseUp += OnTrayMouseUp;
-        _trayIcon.DoubleClick += (_, _) => OpenTool("triffview");
+        _trayIcon.DoubleClick += (_, _) => OpenTool("wraithview");
         _trayIcon.BalloonTipClicked += (_, _) => OnTrayBalloonClicked();
         UpdateControlState();
     }
@@ -313,7 +314,7 @@ public partial class MainWindow : Window
             BackColor = theme.Background,
             ForeColor = theme.Text,
             Font = new Drawing.Font("Segoe UI", 9f, Drawing.FontStyle.Regular, Drawing.GraphicsUnit.Point),
-            Renderer = new Forms.ToolStripProfessionalRenderer(new TriffViewMenuColorTable(theme)),
+            Renderer = new Forms.ToolStripProfessionalRenderer(new WraithViewMenuColorTable(theme)),
             ShowImageMargin = true,
             ShowCheckMargin = false,
         };
@@ -352,7 +353,7 @@ public partial class MainWindow : Window
     {
         menu.BackColor = theme.Background;
         menu.ForeColor = theme.Text;
-        menu.Renderer = new Forms.ToolStripProfessionalRenderer(new TriffViewMenuColorTable(theme));
+        menu.Renderer = new Forms.ToolStripProfessionalRenderer(new WraithViewMenuColorTable(theme));
         foreach (Forms.ToolStripItem item in menu.Items)
         {
             item.BackColor = theme.Background;
@@ -365,7 +366,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            var resource = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Assets/TriffView.ico", UriKind.Absolute));
+            var resource = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Assets/WraithView.ico", UriKind.Absolute));
             if (resource?.Stream == null) return null;
 
             using var stream = resource.Stream;
@@ -387,7 +388,7 @@ public partial class MainWindow : Window
     {
         AppWebView.DefaultBackgroundColor = _guiTheme.Background;
 
-        var webViewUserDataFolder = GetTriffViewLocalAppDataPath("WebView2");
+        var webViewUserDataFolder = GetWraithViewLocalAppDataPath("WebView2");
         Directory.CreateDirectory(webViewUserDataFolder);
         var webViewEnvironment = await CoreWebView2Environment.CreateAsync(
             browserExecutableFolder: null,
@@ -457,18 +458,18 @@ public partial class MainWindow : Window
         switch (e.Kind)
         {
             case CoreWebView2ScriptDialogKind.Alert:
-                System.Windows.MessageBox.Show(this, message, "TriffView", MessageBoxButton.OK, MessageBoxImage.Information);
+                System.Windows.MessageBox.Show(this, message, "WraithView", MessageBoxButton.OK, MessageBoxImage.Information);
                 e.Accept();
                 break;
             case CoreWebView2ScriptDialogKind.Confirm:
             case CoreWebView2ScriptDialogKind.Beforeunload:
-                if (System.Windows.MessageBox.Show(this, message, "TriffView", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+                if (System.Windows.MessageBox.Show(this, message, "WraithView", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
                 {
                     e.Accept();
                 }
                 break;
             case CoreWebView2ScriptDialogKind.Prompt:
-                if (System.Windows.MessageBox.Show(this, message, "TriffView", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.Cancel) == MessageBoxResult.OK)
+                if (System.Windows.MessageBox.Show(this, message, "WraithView", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.Cancel) == MessageBoxResult.OK)
                 {
                     e.Accept();
                 }
@@ -479,7 +480,7 @@ public partial class MainWindow : Window
     private string? GetDevUrl()
     {
 #if DEBUG
-        var envUrl = Environment.GetEnvironmentVariable("TRIFFVIEW_DEV_URL");
+        var envUrl = Environment.GetEnvironmentVariable("WRAITHVIEW_DEV_URL");
         if (!string.IsNullOrWhiteSpace(envUrl)) return envUrl;
         return _args.Any(arg => string.Equals(arg, "--dev", StringComparison.OrdinalIgnoreCase))
             ? "http://localhost:5178"
@@ -529,7 +530,7 @@ public partial class MainWindow : Window
             var zipBytes = buffer.ToArray();
             var hash = Convert.ToHexString(SHA256.HashData(zipBytes))[..16].ToLowerInvariant();
 
-            var extractRoot = GetTriffViewLocalAppDataPath("ui", hash);
+            var extractRoot = GetWraithViewLocalAppDataPath("ui", hash);
             var markerPath = Path.Combine(extractRoot, ".extract-complete");
             var indexPath = Path.Combine(extractRoot, "index.html");
             if (File.Exists(markerPath) && File.Exists(indexPath)) return extractRoot;
@@ -565,17 +566,17 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Failed to extract embedded TriffView UI: {ex}");
+            Debug.WriteLine($"Failed to extract embedded WraithView UI: {ex}");
             return null;
         }
     }
 
-    internal static string GetTriffViewLocalAppDataPath(params string[] segments)
+    internal static string GetWraithViewLocalAppDataPath(params string[] segments)
     {
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var path = Path.Combine(
             string.IsNullOrWhiteSpace(localAppData) ? Path.GetTempPath() : localAppData,
-            "TriffView"
+            "WraithView"
         );
 
         foreach (var segment in segments)
@@ -591,10 +592,10 @@ public partial class MainWindow : Window
         return $"""
         <!doctype html>
         <html>
-          <body style="margin:0;background:{CssColor(TriffToolsGuiTheme.Background)};color:{CssColor(TriffToolsGuiTheme.Accent)};font-family:Segoe UI;">
-            <div style="position:absolute;top:32px;left:32px;border:1px solid {CssColor(TriffToolsGuiTheme.PanelBorder)};background:{CssColor(TriffToolsGuiTheme.PanelDark)};padding:12px;">
-              <div style="font-size:12px;font-weight:800;text-transform:uppercase;">TriffView</div>
-              <div style="margin-top:8px;color:{CssColor(TriffToolsGuiTheme.Text)};font-size:11px;">Build the UI first: npm.cmd run build from TriffView/app.</div>
+          <body style="margin:0;background:{CssColor(WraithToolsGuiTheme.Background)};color:{CssColor(WraithToolsGuiTheme.Accent)};font-family:Segoe UI;">
+            <div style="position:absolute;top:32px;left:32px;border:1px solid {CssColor(WraithToolsGuiTheme.PanelBorder)};background:{CssColor(WraithToolsGuiTheme.PanelDark)};padding:12px;">
+              <div style="font-size:12px;font-weight:800;text-transform:uppercase;">WraithView</div>
+              <div style="margin-top:8px;color:{CssColor(WraithToolsGuiTheme.Text)};font-size:11px;">Build the UI first: npm.cmd run build from WraithView/app.</div>
             </div>
           </body>
         </html>
@@ -621,7 +622,7 @@ public partial class MainWindow : Window
             clickCount,
         };
         var json = JsonSerializer.Serialize(payload);
-        _ = AppWebView.CoreWebView2.ExecuteScriptAsync($"window.triffHudDispatchInput && window.triffHudDispatchInput({json});");
+        _ = AppWebView.CoreWebView2.ExecuteScriptAsync($"window.wraithHudDispatchInput && window.wraithHudDispatchInput({json});");
     }
 
     internal void ForwardTextToHud(string text)
@@ -629,7 +630,7 @@ public partial class MainWindow : Window
         if (!IsVisible || AppWebView.CoreWebView2 == null) return;
 
         var json = JsonSerializer.Serialize(new { text });
-        _ = AppWebView.CoreWebView2.ExecuteScriptAsync($"window.triffHudDispatchText && window.triffHudDispatchText({json});");
+        _ = AppWebView.CoreWebView2.ExecuteScriptAsync($"window.wraithHudDispatchText && window.wraithHudDispatchText({json});");
     }
 
     internal void ForwardKeyToHud(
@@ -644,7 +645,7 @@ public partial class MainWindow : Window
         if (!IsVisible || AppWebView.CoreWebView2 == null) return;
 
         var json = JsonSerializer.Serialize(new { key, gesture, control, alt, shift, windows });
-        _ = AppWebView.CoreWebView2.ExecuteScriptAsync($"window.triffHudDispatchKey && window.triffHudDispatchKey({json});");
+        _ = AppWebView.CoreWebView2.ExecuteScriptAsync($"window.wraithHudDispatchKey && window.wraithHudDispatchKey({json});");
     }
 
     private void OnWebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
@@ -665,7 +666,7 @@ public partial class MainWindow : Window
         var type = message?["type"] is JsonValue value && value.TryGetValue<string>(out var parsedType) ? parsedType : string.Empty;
         if (string.IsNullOrWhiteSpace(type) || type.Length > 128) return;
 
-        if (_triffView?.HandleWebMessage(type, message) == true)
+        if (_wraithView?.HandleWebMessage(type, message) == true)
         {
             UpdateControlState();
             return;
@@ -676,30 +677,30 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (_triffFleets?.HandleWebMessage(type, message) == true)
+        if (_wraithFleets?.HandleWebMessage(type, message) == true)
         {
             return;
         }
 
-        if (type.StartsWith("triffskills:", StringComparison.Ordinal))
+        if (type.StartsWith("wraithskills:", StringComparison.Ordinal))
         {
             try
             {
-                _triffSkills ??= new TriffSkills.TriffSkillsController(PostAppEvent);
+                _wraithSkills ??= new WraithSkills.WraithSkillsController(PostAppEvent);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Failed to initialize Skill Planner: {ex}");
                 PostAppEvent(new
                 {
-                    type = "triffskills:error",
+                    type = "wraithskills:error",
                     action = "initialize",
                     message = "Skill Planner could not be initialized.",
                 });
                 return;
             }
 
-            if (_triffSkills.HandleWebMessage(type, message))
+            if (_wraithSkills.HandleWebMessage(type, message))
             {
                 return;
             }
@@ -762,7 +763,7 @@ public partial class MainWindow : Window
     private void ApplyWindowBackground()
     {
         var brush = new Media.SolidColorBrush(Media.Color.FromRgb(_guiTheme.Background.R, _guiTheme.Background.G, _guiTheme.Background.B));
-        Resources["TriffToolsBackgroundBrush"] = brush;
+        Resources["WraithToolsBackgroundBrush"] = brush;
         Background = brush;
     }
 
@@ -838,32 +839,32 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ToggleTriffView()
+    private void ToggleWraithView()
     {
-        if (_triffView == null) return;
-        _triffView.SetEnabled(!_triffView.Settings.Enabled);
+        if (_wraithView == null) return;
+        _wraithView.SetEnabled(!_wraithView.Settings.Enabled);
         UpdateControlState();
     }
 
-    private void ToggleTriffViewHotkeys()
+    private void ToggleWraithViewHotkeys()
     {
-        if (_triffView == null) return;
-        _triffView.SetHotkeysSuspended(!_triffView.Settings.HotkeysSuspended);
+        if (_wraithView == null) return;
+        _wraithView.SetHotkeysSuspended(!_wraithView.Settings.HotkeysSuspended);
         UpdateControlState();
     }
 
-    private void PostTriffViewNativeCommand(string action)
+    private void PostWraithViewNativeCommand(string action)
     {
         switch (action)
         {
             case "save-preview-layout":
-                _triffView?.HandleWebMessage("triffview:save-preview-layout", null);
+                _wraithView?.HandleWebMessage("wraithview:save-preview-layout", null);
                 break;
             case "save-client-layouts":
-                _triffView?.HandleWebMessage("triffview:save-client-layouts", null);
+                _wraithView?.HandleWebMessage("wraithview:save-client-layouts", null);
                 break;
             case "restore-client-layouts":
-                _triffView?.HandleWebMessage("triffview:restore-client-layouts", null);
+                _wraithView?.HandleWebMessage("wraithview:restore-client-layouts", null);
                 break;
         }
 
@@ -873,18 +874,18 @@ public partial class MainWindow : Window
     private void UpdateControlState()
     {
         if (_showHideItem != null) _showHideItem.Text = SettingsWindowIsShown() ? "Hide Settings" : "Show Settings";
-        if (_triffViewEnabledItem != null)
+        if (_wraithViewEnabledItem != null)
         {
-            var enabled = _triffView?.Settings.Enabled == true;
-            _triffViewEnabledItem.Checked = false;
-            _triffViewEnabledItem.Text = enabled ? "Disable TriffView" : "Enable TriffView";
+            var enabled = _wraithView?.Settings.Enabled == true;
+            _wraithViewEnabledItem.Checked = false;
+            _wraithViewEnabledItem.Text = enabled ? "Disable WraithView" : "Enable WraithView";
         }
-        if (_triffViewHotkeysItem != null)
+        if (_wraithViewHotkeysItem != null)
         {
-            var suspended = _triffView?.Settings.HotkeysSuspended == true;
-            _triffViewHotkeysItem.Checked = false;
-            _triffViewHotkeysItem.Enabled = _triffView?.Settings.Enabled == true;
-            _triffViewHotkeysItem.Text = suspended ? "Resume TriffView hotkeys" : "Suspend TriffView hotkeys";
+            var suspended = _wraithView?.Settings.HotkeysSuspended == true;
+            _wraithViewHotkeysItem.Checked = false;
+            _wraithViewHotkeysItem.Enabled = _wraithView?.Settings.Enabled == true;
+            _wraithViewHotkeysItem.Text = suspended ? "Resume WraithView hotkeys" : "Suspend WraithView hotkeys";
         }
     }
 
@@ -992,7 +993,7 @@ public partial class MainWindow : Window
         if (_updateCheckInFlight) return;
 
         _updateCheckInFlight = true;
-        _updateSnapshot = TriffViewUpdateSnapshot.Checking(_updateChecker.CurrentVersion);
+        _updateSnapshot = WraithViewUpdateSnapshot.Checking(_updateChecker.CurrentVersion);
         if (manual) PostUpdateState();
 
         try
@@ -1004,7 +1005,7 @@ public partial class MainWindow : Window
             {
                 if (manual)
                 {
-                    System.Windows.MessageBox.Show(this, $"Could not check GitHub releases right now.\n\n{_updateSnapshot.Error}", "TriffView updates", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    System.Windows.MessageBox.Show(this, $"Could not check GitHub releases right now.\n\n{_updateSnapshot.Error}", "WraithView updates", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 return;
             }
@@ -1023,18 +1024,18 @@ public partial class MainWindow : Window
             else if (manual)
             {
                 var message = _updateSnapshot.Ignored
-                    ? $"TriffView {_updateSnapshot.LatestTag} is available, but you chose to ignore this version."
+                    ? $"WraithView {_updateSnapshot.LatestTag} is available, but you chose to ignore this version."
                     : $"You're up to date. Current version: {_updateSnapshot.CurrentVersion}.";
-                System.Windows.MessageBox.Show(this, message, "TriffView updates", MessageBoxButton.OK, MessageBoxImage.Information);
+                System.Windows.MessageBox.Show(this, message, "WraithView updates", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         catch (Exception ex)
         {
-            _updateSnapshot = TriffViewUpdateSnapshot.Failed(_updateChecker.CurrentVersion, ex.Message);
+            _updateSnapshot = WraithViewUpdateSnapshot.Failed(_updateChecker.CurrentVersion, ex.Message);
             PostUpdateState();
             if (manual)
             {
-                System.Windows.MessageBox.Show(this, $"Could not check GitHub releases right now.\n\n{ex.Message}", "TriffView updates", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show(this, $"Could not check GitHub releases right now.\n\n{ex.Message}", "WraithView updates", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
         finally
@@ -1050,13 +1051,13 @@ public partial class MainWindow : Window
         _lastBalloonAction = "update";
         _trayIcon.ShowBalloonTip(
             8000,
-            "TriffView update available",
-            $"{_updateSnapshot.LatestTag} is available. Open TriffView settings to download it from GitHub.",
+            "WraithView update available",
+            $"{_updateSnapshot.LatestTag} is available. Open WraithView settings to download it from GitHub.",
             Forms.ToolTipIcon.Info
         );
     }
 
-    private void OnTriffAlertNotification(TriffAlertEvent alert)
+    private void OnWraithAlertNotification(WraithAlertEvent alert)
     {
         Dispatcher.InvokeAsync(() =>
         {
@@ -1064,8 +1065,8 @@ public partial class MainWindow : Window
             _lastBalloonAction = "alerts";
             var icon = alert.Severity switch
             {
-                TriffAlertSeverity.Critical => Forms.ToolTipIcon.Error,
-                TriffAlertSeverity.Warning => Forms.ToolTipIcon.Warning,
+                WraithAlertSeverity.Critical => Forms.ToolTipIcon.Error,
+                WraithAlertSeverity.Warning => Forms.ToolTipIcon.Warning,
                 _ => Forms.ToolTipIcon.Info,
             };
             var title = $"{alert.Label} - {alert.CharacterName}";
@@ -1084,7 +1085,7 @@ public partial class MainWindow : Window
         }
         else
         {
-            OpenTool("triffview");
+            OpenTool("wraithview");
         }
 
         _lastBalloonAction = "";
@@ -1094,7 +1095,7 @@ public partial class MainWindow : Window
     {
         var url = !string.IsNullOrWhiteSpace(_updateSnapshot.ReleaseUrl)
             ? _updateSnapshot.ReleaseUrl
-            : TriffViewUpdateChecker.ReleasesPageUrl;
+            : WraithViewUpdateChecker.ReleasesPageUrl;
         OpenExternal(url);
     }
 
@@ -1130,19 +1131,19 @@ public partial class MainWindow : Window
         });
     }
 
-    private void CheckRuntimeTriffHudConflict()
+    private void CheckRuntimeWraithHudConflict()
     {
-        if (_conflictWarningShown || !App.IsTriffHudRunning()) return;
+        if (_conflictWarningShown || !App.IsTriffViewRunning()) return;
 
         _conflictWarningShown = true;
-        _triffView?.SetEnabled(false);
-        _triffView?.SetHotkeysSuspended(true);
+        _wraithView?.SetEnabled(false);
+        _wraithView?.SetHotkeysSuspended(true);
         UpdateControlState();
 
         System.Windows.MessageBox.Show(
             this,
-            "TriffHUD is now running. Standalone TriffView disabled its previews and hotkeys so the two apps do not fight over EVE windows, DWM thumbnails, shared settings, or global hotkeys.\n\nQuit one app before enabling TriffView again.",
-            "TriffView conflict",
+            "TriffView is now running. WraithView disabled its previews and hotkeys so the two apps don't fight over EVE windows, DWM thumbnails or global hotkeys.\n\nQuit TriffView before enabling WraithView again.",
+            "TriffView is running",
             MessageBoxButton.OK,
             MessageBoxImage.Warning
         );
@@ -1159,22 +1160,22 @@ public partial class MainWindow : Window
     {
         _conflictTimer.Stop();
 
-        if (_triffView != null)
+        if (_wraithView != null)
         {
-            _triffView.Dispose();
-            _triffView = null;
+            _wraithView.Dispose();
+            _wraithView = null;
         }
 
-        if (_triffSkills != null)
+        if (_wraithSkills != null)
         {
-            _triffSkills.Dispose();
-            _triffSkills = null;
+            _wraithSkills.Dispose();
+            _wraithSkills = null;
         }
 
-        if (_triffFleets != null)
+        if (_wraithFleets != null)
         {
-            _triffFleets.Dispose();
-            _triffFleets = null;
+            _wraithFleets.Dispose();
+            _wraithFleets = null;
         }
 
         if (_inputOverlay != null)
@@ -1204,11 +1205,11 @@ public partial class MainWindow : Window
     }
 }
 
-internal sealed class TriffViewMenuColorTable : Forms.ProfessionalColorTable
+internal sealed class WraithViewMenuColorTable : Forms.ProfessionalColorTable
 {
     private readonly GuiThemePalette _theme;
 
-    public TriffViewMenuColorTable(GuiThemePalette theme)
+    public WraithViewMenuColorTable(GuiThemePalette theme)
     {
         _theme = theme;
     }

@@ -1,4 +1,4 @@
-namespace TriffView;
+namespace WraithView;
 
 internal enum WebViewNavigationKind
 {
@@ -43,7 +43,7 @@ internal sealed class WebViewTrustPolicy
             || uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps
             || !string.IsNullOrEmpty(uri.UserInfo))
         {
-            throw new InvalidOperationException("TRIFFVIEW_DEV_URL must be an absolute HTTP or HTTPS URL without credentials.");
+            throw new InvalidOperationException("WRAITHVIEW_DEV_URL must be an absolute HTTP or HTTPS URL without credentials.");
         }
         return new Uri(uri.GetLeftPart(UriPartial.Authority) + "/");
     }

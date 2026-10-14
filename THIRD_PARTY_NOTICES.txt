@@ -1,3 +1,5 @@
+WraithView is a modified version of TriffView (https://github.com/NarcisussX/TriffView), licensed under the GNU General Public License, version 3 only. The notices below are TriffView's and apply to WraithView unchanged; where they say "TriffView" they also cover WraithView. Modifications by the wraithtools crew are described in README.md under "Changes from TriffView".
+
 # Third Party Notices
 
 TriffView is licensed under the GNU General Public License, version 3 only. See `LICENSE`.
@@ -178,7 +180,7 @@ EVE-O Preview, EVE-X Preview, EVE-APM, Nicotine, and related tools were used as 
 
 ### EVE-X Preview hotkey activation
 
-The registration and foreground activation sequence in `native/Hotkeys/TriffViewHotkeys.ahk` is adapted from EVE-X Preview's `src/Main_Class.ahk` at commit `b5902250f8189f6b3d345b7ba1ac998de6d6b55b`.
+The registration and foreground activation sequence in `native/Hotkeys/WraithViewHotkeys.ahk (originally TriffViewHotkeys.ahk)` is adapted from EVE-X Preview's `src/Main_Class.ahk` at commit `b5902250f8189f6b3d345b7ba1ac998de6d6b55b`.
 
 - Copyright (c) 2024 g0nzo83
 - License: MIT; complete notice in `native/Hotkeys/EVE-X-LICENSE.txt`, also embedded and extracted with the helper

@@ -32,8 +32,8 @@
 
 :root {
   color-scheme: dark;
-  --triffhud-font-family: "Rajdhani", "Segoe UI", sans-serif;
-  --triffview-theme-name: "Triff.Tools";
+  --wraithhud-font-family: "Rajdhani", "Segoe UI", sans-serif;
+  --wraithview-theme-name: "Classic";
   --tv-bg: #05070b;
   --tv-bg-rgb: 5, 7, 11;
   --tv-bg-deep: #030509;
@@ -131,15 +131,93 @@
   --tv-danger-control-bg: #090609;
   --tv-danger-deep-bg: #120609;
   --tv-danger-hover-bg: #1a0d12;
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   background: var(--tv-bg);
   color: var(--tv-text);
   font-size: 11px;
   font-synthesis: none;
 }
 
+:root[data-theme="void"] {
+  --wraithview-theme-name: "Void";
+  --tv-bg: #09080f;
+  --tv-bg-rgb: 9, 8, 15;
+  --tv-bg-deep: #05040a;
+  --tv-topbar-bg: #0e0c17;
+  --tv-titlebar-bg: #14111f;
+  --tv-panel-dark: #0d0b16;
+  --tv-panel-dark-rgb: 13, 11, 22;
+  --tv-panel-rgb: 15, 13, 26;
+  --tv-surface-rgb: 22, 19, 36;
+  --tv-control-bg: #141122;
+  --tv-control-bg-alt: #100e1b;
+  --tv-control-active-bg: #241a3d;
+  --tv-hover-bg: #1b1630;
+  --tv-hover-muted-bg: #120f1f;
+  --tv-accent-bg: #22183a;
+  --tv-accent-selected-bg: #2a1d48;
+  --tv-accent-deep-bg: #160f27;
+  --tv-accent-deeper-bg: #100b1d;
+  --tv-select-bg: #2c1f4d;
+  --tv-table-head-bg: #15121f;
+  --tv-loading-track: #221d33;
+  --tv-accent: #a77bff;
+  --tv-accent-rgb: 167, 123, 255;
+  --tv-accent-bright: #c3a3ff;
+  --tv-accent-hot: #d9c4ff;
+  --tv-accent-text: #cdb6ff;
+  --tv-accent-muted: #9a8cc4;
+  --tv-accent-drag: #c3a3ff;
+  --tv-accent-divider: #3a2c5e;
+  --tv-accent-border-deep: #7a52d6;
+  --tv-accent-gradient-start: #8f5cf0;
+  --tv-accent-gradient-end: #5b37a8;
+  --tv-checkmark: #f3ecff;
+  --tv-text: #e6e1f2;
+  --tv-text-strong: #f5f2fc;
+  --tv-text-active: #f7f3ff;
+  --tv-text-cool: #f4f0ff;
+  --tv-text-cool-2: #efeaff;
+  --tv-text-cool-3: #f1edff;
+  --tv-text-soft-blue: #e2dcf2;
+  --tv-text-muted-blue: #cdc6e0;
+  --tv-text-toggle: #c4bdd8;
+  --tv-text-muted: #b3abc8;
+  --tv-text-muted-alt: #b0a8c4;
+  --tv-muted: #8f88a6;
+  --tv-muted-strong: #7d7794;
+  --tv-muted-extra: #6c6683;
+  --tv-loading-text: #a69ec0;
+  --tv-section-text: #b3a0e0;
+  --tv-separator-text: #948caa;
+  --tv-drag-text: #9d93bc;
+  --tv-tool-pin-text: #958cb0;
+  --tv-tool-pin-active-text: #e4d8ff;
+  --tv-icon-muted: #aea6c4;
+  --tv-selection-text: #faf7ff;
+  --tv-border: #2e2842;
+  --tv-border-alt: #29243a;
+  --tv-border-muted: #211c31;
+  --tv-border-soft: #2a2440;
+  --tv-border-topbar: #241f37;
+  --tv-border-panel: #2a2440;
+  --tv-border-faint: #1a1628;
+  --tv-border-strong: #3a3354;
+  --tv-border-pin: #4a3f6e;
+  --tv-border-preview: #4b4366;
+  --tv-border-dashed: #3a3158;
+  --tv-border-muted-hover: #4f4670;
+  --tv-border-accent-soft: #4b3878;
+  --tv-scroll-thumb: #3b3452;
+  --tv-drag-rgb: 14, 10, 26;
+  --tv-drag-muted-rgb: 14, 12, 24;
+  --tv-success: #4fe0a6;
+  --tv-danger: #ff6b81;
+  --tv-danger-text: #ffb3c0;
+}
+
 :root[data-theme="amarr"] {
-  --triffview-theme-name: "Amarr";
+  --wraithview-theme-name: "Amarr";
   --tv-bg: #090705;
   --tv-bg-rgb: 9, 7, 5;
   --tv-bg-deep: #050403;
@@ -191,7 +269,7 @@
 }
 
 :root[data-theme="caldari"] {
-  --triffview-theme-name: "Caldari";
+  --wraithview-theme-name: "Caldari";
   --tv-bg: #04090b;
   --tv-bg-rgb: 4, 9, 11;
   --tv-bg-deep: #020506;
@@ -242,7 +320,7 @@
 }
 
 :root[data-theme="carbon"] {
-  --triffview-theme-name: "Carbon";
+  --wraithview-theme-name: "Carbon";
   --tv-bg: #080909;
   --tv-bg-rgb: 8, 9, 9;
   --tv-bg-deep: #040505;
@@ -293,7 +371,7 @@
 }
 
 :root[data-theme="gallente"] {
-  --triffview-theme-name: "Gallente";
+  --wraithview-theme-name: "Gallente";
   --tv-bg: #050b09;
   --tv-bg-rgb: 5, 11, 9;
   --tv-bg-deep: #020604;
@@ -344,7 +422,7 @@
 }
 
 :root[data-theme="minmatar"] {
-  --triffview-theme-name: "Minmatar";
+  --wraithview-theme-name: "Minmatar";
   --tv-bg: #0c0504;
   --tv-bg-rgb: 12, 5, 4;
   --tv-bg-deep: #060302;
@@ -395,7 +473,7 @@
 }
 
 :root[data-theme="ore"] {
-  --triffview-theme-name: "ORE";
+  --wraithview-theme-name: "ORE";
   --tv-bg: #0b0a04;
   --tv-bg-rgb: 11, 10, 4;
   --tv-bg-deep: #060502;
@@ -446,7 +524,7 @@
 }
 
 :root[data-theme="servant-sisters"] {
-  --triffview-theme-name: "Servant Sisters of EVE";
+  --wraithview-theme-name: "Servant Sisters of EVE";
   --tv-bg: #080608;
   --tv-bg-rgb: 8, 6, 8;
   --tv-bg-deep: #040304;
@@ -496,7 +574,7 @@
   --tv-scroll-thumb: #67465d;
 }
 
-.triffview-standalone-root {
+.wraithview-standalone-root {
   display: grid;
   grid-template-rows: 44px minmax(0, 1fr);
   width: 100%;
@@ -505,7 +583,7 @@
   color: var(--tv-text);
 }
 
-.triffview-standalone-topbar {
+.wraithview-standalone-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -515,38 +593,38 @@
   padding: 0 12px;
 }
 
-.triffview-standalone-topbar > div {
+.wraithview-standalone-topbar > div {
   display: flex;
   align-items: baseline;
   gap: 10px;
   min-width: 0;
 }
 
-.triffview-standalone-topbar .triffview-brand-block {
+.wraithview-standalone-topbar .wraithview-brand-block {
   align-items: center;
   gap: 9px;
 }
 
-.triffview-standalone-topbar strong {
+.wraithview-standalone-topbar strong {
   color: var(--tv-accent);
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
 }
 
-.triffview-standalone-topbar span {
+.wraithview-standalone-topbar span {
   color: var(--tv-muted);
   font-size: 11px;
 }
 
-.triffview-theme-picker {
+.wraithview-theme-picker {
   display: inline-flex;
   min-width: 0;
   align-items: center;
   gap: 6px;
 }
 
-.triffview-theme-swatches {
+.wraithview-theme-swatches {
   display: inline-grid;
   grid-template-columns: repeat(3, 13px);
   gap: 2px;
@@ -554,14 +632,14 @@
   flex: 0 0 auto;
 }
 
-.triffview-theme-swatches i {
+.wraithview-theme-swatches i {
   display: block;
   width: 13px;
   height: 14px;
   border: 1px solid rgba(var(--tv-white-rgb), 0.12);
 }
 
-.triffview-theme-select {
+.wraithview-theme-select {
   width: 178px;
   height: 28px;
   min-width: 0;
@@ -576,20 +654,20 @@
   outline: none;
 }
 
-.triffview-theme-select:hover,
-.triffview-theme-select:focus {
+.wraithview-theme-select:hover,
+.wraithview-theme-select:focus {
   border-color: var(--tv-accent);
   background: var(--tv-control-active-bg);
   color: var(--tv-text-active);
 }
 
-.triffview-standalone-topbar nav {
+.wraithview-standalone-topbar nav {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.triffview-standalone-topbar button {
+.wraithview-standalone-topbar button {
   min-width: 112px;
   min-height: 28px;
   border: 1px solid var(--tv-border);
@@ -599,14 +677,14 @@
   cursor: pointer;
 }
 
-.triffview-standalone-topbar button:hover,
-.triffview-standalone-topbar button.is-active {
+.wraithview-standalone-topbar button:hover,
+.wraithview-standalone-topbar button.is-active {
   border-color: var(--tv-accent);
   background: var(--tv-control-active-bg);
   color: var(--tv-text-active);
 }
 
-.triffview-standalone-topbar > .triffview-update-pill {
+.wraithview-standalone-topbar > .wraithview-update-pill {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -620,7 +698,7 @@
   box-shadow: inset 2px 0 0 var(--tv-warning);
 }
 
-.triffview-standalone-topbar .triffview-update-copy {
+.wraithview-standalone-topbar .wraithview-update-copy {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -629,13 +707,13 @@
   white-space: nowrap;
 }
 
-.triffview-standalone-topbar .triffview-update-copy strong {
+.wraithview-standalone-topbar .wraithview-update-copy strong {
   color: var(--tv-warning);
   font-size: 12px;
   text-transform: uppercase;
 }
 
-.triffview-standalone-topbar .triffview-update-copy em {
+.wraithview-standalone-topbar .wraithview-update-copy em {
   overflow: hidden;
   max-width: 96px;
   color: var(--tv-text-muted);
@@ -643,7 +721,7 @@
   text-overflow: ellipsis;
 }
 
-.triffview-standalone-topbar .triffview-update-pill button {
+.wraithview-standalone-topbar .wraithview-update-pill button {
   min-width: 0;
   min-height: 22px;
   padding: 0 8px;
@@ -653,24 +731,24 @@
   font-size: 11px;
 }
 
-.triffview-standalone-topbar .triffview-update-pill button:hover {
+.wraithview-standalone-topbar .wraithview-update-pill button:hover {
   border-color: var(--tv-warning);
   background: var(--tv-warning-bg);
   color: var(--tv-white);
 }
 
-.triffview-standalone-panel {
+.wraithview-standalone-panel {
   min-height: 0;
   overflow: hidden;
 }
 
-.triffview-standalone-panel > .triffview-settings,
-.triffview-standalone-panel > .eve-settings {
+.wraithview-standalone-panel > .wraithview-settings,
+.wraithview-standalone-panel > .eve-settings {
   width: 100%;
   height: 100%;
 }
 
-.triffview-standalone-loading {
+.wraithview-standalone-loading {
   display: grid;
   place-items: center;
   height: 100%;
@@ -682,7 +760,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  font-family: var(--triffhud-font-family) !important;
+  font-family: var(--wraithhud-font-family) !important;
 }
 
 html,
@@ -862,7 +940,7 @@ button:disabled {
     input[type="reset"],
     input[type="checkbox"],
     input[type="radio"]
-  ).triff-hud-hover:not(:disabled) {
+  ).wraith-hud-hover:not(:disabled) {
   border-color: var(--tv-accent) !important;
   color: var(--tv-white) !important;
   filter: brightness(1.14);
@@ -883,7 +961,7 @@ button:disabled {
     input[type="reset"],
     input[type="checkbox"],
     input[type="radio"]
-  ).triff-hud-active:not(:disabled) {
+  ).wraith-hud-active:not(:disabled) {
   transform: translateY(1px);
   filter: brightness(0.92);
   box-shadow:
@@ -903,7 +981,7 @@ button:disabled {
     input[type="reset"],
     input[type="checkbox"],
     input[type="radio"]
-  ).triff-hud-clicked:not(:disabled) {
+  ).wraith-hud-clicked:not(:disabled) {
   animation: hud-click-pulse 180ms ease-out;
 }
 
@@ -933,16 +1011,16 @@ button:disabled {
   opacity: var(--hud-opacity, 1);
 }
 
-.triff-market-browser-root {
+.wraith-market-browser-root {
   background: var(--tv-bg);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
 }
 
-.triff-market-browser-root .hud-market-item-grid {
+.wraith-market-browser-root .hud-market-item-grid {
   grid-template-rows: minmax(210px, 0.62fr) auto minmax(240px, 1fr);
 }
 
-.triff-hud-fitting-root {
+.wraith-hud-fitting-root {
   position: relative;
   isolation: isolate;
   width: 100%;
@@ -954,21 +1032,21 @@ button:disabled {
   transform: translateZ(0);
 }
 
-.triff-hud-fitting-viewport {
+.wraith-hud-fitting-viewport {
   height: 100%;
   min-height: 0;
   overflow: hidden;
 }
 
-.triff-hud-fitting-root .h-\[calc\(100vh-48px\)\] {
+.wraith-hud-fitting-root .h-\[calc\(100vh-48px\)\] {
   height: 100% !important;
 }
 
-.triff-hud-fitting-root .max-w-\[1900px\] {
+.wraith-hud-fitting-root .max-w-\[1900px\] {
   max-width: none;
 }
 
-.triff-hud-fitting-portal-root {
+.wraith-hud-fitting-portal-root {
   position: absolute;
   inset: 0;
   z-index: 10000;
@@ -976,17 +1054,17 @@ button:disabled {
   pointer-events: none;
 }
 
-.triff-hud-fitting-portal-viewport {
+.wraith-hud-fitting-portal-viewport {
   position: absolute;
   pointer-events: none;
   transform: translateZ(0);
 }
 
-.triff-hud-fitting-portal-viewport > * {
+.wraith-hud-fitting-portal-viewport > * {
   pointer-events: auto;
 }
 
-.triff-hud-fitting-portal-viewport > .fixed.inset-0 {
+.wraith-hud-fitting-portal-viewport > .fixed.inset-0 {
   left: var(--hud-fitting-panel-left, 0) !important;
   top: var(--hud-fitting-panel-top, 0) !important;
   right: auto !important;
@@ -995,16 +1073,16 @@ button:disabled {
   height: var(--hud-fitting-panel-height, 100%) !important;
 }
 
-.triff-hud-fitting-root ::-webkit-scrollbar {
+.wraith-hud-fitting-root ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-.triff-hud-fitting-root ::-webkit-scrollbar-track {
+.wraith-hud-fitting-root ::-webkit-scrollbar-track {
   background: var(--tv-bg);
 }
 
-.triff-hud-fitting-root ::-webkit-scrollbar-thumb {
+.wraith-hud-fitting-root ::-webkit-scrollbar-thumb {
   border: 2px solid var(--tv-bg);
   background: var(--tv-scroll-thumb);
 }
@@ -1240,7 +1318,7 @@ button:disabled {
 
 .tool-crash-message {
   color: var(--tv-danger-text-strong);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 11px;
   word-break: break-word;
 }
@@ -1261,7 +1339,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  font-family: var(--triffhud-font-family) !important;
+  font-family: var(--wraithhud-font-family) !important;
   letter-spacing: 0;
 }
 
@@ -1324,7 +1402,7 @@ button:disabled {
   border: 1px solid var(--tv-border-alt);
   background: var(--tv-bg);
   color: var(--tv-text-muted-blue);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 10px;
   font-weight: 700;
   text-transform: none;
@@ -1436,7 +1514,7 @@ button:disabled {
   border: 1px solid var(--tv-danger-border-muted);
   background: var(--tv-danger-control-bg);
   color: var(--tv-danger-muted);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 9px;
   font-weight: 700;
 }
@@ -1506,7 +1584,7 @@ button:disabled {
   border: 1px solid var(--tv-border-alt);
   background: var(--tv-bg);
   color: var(--tv-text-soft-blue);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 10px;
   font-weight: 600;
   outline: none;
@@ -1524,7 +1602,7 @@ button:disabled {
   border: 1px solid var(--tv-border-alt);
   background: var(--tv-bg);
   color: var(--tv-text);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 10px;
   font-weight: 700;
 }
@@ -1604,7 +1682,7 @@ button:disabled {
   border: 1px solid var(--tv-border-alt);
   background: var(--tv-bg);
   color: var(--tv-text-soft-blue);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 11px;
   font-weight: 600;
   outline: none;
@@ -1625,7 +1703,7 @@ button:disabled {
   border: 1px solid var(--tv-danger-border-muted);
   background: var(--tv-danger-control-bg);
   color: var(--tv-danger-muted);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 10px;
   font-weight: 700;
 }
@@ -1663,7 +1741,7 @@ button:disabled {
   background: var(--tv-bg);
   color: var(--tv-text-muted-blue);
   padding: 0 8px;
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 11px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -1693,7 +1771,7 @@ button:disabled {
   background: var(--tv-bg);
   color: var(--tv-drag-text);
   cursor: grab;
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 10px;
   font-weight: 800;
   line-height: 1;
@@ -1724,7 +1802,7 @@ button:disabled {
     inset 0 0 0 1px rgba(var(--tv-accent-rgb), 0.22),
     0 8px 24px rgba(var(--tv-shadow-rgb), 0.48);
   color: var(--tv-text-cool-3);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
   font-size: 11px;
   font-weight: 700;
   pointer-events: none;
@@ -1972,7 +2050,7 @@ button:disabled {
   font-size: 11px;
 }
 
-.triffview-settings {
+.wraithview-settings {
   display: flex;
   height: 100%;
   min-height: 100%;
@@ -1982,7 +2060,7 @@ button:disabled {
   padding: 0;
   background: var(--tv-bg);
   color: var(--tv-text);
-  font-family: var(--triffhud-font-family);
+  font-family: var(--wraithhud-font-family);
 }
 
 .tool-pin {
@@ -2079,24 +2157,24 @@ button:disabled {
   opacity: 0.72;
 }
 
-.triffview-settings * {
-  font-family: var(--triffhud-font-family) !important;
+.wraithview-settings * {
+  font-family: var(--wraithhud-font-family) !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
 }
 
-.triffview-settings :is(input, textarea)::selection {
+.wraithview-settings :is(input, textarea)::selection {
   background: var(--tv-accent);
   color: var(--tv-bg);
 }
 
-.triffview-band,
-.triffview-panel {
+.wraithview-band,
+.wraithview-panel {
   border: 1px solid var(--tv-border-soft);
   background: rgba(var(--tv-bg-rgb), 0.88);
 }
 
-.triffview-band-top {
+.wraithview-band-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2104,27 +2182,27 @@ button:disabled {
   padding: 11px 12px;
 }
 
-.triffview-band h2,
-.triffview-panel h3 {
+.wraithview-band h2,
+.wraithview-panel h3 {
   margin: 0;
   color: var(--tv-text-strong);
   font-size: 13px;
   font-weight: 700;
 }
 
-.triffview-band p {
+.wraithview-band p {
   margin: 3px 0 0;
   color: var(--tv-muted);
   font-size: 11px;
 }
 
-.triffview-grid {
+.wraithview-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.triffview-settings-shell {
+.wraithview-settings-shell {
   display: grid;
   grid-template-columns: 214px minmax(0, 1fr);
   height: 100%;
@@ -2135,11 +2213,11 @@ button:disabled {
   background: var(--tv-bg);
 }
 
-.triffview-settings-shell-guide {
+.wraithview-settings-shell-guide {
   grid-template-columns: minmax(0, 1fr);
 }
 
-.triffview-side-nav {
+.wraithview-side-nav {
   display: flex;
   align-self: stretch;
   height: 100%;
@@ -2151,27 +2229,27 @@ button:disabled {
   padding: 15px 12px;
 }
 
-.triffview-nav-brand h2 {
+.wraithview-nav-brand h2 {
   margin: 0;
   color: var(--tv-accent);
   font-size: 13px;
   font-weight: 800;
 }
 
-.triffview-nav-brand p {
+.wraithview-nav-brand p {
   margin: 4px 0 0;
   color: var(--tv-muted);
   font-size: 11px;
 }
 
-.triffview-side-nav nav,
-.triffview-nav-actions {
+.wraithview-side-nav nav,
+.wraithview-nav-actions {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.triffview-side-nav button {
+.wraithview-side-nav button {
   min-height: 34px;
   border: 1px solid transparent;
   border-radius: 0;
@@ -2184,49 +2262,49 @@ button:disabled {
   line-height: 1.25;
 }
 
-.triffview-nav-actions {
+.wraithview-nav-actions {
   margin-top: auto;
   border-top: 1px solid var(--tv-border-soft);
   padding-top: 10px;
 }
 
-.triffview-nav-actions button {
+.wraithview-nav-actions button {
   border: 1px solid var(--tv-border);
   background: var(--tv-control-bg);
   color: var(--tv-text);
   text-align: center;
 }
 
-.triffview-nav-actions .triffview-toggle {
+.wraithview-nav-actions .wraithview-toggle {
   min-height: 32px;
   border-color: var(--tv-border);
   background: var(--tv-control-bg);
   color: var(--tv-text);
 }
 
-.triffview-nav-actions button:disabled {
+.wraithview-nav-actions button:disabled {
   cursor: not-allowed;
   color: var(--tv-disabled);
 }
 
-.triffview-nav-actions .primary-action {
+.wraithview-nav-actions .primary-action {
   border-color: var(--tv-accent);
   background: var(--tv-accent-bg);
 }
 
-.triffview-side-nav button:hover,
-.triffview-side-nav button.is-active {
+.wraithview-side-nav button:hover,
+.wraithview-side-nav button.is-active {
   border-color: var(--tv-border);
   background: var(--tv-control-bg);
   color: var(--tv-text-strong);
 }
 
-.triffview-side-nav button.is-active {
+.wraithview-side-nav button.is-active {
   border-left-color: var(--tv-accent);
   box-shadow: inset 2px 0 0 var(--tv-accent);
 }
 
-.triffview-section-content {
+.wraithview-section-content {
   position: relative;
   display: flex;
   min-width: 0;
@@ -2238,7 +2316,7 @@ button:disabled {
   background: var(--tv-bg);
 }
 
-.triffview-section-header h2 {
+.wraithview-section-header h2 {
   margin: 0;
   color: var(--tv-text-strong);
   font-size: 15px;
@@ -2246,7 +2324,7 @@ button:disabled {
   text-transform: none !important;
 }
 
-.triffview-guide {
+.wraithview-guide {
   display: grid;
   grid-template-columns: minmax(132px, 156px) minmax(0, 1fr);
   gap: 16px;
@@ -2254,14 +2332,14 @@ button:disabled {
   max-width: 860px;
 }
 
-.triffview-guide-progress {
+.wraithview-guide-progress {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 6px;
 }
 
-.triffview-guide-step {
+.wraithview-guide-step {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr);
   min-height: 34px;
@@ -2277,7 +2355,7 @@ button:disabled {
   font-weight: 700;
 }
 
-.triffview-guide-step span {
+.wraithview-guide-step span {
   display: inline-flex;
   width: 20px;
   height: 20px;
@@ -2288,23 +2366,23 @@ button:disabled {
   font-size: 10px;
 }
 
-.triffview-guide-step.is-active {
+.wraithview-guide-step.is-active {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triffview-guide-step.is-active span {
+.wraithview-guide-step.is-active span {
   border-color: var(--tv-accent);
   background: var(--tv-accent-bg);
   color: var(--tv-text-strong);
 }
 
-.triffview-guide-step.is-complete span {
+.wraithview-guide-step.is-complete span {
   border-color: var(--tv-success);
   color: var(--tv-success);
 }
 
-.triffview-guide-main {
+.wraithview-guide-main {
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -2314,35 +2392,35 @@ button:disabled {
   padding: 14px;
 }
 
-.triffview-guide-copy {
+.wraithview-guide-copy {
   display: flex;
   flex-direction: column;
   gap: 7px;
 }
 
-.triffview-guide-kicker,
-.triffview-guide-minihead {
+.wraithview-guide-kicker,
+.wraithview-guide-minihead {
   color: var(--tv-accent);
   font-size: 11px;
   font-weight: 700;
 }
 
-.triffview-guide-copy h3 {
+.wraithview-guide-copy h3 {
   margin: 0;
   color: var(--tv-text-strong);
   font-size: 16px;
   font-weight: 700;
 }
 
-.triffview-guide-copy p,
-.triffview-guide-clients p {
+.wraithview-guide-copy p,
+.wraithview-guide-clients p {
   margin: 0;
   color: var(--tv-text-muted);
   font-size: 12px;
   line-height: 1.45;
 }
 
-.triffview-guide-clients {
+.wraithview-guide-clients {
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -2352,7 +2430,7 @@ button:disabled {
   padding: 9px;
 }
 
-.triffview-guide-minihead {
+.wraithview-guide-minihead {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2360,12 +2438,12 @@ button:disabled {
   color: var(--tv-text-muted);
 }
 
-.triffview-guide-minihead strong {
+.wraithview-guide-minihead strong {
   color: var(--tv-accent);
   font-size: 11px;
 }
 
-.triffview-guide-client {
+.wraithview-guide-client {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -2376,35 +2454,35 @@ button:disabled {
   font-size: 11px;
 }
 
-.triffview-guide-client span {
+.wraithview-guide-client span {
   overflow: hidden;
   color: var(--tv-text);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.triffview-guide-client small {
+.wraithview-guide-client small {
   color: var(--tv-accent);
   font-size: 10px;
 }
 
-.triffview-guide-actions,
-.triffview-guide-footer,
-.triffview-guide-next {
+.wraithview-guide-actions,
+.wraithview-guide-footer,
+.wraithview-guide-next {
   display: flex;
   min-width: 0;
   flex-wrap: wrap;
   gap: 7px;
 }
 
-.triffview-guide-footer {
+.wraithview-guide-footer {
   justify-content: space-between;
   border-top: 1px solid var(--tv-border-muted);
   padding-top: 12px;
 }
 
-.triffview-guide-actions button,
-.triffview-guide-footer button {
+.wraithview-guide-actions button,
+.wraithview-guide-footer button {
   min-height: 30px;
   border: 1px solid var(--tv-border);
   border-radius: 0;
@@ -2415,25 +2493,25 @@ button:disabled {
   font-weight: 700;
 }
 
-.triffview-guide-actions button:hover,
-.triffview-guide-footer button:hover {
+.wraithview-guide-actions button:hover,
+.wraithview-guide-footer button:hover {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triffview-guide-actions button:disabled,
-.triffview-guide-footer button:disabled {
+.wraithview-guide-actions button:disabled,
+.wraithview-guide-footer button:disabled {
   cursor: not-allowed;
   color: var(--tv-disabled);
 }
 
-.triffview-guide-actions .primary-action,
-.triffview-guide-footer .primary-action {
+.wraithview-guide-actions .primary-action,
+.wraithview-guide-footer .primary-action {
   border-color: var(--tv-accent);
   background: var(--tv-accent-bg);
 }
 
-.triffview-panel {
+.wraithview-panel {
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -2443,7 +2521,7 @@ button:disabled {
   padding: 0;
 }
 
-.triffview-field {
+.wraithview-field {
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -2457,23 +2535,23 @@ button:disabled {
   text-transform: none;
 }
 
-.triffview-profile-select-row,
-.triffview-profile-edit-row {
+.wraithview-profile-select-row,
+.wraithview-profile-edit-row {
   display: grid;
   min-width: 0;
   gap: 7px;
   align-items: center;
 }
 
-.triffview-profile-select-row {
+.wraithview-profile-select-row {
   grid-template-columns: minmax(0, 1fr) 34px;
 }
 
-.triffview-profile-edit-row {
+.wraithview-profile-edit-row {
   grid-template-columns: minmax(0, 1fr) auto auto;
 }
 
-.triffview-icon-button {
+.wraithview-icon-button {
   display: inline-flex;
   width: 34px;
   min-width: 34px;
@@ -2482,10 +2560,10 @@ button:disabled {
   padding: 0;
 }
 
-.triffview-field input,
-.triffview-field select,
-.triffview-field textarea,
-.triffview-row input {
+.wraithview-field input,
+.wraithview-field select,
+.wraithview-field textarea,
+.wraithview-row input {
   width: 100%;
   min-width: 0;
   border: 1px solid var(--tv-border);
@@ -2496,8 +2574,8 @@ button:disabled {
   font-size: 11px;
 }
 
-.triffview-field button,
-.triffview-profile-edit-row button {
+.wraithview-field button,
+.wraithview-profile-edit-row button {
   min-height: 30px;
   border: 1px solid var(--tv-border);
   border-radius: 0;
@@ -2508,25 +2586,25 @@ button:disabled {
   font-weight: 700;
 }
 
-.triffview-field button:hover,
-.triffview-profile-edit-row button:hover {
+.wraithview-field button:hover,
+.wraithview-profile-edit-row button:hover {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triffview-field .triffview-icon-button {
+.wraithview-field .wraithview-icon-button {
   height: 30px;
   padding: 0;
 }
 
-.triffview-field input,
-.triffview-field select,
-.triffview-row input {
+.wraithview-field input,
+.wraithview-field select,
+.wraithview-row input {
   height: 30px;
   padding: 0 8px;
 }
 
-.triffview-field textarea {
+.wraithview-field textarea {
   min-height: 74px;
   overflow: auto;
   resize: vertical;
@@ -2535,25 +2613,25 @@ button:disabled {
   line-height: 1.35;
 }
 
-.triffview-columns,
-.triffview-color-grid {
+.wraithview-columns,
+.wraithview-color-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
-.triffview-color-setting {
+.wraithview-color-setting {
   gap: 7px;
 }
 
-.triffview-color-control {
+.wraithview-color-control {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
   gap: 7px;
   align-items: center;
 }
 
-.triffview-color-preview {
+.wraithview-color-preview {
   display: block;
   width: 30px;
   height: 30px;
@@ -2561,13 +2639,13 @@ button:disabled {
   background-clip: padding-box;
 }
 
-.triffview-swatches {
+.wraithview-swatches {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 5px;
 }
 
-.triffview-swatches button {
+.wraithview-swatches button {
   height: 22px;
   min-height: 22px;
   border: 1px solid var(--tv-border);
@@ -2575,17 +2653,17 @@ button:disabled {
   padding: 0;
 }
 
-.triffview-swatches button:hover {
+.wraithview-swatches button:hover {
   border-color: var(--tv-text);
 }
 
-.triffview-toggle-grid {
+.wraithview-toggle-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 7px;
 }
 
-.triffview-toggle {
+.wraithview-toggle {
   display: flex;
   min-height: 28px;
   align-items: center;
@@ -2597,23 +2675,23 @@ button:disabled {
   font-size: 11px;
 }
 
-.triffview-toggle input {
+.wraithview-toggle input {
   width: 14px;
   height: 14px;
   margin: 0;
   accent-color: var(--tv-accent);
 }
 
-.triffview-actions,
-.triffview-row {
+.wraithview-actions,
+.wraithview-row {
   display: flex;
   min-width: 0;
   flex-wrap: wrap;
   gap: 7px;
 }
 
-.triffview-actions button,
-.triffview-row button {
+.wraithview-actions button,
+.wraithview-row button {
   min-height: 30px;
   border: 1px solid var(--tv-border);
   border-radius: 0;
@@ -2624,23 +2702,23 @@ button:disabled {
   font-weight: 700;
 }
 
-.triffview-actions button:hover,
-.triffview-row button:hover {
+.wraithview-actions button:hover,
+.wraithview-row button:hover {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triffview-actions button:disabled {
+.wraithview-actions button:disabled {
   cursor: not-allowed;
   color: var(--tv-disabled);
 }
 
-.triffview-actions .primary-action {
+.wraithview-actions .primary-action {
   border-color: var(--tv-accent);
   background: var(--tv-accent-bg);
 }
 
-.triffview-subsection {
+.wraithview-subsection {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -2648,7 +2726,7 @@ button:disabled {
   padding-top: 14px;
 }
 
-.triffview-subsection h4 {
+.wraithview-subsection h4 {
   margin: 0;
   color: var(--tv-text-strong);
   font-size: 13px;
@@ -2656,29 +2734,29 @@ button:disabled {
   text-transform: none;
 }
 
-.triffview-muted {
+.wraithview-muted {
   margin: 0;
   color: var(--tv-muted);
   font-size: 11px;
 }
 
-.triffview-stepper,
-.triffview-gesture-control,
-.triffview-slider-control {
+.wraithview-stepper,
+.wraithview-gesture-control,
+.wraithview-slider-control {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr) auto 30px;
   gap: 6px;
   align-items: center;
 }
 
-.triffview-stepper input,
-.triffview-slider-control input {
+.wraithview-stepper input,
+.wraithview-slider-control input {
   text-align: right;
 }
 
-.triffview-stepper button,
-.triffview-gesture-control button,
-.triffview-slider-control button {
+.wraithview-stepper button,
+.wraithview-gesture-control button,
+.wraithview-slider-control button {
   min-height: 30px;
   border: 1px solid var(--tv-border);
   border-radius: 0;
@@ -2689,17 +2767,17 @@ button:disabled {
   font-weight: 700;
 }
 
-.triffview-stepper span,
-.triffview-slider-control > span {
+.wraithview-stepper span,
+.wraithview-slider-control > span {
   color: var(--tv-muted);
   font-size: 11px;
 }
 
-.triffview-slider-control {
+.wraithview-slider-control {
   grid-template-columns: 30px minmax(92px, 1fr) 44px auto 30px;
 }
 
-.triffview-slider-track {
+.wraithview-slider-track {
   position: relative;
   height: 30px;
   border: 1px solid var(--tv-border);
@@ -2707,13 +2785,13 @@ button:disabled {
   cursor: ew-resize;
 }
 
-.triffview-slider-track:focus {
+.wraithview-slider-track:focus {
   border-color: var(--tv-accent);
   outline: 1px solid rgba(var(--tv-accent-rgb), 0.7);
   outline-offset: -1px;
 }
 
-.triffview-slider-fill {
+.wraithview-slider-fill {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -2721,7 +2799,7 @@ button:disabled {
   background: rgba(var(--tv-accent-rgb), 0.28);
 }
 
-.triffview-slider-thumb {
+.wraithview-slider-thumb {
   position: absolute;
   top: 4px;
   bottom: 4px;
@@ -2731,13 +2809,13 @@ button:disabled {
   transform: translateX(-50%);
 }
 
-.triffview-hotkey-list {
+.wraithview-hotkey-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.triffview-hotkey-row {
+.wraithview-hotkey-row {
   display: grid;
   grid-template-columns: minmax(120px, 0.85fr) minmax(0, 1.15fr);
   gap: 8px;
@@ -2747,7 +2825,7 @@ button:disabled {
   padding: 8px 10px;
 }
 
-.triffview-hotkey-row > span {
+.wraithview-hotkey-row > span {
   overflow: hidden;
   color: var(--tv-text);
   font-size: 11px;
@@ -2755,24 +2833,24 @@ button:disabled {
   white-space: nowrap;
 }
 
-.triffview-label-list {
+.wraithview-label-list {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 6px;
 }
 
-.triffview-label-controls {
+.wraithview-label-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(120px, 0.9fr);
   gap: 8px;
 }
 
-.triffview-label-controls .triffview-slider-field {
+.wraithview-label-controls .wraithview-slider-field {
   grid-column: 1 / -1;
 }
 
-.triffview-label-row {
+.wraithview-label-row {
   display: grid;
   grid-template-columns: minmax(120px, 0.8fr) minmax(0, 1.2fr) 64px;
   gap: 8px;
@@ -2782,14 +2860,14 @@ button:disabled {
   padding: 8px 10px;
 }
 
-.triffview-label-source {
+.wraithview-label-source {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 3px;
 }
 
-.triffview-label-source span {
+.wraithview-label-source span {
   overflow: hidden;
   color: var(--tv-text);
   font-size: 11px;
@@ -2798,7 +2876,7 @@ button:disabled {
   white-space: nowrap;
 }
 
-.triffview-label-source small {
+.wraithview-label-source small {
   overflow: hidden;
   color: var(--tv-muted);
   font-size: 10px;
@@ -2806,7 +2884,7 @@ button:disabled {
   white-space: nowrap;
 }
 
-.triffview-label-row input {
+.wraithview-label-row input {
   width: 100%;
   min-width: 0;
   height: 30px;
@@ -2818,7 +2896,7 @@ button:disabled {
   font-size: 11px;
 }
 
-.triffview-label-row button {
+.wraithview-label-row button {
   min-height: 30px;
   border: 1px solid var(--tv-border);
   border-radius: 0;
@@ -2829,12 +2907,12 @@ button:disabled {
   font-weight: 700;
 }
 
-.triffview-label-row button:hover {
+.wraithview-label-row button:hover {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triff-alert-summary {
+.wraith-alert-summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2844,28 +2922,28 @@ button:disabled {
   padding: 10px 12px;
 }
 
-.triff-alert-summary > div {
+.wraith-alert-summary > div {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 3px;
 }
 
-.triff-alert-summary strong,
-.triff-alert-event h4,
-.triff-alert-history-head h4 {
+.wraith-alert-summary strong,
+.wraith-alert-event h4,
+.wraith-alert-history-head h4 {
   color: var(--tv-text-strong);
   font-size: 13px;
   font-weight: 700;
 }
 
-.triff-alert-summary span,
-.triff-alert-event p {
+.wraith-alert-summary span,
+.wraith-alert-event p {
   color: var(--tv-muted);
   font-size: 11px;
 }
 
-.triff-alert-status {
+.wraith-alert-status {
   flex: 0 0 auto;
   border: 1px solid var(--tv-border);
   background: var(--tv-control-bg);
@@ -2875,19 +2953,19 @@ button:disabled {
   font-weight: 800;
 }
 
-.triff-alert-status.is-on {
+.wraith-alert-status.is-on {
   border-color: var(--tv-success-border);
   background: rgba(var(--tv-success-bg-rgb), 0.28);
   color: var(--tv-success);
 }
 
-.triff-alert-event-list {
+.wraith-alert-event-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.triff-alert-event {
+.wraith-alert-event {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -2896,19 +2974,19 @@ button:disabled {
   padding: 0;
 }
 
-.triff-alert-event.is-critical {
+.wraith-alert-event.is-critical {
   border-left: 2px solid var(--tv-danger);
 }
 
-.triff-alert-event.is-warning {
+.wraith-alert-event.is-warning {
   border-left: 2px solid var(--tv-warning);
 }
 
-.triff-alert-event.is-info {
+.wraith-alert-event.is-info {
   border-left: 2px solid var(--tv-accent);
 }
 
-.triff-alert-event-header {
+.wraith-alert-event-header {
   display: flex;
   align-items: stretch;
   justify-content: space-between;
@@ -2917,13 +2995,13 @@ button:disabled {
   padding: 8px 10px;
 }
 
-.triff-alert-event h4,
-.triff-alert-event p,
-.triff-alert-history-head h4 {
+.wraith-alert-event h4,
+.wraith-alert-event p,
+.wraith-alert-history-head h4 {
   margin: 0;
 }
 
-.triff-alert-event-toggle {
+.wraith-alert-event-toggle {
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr);
   flex: 1 1 auto;
@@ -2938,7 +3016,7 @@ button:disabled {
   text-align: left;
 }
 
-.triff-alert-caret {
+.wraith-alert-caret {
   display: inline-flex;
   width: 18px;
   height: 18px;
@@ -2951,14 +3029,14 @@ button:disabled {
   line-height: 1;
 }
 
-.triff-alert-event-meta {
+.wraith-alert-event-meta {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
   gap: 5px;
 }
 
-.triff-alert-event-meta span {
+.wraith-alert-event-meta span {
   border: 1px solid var(--tv-border);
   background: var(--tv-bg);
   color: var(--tv-muted);
@@ -2968,8 +3046,8 @@ button:disabled {
   white-space: nowrap;
 }
 
-.triff-alert-test-button,
-.triff-alert-history-head button {
+.wraith-alert-test-button,
+.wraith-alert-history-head button {
   min-height: 30px;
   border: 1px solid var(--tv-border);
   border-radius: 0;
@@ -2980,14 +3058,14 @@ button:disabled {
   font-weight: 700;
 }
 
-.triff-alert-event-toggle:hover .triff-alert-caret,
-.triff-alert-test-button:hover,
-.triff-alert-history-head button:hover {
+.wraith-alert-event-toggle:hover .wraith-alert-caret,
+.wraith-alert-test-button:hover,
+.wraith-alert-history-head button:hover {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triff-alert-controls {
+.wraith-alert-controls {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 7px;
@@ -2995,14 +3073,14 @@ button:disabled {
   padding: 10px;
 }
 
-.triff-alert-color-wheel-row {
+.wraith-alert-color-wheel-row {
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr);
   gap: 7px;
   align-items: center;
 }
 
-.triff-alert-color-wheel-row input[type="color"] {
+.wraith-alert-color-wheel-row input[type="color"] {
   width: 42px;
   height: 30px;
   border: 1px solid var(--tv-border);
@@ -3011,8 +3089,8 @@ button:disabled {
   padding: 2px;
 }
 
-.triff-alert-color-wheel-row input[type="text"],
-.triff-alert-color-wheel-row input:not([type]) {
+.wraith-alert-color-wheel-row input[type="text"],
+.wraith-alert-color-wheel-row input:not([type]) {
   height: 30px;
   border: 1px solid var(--tv-border);
   border-radius: 0;
@@ -3023,14 +3101,14 @@ button:disabled {
   font-size: 11px;
 }
 
-.triff-alert-history-head {
+.wraith-alert-history-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
-.triff-alert-history {
+.wraith-alert-history {
   display: flex;
   max-height: 260px;
   flex-direction: column;
@@ -3038,7 +3116,7 @@ button:disabled {
   overflow: auto;
 }
 
-.triff-alert-history-row {
+.wraith-alert-history-row {
   display: grid;
   grid-template-columns: 76px minmax(120px, 0.75fr) minmax(110px, 0.7fr) 72px minmax(0, 1.5fr);
   gap: 8px;
@@ -3050,58 +3128,58 @@ button:disabled {
   font-size: 11px;
 }
 
-.triff-alert-history-row.is-critical {
+.wraith-alert-history-row.is-critical {
   border-left-color: var(--tv-danger);
 }
 
-.triff-alert-history-row.is-warning {
+.wraith-alert-history-row.is-warning {
   border-left-color: var(--tv-warning);
 }
 
-.triff-alert-history-row.is-info {
+.wraith-alert-history-row.is-info {
   border-left-color: var(--tv-accent);
 }
 
-.triff-alert-history-row strong,
-.triff-alert-history-row em,
-.triff-alert-history-row p {
+.wraith-alert-history-row strong,
+.wraith-alert-history-row em,
+.wraith-alert-history-row p {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.triff-alert-history-row em {
+.wraith-alert-history-row em {
   color: var(--tv-text);
   font-style: normal;
 }
 
-.triff-alert-history-row span,
-.triff-alert-history-row small,
-.triff-alert-history-row p {
+.wraith-alert-history-row span,
+.wraith-alert-history-row small,
+.wraith-alert-history-row p {
   color: var(--tv-muted);
 }
 
-.triff-alert-history-row p {
+.wraith-alert-history-row p {
   margin: 0;
 }
 
-.triffview-label-row button:disabled {
+.wraithview-label-row button:disabled {
   cursor: not-allowed;
   color: var(--tv-disabled);
 }
 
-.triffview-gesture-control {
+.wraithview-gesture-control {
   grid-template-columns: minmax(0, 1fr) 168px 56px;
 }
 
-.triffview-gesture-summary {
+.wraithview-gesture-summary {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(200px, max-content);
   gap: 6px;
   align-items: center;
 }
 
-.triffview-gesture-value {
+.wraithview-gesture-value {
   overflow: hidden;
   min-height: 30px;
   border: 1px solid var(--tv-border);
@@ -3113,12 +3191,12 @@ button:disabled {
   white-space: nowrap;
 }
 
-.triffview-gesture-control button {
+.wraithview-gesture-control button {
   white-space: nowrap;
 }
 
-.triffview-gesture-summary button,
-.triffview-hotkey-modal button {
+.wraithview-gesture-summary button,
+.wraithview-hotkey-modal button {
   min-height: 30px;
   border: 1px solid var(--tv-border);
   border-radius: 0;
@@ -3130,22 +3208,22 @@ button:disabled {
   white-space: nowrap;
 }
 
-.triffview-gesture-summary button:hover,
-.triffview-hotkey-modal button:hover {
+.wraithview-gesture-summary button:hover,
+.wraithview-hotkey-modal button:hover {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triffview-hotkey-modal button:disabled {
+.wraithview-hotkey-modal button:disabled {
   cursor: not-allowed;
   color: var(--tv-disabled);
 }
 
-.triffview-gesture-value.is-empty {
+.wraithview-gesture-value.is-empty {
   color: var(--tv-disabled);
 }
 
-.triffview-modal-backdrop {
+.wraithview-modal-backdrop {
   position: absolute;
   inset: 0;
   z-index: 10;
@@ -3155,23 +3233,23 @@ button:disabled {
   background: rgba(var(--tv-shadow-rgb), 0.42);
 }
 
-.triffview-hotkey-backdrop {
+.wraithview-hotkey-backdrop {
   position: fixed;
   overflow: auto;
   overscroll-behavior: contain;
 }
 
-.triffview-hotkey-backdrop > .triffview-hotkey-modal {
+.wraithview-hotkey-backdrop > .wraithview-hotkey-modal {
   display: flex;
   flex-direction: column;
 }
 
-.triffview-hotkey-backdrop .triffview-hotkey-modal > header,
-.triffview-hotkey-editor-help {
+.wraithview-hotkey-backdrop .wraithview-hotkey-modal > header,
+.wraithview-hotkey-editor-help {
   flex-shrink: 0;
 }
 
-.triffview-hotkey-modal {
+.wraithview-hotkey-modal {
   width: min(520px, calc(100% - 42px));
   max-height: calc(100% - 42px);
   overflow: hidden;
@@ -3180,7 +3258,7 @@ button:disabled {
   box-shadow: 0 12px 36px rgba(var(--tv-shadow-rgb), 0.5);
 }
 
-.triffview-hotkey-modal header {
+.wraithview-hotkey-modal header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3189,20 +3267,20 @@ button:disabled {
   padding: 11px 12px;
 }
 
-.triffview-hotkey-modal h3 {
+.wraithview-hotkey-modal h3 {
   margin: 0;
   color: var(--tv-text-strong);
   font-size: 13px;
   font-weight: 700;
 }
 
-.triffview-hotkey-modal p {
+.wraithview-hotkey-modal p {
   margin: 3px 0 0;
   color: var(--tv-muted);
   font-size: 11px;
 }
 
-.triffview-hotkey-editor-list {
+.wraithview-hotkey-editor-list {
   display: flex;
   min-height: 0;
   max-height: 320px;
@@ -3213,27 +3291,27 @@ button:disabled {
   padding: 12px;
 }
 
-.triffview-hotkey-editor-help {
+.wraithview-hotkey-editor-help {
   padding: 0 12px 12px;
 }
 
-.triffview-hotkey-editor-help p {
+.wraithview-hotkey-editor-help p {
   margin: 0;
   line-height: 1.5;
 }
 
-.triffview-hotkey-editor-help p + p {
+.wraithview-hotkey-editor-help p + p {
   margin-top: 8px;
 }
 
-.triffview-hotkey-editor-row {
+.wraithview-hotkey-editor-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 82px 64px;
   gap: 6px;
   align-items: center;
 }
 
-.triffview-cycle-card {
+.wraithview-cycle-card {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -3243,32 +3321,32 @@ button:disabled {
   padding: 12px 0 0;
 }
 
-.triffview-cycle-card h5 {
+.wraithview-cycle-card h5 {
   margin: 0;
   color: var(--tv-text-strong);
   font-size: 12px;
   font-weight: 700;
 }
 
-.triffview-cycle-table-wrap {
+.wraithview-cycle-table-wrap {
   min-width: 0;
   overflow-x: auto;
   border: 1px solid var(--tv-border-muted);
   background: rgba(var(--tv-surface-rgb), 0.72);
 }
 
-.triffview-cycle-memory-row {
+.wraithview-cycle-memory-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 32px;
   gap: 6px;
   align-items: stretch;
 }
 
-.triffview-cycle-memory-row .triffview-toggle {
+.wraithview-cycle-memory-row .wraithview-toggle {
   min-width: 0;
 }
 
-.triffview-info-button {
+.wraithview-info-button {
   display: inline-flex;
   width: 32px;
   min-width: 32px;
@@ -3285,13 +3363,13 @@ button:disabled {
   font-weight: 700;
 }
 
-.triffview-info-button:hover,
-.triffview-info-button[aria-expanded="true"] {
+.wraithview-info-button:hover,
+.wraithview-info-button[aria-expanded="true"] {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triffview-cycle-memory-help {
+.wraithview-cycle-memory-help {
   border: 1px solid var(--tv-border-muted);
   border-left-color: var(--tv-accent);
   background: rgba(var(--tv-surface-rgb), 0.72);
@@ -3301,15 +3379,15 @@ button:disabled {
   line-height: 1.4;
 }
 
-.triffview-cycle-memory-help p {
+.wraithview-cycle-memory-help p {
   margin: 0;
 }
 
-.triffview-cycle-memory-help p + p {
+.wraithview-cycle-memory-help p + p {
   margin-top: 7px;
 }
 
-.triffview-cycle-table {
+.wraithview-cycle-table {
   width: 100%;
   min-width: 650px;
   border-collapse: collapse;
@@ -3318,8 +3396,8 @@ button:disabled {
   font-size: 11px;
 }
 
-.triffview-cycle-table th,
-.triffview-cycle-table td {
+.wraithview-cycle-table th,
+.wraithview-cycle-table td {
   height: 34px;
   border-bottom: 1px solid var(--tv-border-muted);
   padding: 5px 8px;
@@ -3329,53 +3407,53 @@ button:disabled {
   white-space: nowrap;
 }
 
-.triffview-cycle-table th {
+.wraithview-cycle-table th {
   background: var(--tv-control-bg);
   color: var(--tv-muted);
   font-size: 10px;
   font-weight: 700;
 }
 
-.triffview-cycle-table tbody tr:last-child td {
+.wraithview-cycle-table tbody tr:last-child td {
   border-bottom: 0;
 }
 
-.triffview-cycle-table tbody tr {
+.wraithview-cycle-table tbody tr {
   background: rgba(var(--tv-bg-rgb), 0.48);
 }
 
-.triffview-cycle-table tbody tr:hover,
-.triffview-cycle-table tbody tr.is-selected {
+.wraithview-cycle-table tbody tr:hover,
+.wraithview-cycle-table tbody tr.is-selected {
   background: var(--tv-control-bg);
 }
 
-.triffview-cycle-table tbody tr.is-selected td:first-child {
+.wraithview-cycle-table tbody tr.is-selected td:first-child {
   box-shadow: inset 2px 0 0 var(--tv-accent);
 }
 
-.triffview-cycle-table .is-active-column {
+.wraithview-cycle-table .is-active-column {
   width: 58px;
   text-align: center;
 }
 
-.triffview-cycle-table .is-members-column {
+.wraithview-cycle-table .is-members-column {
   width: 68px;
   text-align: center;
 }
 
-.triffview-cycle-table .is-action-column {
+.wraithview-cycle-table .is-action-column {
   width: 62px;
   text-align: right;
 }
 
-.triffview-cycle-table input[type="checkbox"] {
+.wraithview-cycle-table input[type="checkbox"] {
   width: 14px;
   height: 14px;
   margin: 0;
   accent-color: var(--tv-accent);
 }
 
-.triffview-cycle-table button {
+.wraithview-cycle-table button {
   min-height: 24px;
   border: 1px solid var(--tv-border);
   border-radius: 0;
@@ -3386,12 +3464,12 @@ button:disabled {
   font-weight: 700;
 }
 
-.triffview-cycle-table button:hover {
+.wraithview-cycle-table button:hover {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triffview-cycle-table .triffview-cycle-name {
+.wraithview-cycle-table .wraithview-cycle-name {
   display: block;
   width: 100%;
   overflow: hidden;
@@ -3403,7 +3481,7 @@ button:disabled {
   white-space: nowrap;
 }
 
-.triffview-profile-create {
+.wraithview-profile-create {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -3412,7 +3490,7 @@ button:disabled {
   padding-top: 14px;
 }
 
-.triffview-backup-note {
+.wraithview-backup-note {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -3424,32 +3502,32 @@ button:disabled {
   line-height: 1.35;
 }
 
-.triffview-backup-note strong {
+.wraithview-backup-note strong {
   color: var(--tv-text-strong);
   font-size: 13px;
   line-height: 1.35;
 }
 
-.triffview-backup-note span {
+.wraithview-backup-note span {
   font-size: 13px;
   line-height: 1.35;
 }
 
-.triffview-character-tools {
+.wraithview-character-tools {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 7px;
 }
 
-.triffview-character-chips {
+.wraithview-character-chips {
   display: flex;
   min-width: 0;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.triffview-character-chips button {
+.wraithview-character-chips button {
   min-height: 26px;
   max-width: 100%;
   overflow: hidden;
@@ -3463,12 +3541,12 @@ button:disabled {
   white-space: nowrap;
 }
 
-.triffview-character-chips button:hover {
+.wraithview-character-chips button:hover {
   border-color: var(--tv-accent);
   color: var(--tv-text-strong);
 }
 
-.triffview-character-chips button.is-selected {
+.wraithview-character-chips button.is-selected {
   border-color: var(--tv-border-accent-soft);
   background: var(--tv-accent-bg);
   color: var(--tv-text);
@@ -3476,18 +3554,18 @@ button:disabled {
 
 .eve-settings,
 .eve-settings * {
-  font-family: var(--triffhud-font-family) !important;
+  font-family: var(--wraithhud-font-family) !important;
   letter-spacing: 0 !important;
 }
 
-.eve-settings .triffview-section-header {
+.eve-settings .wraithview-section-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
 }
 
-.eve-settings .triffview-section-header p {
+.eve-settings .wraithview-section-header p {
   margin: 4px 0 0;
   color: var(--tv-muted);
   font-size: 11px;
@@ -3571,7 +3649,7 @@ button:disabled {
   font-size: 10px;
 }
 
-.eve-settings-advanced-intro .triffview-band-top {
+.eve-settings-advanced-intro .wraithview-band-top {
   align-items: flex-start;
 }
 
@@ -3595,11 +3673,11 @@ button:disabled {
   padding: 12px;
 }
 
-.eve-settings-copy-panel .triffview-band-top {
+.eve-settings-copy-panel .wraithview-band-top {
   align-items: flex-start;
 }
 
-.eve-settings-copy-panel .triffview-band-top button {
+.eve-settings-copy-panel .wraithview-band-top button {
   min-height: 30px;
   border: 1px solid var(--tv-accent);
   border-radius: 0;
@@ -3610,12 +3688,12 @@ button:disabled {
   font-weight: 800;
 }
 
-.eve-settings-copy-panel .triffview-band-top button:hover {
+.eve-settings-copy-panel .wraithview-band-top button:hover {
   border-color: var(--tv-accent-hot);
   color: var(--tv-white);
 }
 
-.eve-settings-copy-panel .triffview-band-top button:disabled {
+.eve-settings-copy-panel .wraithview-band-top button:disabled {
   border-color: var(--tv-border);
   background: var(--tv-control-bg);
   color: var(--tv-disabled);
@@ -3694,7 +3772,7 @@ button:disabled {
   padding-right: 2px;
 }
 
-.triffview-field .eve-settings-target-row {
+.wraithview-field .eve-settings-target-row {
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr) auto;
   min-width: 0;
@@ -3710,12 +3788,12 @@ button:disabled {
   font-weight: 700;
 }
 
-.triffview-field .eve-settings-target-row:hover {
+.wraithview-field .eve-settings-target-row:hover {
   border-color: var(--tv-accent);
   color: var(--tv-white);
 }
 
-.triffview-field .eve-settings-target-row.is-selected {
+.wraithview-field .eve-settings-target-row.is-selected {
   border-color: var(--tv-accent);
   background: rgba(var(--tv-accent-rgb), 0.11);
   color: var(--tv-white);
@@ -3728,7 +3806,7 @@ button:disabled {
   background: var(--tv-table-head-bg);
 }
 
-.triffview-field .eve-settings-target-row.is-selected .eve-settings-target-check {
+.wraithview-field .eve-settings-target-row.is-selected .eve-settings-target-check {
   border-color: var(--tv-accent);
   background:
     linear-gradient(135deg, transparent 0 43%, var(--tv-checkmark) 43% 57%, transparent 57%),
@@ -3902,7 +3980,7 @@ button:disabled {
   color: var(--tv-danger-text);
 }
 
-.triffview-warning {
+.wraithview-warning {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -3913,20 +3991,20 @@ button:disabled {
   font-size: 11px;
 }
 
-.triffview-client-list {
+.wraithview-client-list {
   display: flex;
   min-height: 72px;
   flex-direction: column;
   gap: 5px;
 }
 
-.triffview-client-list p {
+.wraithview-client-list p {
   margin: 0;
   color: var(--tv-muted);
   font-size: 11px;
 }
 
-.triffview-client {
+.wraithview-client {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -3937,13 +4015,13 @@ button:disabled {
   font-size: 11px;
 }
 
-.triffview-client span {
+.wraithview-client span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.triffview-client small {
+.wraithview-client small {
   color: var(--tv-accent);
   font-size: 10px;
   text-transform: uppercase;
@@ -3958,124 +4036,124 @@ button:disabled {
     display: none;
   }
 
-  .triffview-grid {
+  .wraithview-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .triffview-guide,
-  .triffview-columns,
-  .triffview-color-grid,
-  .triffview-toggle-grid,
-  .triffview-hotkey-row,
-  .triffview-label-row {
+  .wraithview-guide,
+  .wraithview-columns,
+  .wraithview-color-grid,
+  .wraithview-toggle-grid,
+  .wraithview-hotkey-row,
+  .wraithview-label-row {
     grid-template-columns: minmax(0, 1fr);
   }
 
 }
 
 /* The EVE-flavored display fonts read smaller than Segoe UI at the same pixel size. */
-.triffview-standalone-root {
+.wraithview-standalone-root {
   font-size: 13px;
 }
 
-.triffview-standalone-topbar strong {
+.wraithview-standalone-topbar strong {
   font-size: 15px;
 }
 
-.triffview-standalone-topbar span,
-.triffview-standalone-topbar button {
+.wraithview-standalone-topbar span,
+.wraithview-standalone-topbar button {
   font-size: 13px;
 }
 
-.triffview-settings,
+.wraithview-settings,
 .eve-settings {
   font-size: 13px;
 }
 
-.triffview-settings :is(button, input, select, textarea, label, p, small, th, td),
+.wraithview-settings :is(button, input, select, textarea, label, p, small, th, td),
 .eve-settings :is(button, input, select, textarea, label, p, small, th, td),
-.triffview-settings :is(.triffview-field, .triffview-client, .triffview-hotkey-row, .triffview-label-row, .triffview-guide-step, .triffview-guide-kicker, .triffview-guide-minihead),
-.eve-settings :is(.triffview-field, .eve-settings-target-row, .eve-settings-table) {
+.wraithview-settings :is(.wraithview-field, .wraithview-client, .wraithview-hotkey-row, .wraithview-label-row, .wraithview-guide-step, .wraithview-guide-kicker, .wraithview-guide-minihead),
+.eve-settings :is(.wraithview-field, .eve-settings-target-row, .eve-settings-table) {
   font-size: 13px;
 }
 
-.triffview-guide-copy p,
-.triffview-guide-clients p {
+.wraithview-guide-copy p,
+.wraithview-guide-clients p {
   font-size: 13px;
 }
 
-.triffview-guide-step span,
-.triffview-guide-minihead strong,
-.triffview-guide-client small {
+.wraithview-guide-step span,
+.wraithview-guide-minihead strong,
+.wraithview-guide-client small {
   font-size: 12px;
 }
 
-.triffview-nav-brand h2,
-.triffview-band h2,
-.triffview-panel h3,
-.triffview-hotkey-modal h3,
+.wraithview-nav-brand h2,
+.wraithview-band h2,
+.wraithview-panel h3,
+.wraithview-hotkey-modal h3,
 .eve-settings-modal h3 {
   font-size: 15px;
 }
 
-.triffview-section-header h2 {
+.wraithview-section-header h2 {
   font-size: 17px;
 }
 
-.triffview-side-nav button {
+.wraithview-side-nav button {
   min-height: 38px;
   font-size: 13px;
 }
 
-.triffview-nav-actions .triffview-toggle,
-.triffview-nav-actions button {
+.wraithview-nav-actions .wraithview-toggle,
+.wraithview-nav-actions button {
   min-height: 36px;
 }
 
-.triffview-field input,
-.triffview-field select,
-.triffview-row input {
+.wraithview-field input,
+.wraithview-field select,
+.wraithview-row input {
   height: 34px;
 }
 
-.triffview-field button,
-.triffview-profile-edit-row button,
-.triffview-actions button,
-.triffview-gesture-control button,
-.triffview-hotkey-modal button {
+.wraithview-field button,
+.wraithview-profile-edit-row button,
+.wraithview-actions button,
+.wraithview-gesture-control button,
+.wraithview-hotkey-modal button {
   min-height: 34px;
 }
 
-.trifffleets .triffview-section-content {
+.wraithfleets .wraithview-section-content {
   gap: 14px;
 }
 
-.trifffleets-stack {
+.wraithfleets-stack {
   display: grid;
   gap: 12px;
 }
 
-.trifffleets-error {
+.wraithfleets-error {
   grid-template-columns: auto 1fr auto;
   align-items: center;
 }
 
-.trifffleets-error button {
+.wraithfleets-error button {
   min-height: 28px;
 }
 
-.trifffleets-auth-band .triffview-band-top {
+.wraithfleets-auth-band .wraithview-band-top {
   align-items: center;
 }
 
-.trifffleets-scope-list {
+.wraithfleets-scope-list {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 10px;
 }
 
-.trifffleets-scope-list span {
+.wraithfleets-scope-list span {
   border: 1px solid var(--tv-border);
   background: var(--tv-control-bg-alt);
   color: var(--tv-accent-text);
@@ -4083,13 +4161,13 @@ button:disabled {
   font-weight: 700;
 }
 
-.trifffleets-two-col {
+.wraithfleets-two-col {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.trifffleets-readonly {
+.wraithfleets-readonly {
   min-height: 34px;
   border: 1px solid var(--tv-border);
   background: var(--tv-bg);
@@ -4098,19 +4176,19 @@ button:disabled {
   font-weight: 700;
 }
 
-.trifffleets-actions-row {
+.wraithfleets-actions-row {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
   align-items: center;
 }
 
-.trifffleets-actions-row button,
-.trifffleets button {
+.wraithfleets-actions-row button,
+.wraithfleets button {
   min-height: 31px;
 }
 
-.trifffleets .trifffleets-actions-row button {
+.wraithfleets .wraithfleets-actions-row button {
   border: 1px solid var(--tv-border);
   background: var(--tv-control-bg-alt);
   color: var(--tv-text-strong);
@@ -4119,40 +4197,40 @@ button:disabled {
   font-weight: 800;
 }
 
-.trifffleets .trifffleets-actions-row button:hover:not(:disabled),
-.trifffleets .trifffleets-actions-row button:focus-visible:not(:disabled) {
+.wraithfleets .wraithfleets-actions-row button:hover:not(:disabled),
+.wraithfleets .wraithfleets-actions-row button:focus-visible:not(:disabled) {
   border-color: var(--tv-accent);
   background: rgba(var(--tv-accent-rgb), 0.14);
   color: var(--tv-text-strong);
 }
 
-.trifffleets .trifffleets-actions-row button:disabled {
+.wraithfleets .wraithfleets-actions-row button:disabled {
   opacity: 0.42;
 }
 
-.trifffleets-profile-actions {
+.wraithfleets-profile-actions {
   justify-content: flex-start;
   align-self: end;
   padding-bottom: 1px;
 }
 
-.trifffleets-editor-actions {
+.wraithfleets-editor-actions {
   margin-top: 2px;
 }
 
-.trifffleets-stat-grid {
+.wraithfleets-stat-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
 
-.trifffleets-stat-grid > div {
+.wraithfleets-stat-grid > div {
   border: 1px solid var(--tv-border);
   background: var(--tv-control-bg-alt);
   padding: 10px;
 }
 
-.trifffleets-stat-grid span {
+.wraithfleets-stat-grid span {
   display: block;
   color: var(--tv-muted);
   font-size: 12px;
@@ -4160,21 +4238,21 @@ button:disabled {
   text-transform: uppercase;
 }
 
-.trifffleets-stat-grid strong {
+.wraithfleets-stat-grid strong {
   display: block;
   margin-top: 4px;
   color: var(--tv-text-strong);
   font-size: 15px;
 }
 
-.trifffleets-profile-head {
+.wraithfleets-profile-head {
   display: grid;
   grid-template-columns: minmax(280px, 1fr) auto;
   gap: 10px;
   align-items: end;
 }
 
-.trifffleets-toggle-row {
+.wraithfleets-toggle-row {
   display: inline-flex;
   width: fit-content;
   max-width: 100%;
@@ -4188,7 +4266,7 @@ button:disabled {
   font-weight: 700;
 }
 
-.trifffleets .trifffleets-toggle-row input {
+.wraithfleets .wraithfleets-toggle-row input {
   flex: 0 0 auto;
   width: 14px;
   height: 14px;
@@ -4198,7 +4276,7 @@ button:disabled {
   accent-color: var(--tv-accent);
 }
 
-.trifffleets-tree {
+.wraithfleets-tree {
   display: grid;
   gap: 4px;
   border: 1px solid var(--tv-border);
@@ -4208,14 +4286,14 @@ button:disabled {
   padding: 7px;
 }
 
-.trifffleets-tree-head {
+.wraithfleets-tree-head {
   display: grid;
   grid-template-columns: 12px minmax(0, 1fr) auto;
   gap: 6px;
   align-items: center;
 }
 
-.trifffleets-wing {
+.wraithfleets-wing {
   display: grid;
   gap: 4px;
   border: 0;
@@ -4223,7 +4301,7 @@ button:disabled {
   padding: 0;
 }
 
-.trifffleets-squad {
+.wraithfleets-squad {
   display: grid;
   gap: 4px;
   margin-left: 22px;
@@ -4233,13 +4311,13 @@ button:disabled {
   padding: 0 0 0 9px;
 }
 
-.trifffleets-members {
+.wraithfleets-members {
   display: grid;
   gap: 3px;
   margin-left: 22px;
 }
 
-.trifffleets-member-row {
+.wraithfleets-member-row {
   display: grid;
   grid-template-columns: 10px minmax(180px, 1fr) minmax(150px, 210px) auto;
   gap: 5px;
@@ -4250,23 +4328,23 @@ button:disabled {
   padding: 3px 5px;
 }
 
-.trifffleets-wing-head,
-.trifffleets-squad-head {
+.wraithfleets-wing-head,
+.wraithfleets-squad-head {
   min-height: 34px;
   border: 1px solid var(--tv-border);
   background: rgba(var(--tv-panel-rgb), 0.68);
   padding: 4px 6px;
 }
 
-.trifffleets-wing-head {
+.wraithfleets-wing-head {
   background: linear-gradient(90deg, rgba(var(--tv-accent-rgb), 0.16), rgba(var(--tv-panel-rgb), 0.68));
 }
 
-.trifffleets-squad-head {
+.wraithfleets-squad-head {
   background: rgba(var(--tv-panel-rgb), 0.54);
 }
 
-.trifffleets-node-caret {
+.wraithfleets-node-caret {
   width: 0;
   height: 0;
   border-left: 5px solid var(--tv-text);
@@ -4275,107 +4353,107 @@ button:disabled {
   opacity: 0.74;
 }
 
-.trifffleets-member-rail {
+.wraithfleets-member-rail {
   width: 8px;
   height: 1px;
   background: rgba(var(--tv-accent-rgb), 0.56);
 }
 
-.trifffleets-tree .triffview-field {
+.wraithfleets-tree .wraithview-field {
   gap: 3px;
 }
 
-.trifffleets-field-label-row {
+.wraithfleets-field-label-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
-.trifffleets-field-label-row span {
+.wraithfleets-field-label-row span {
   color: var(--tv-muted);
   font-size: 11px;
   font-weight: 700;
 }
 
-.trifffleets-tree .triffview-field label {
+.wraithfleets-tree .wraithview-field label {
   color: var(--tv-muted);
   font-size: 11px;
 }
 
-.trifffleets-tree .triffview-field input,
-.trifffleets-tree .trifffleets-member-row input,
-.trifffleets-tree .trifffleets-member-row select {
+.wraithfleets-tree .wraithview-field input,
+.wraithfleets-tree .wraithfleets-member-row input,
+.wraithfleets-tree .wraithfleets-member-row select {
   min-height: 28px;
   padding: 4px 8px;
 }
 
-.trifffleets-tree .trifffleets-actions-row {
+.wraithfleets-tree .wraithfleets-actions-row {
   flex-wrap: nowrap;
   gap: 5px;
 }
 
-.trifffleets-tree .trifffleets-actions-row button,
-.trifffleets-tree .trifffleets-member-row button {
+.wraithfleets-tree .wraithfleets-actions-row button,
+.wraithfleets-tree .wraithfleets-member-row button {
   min-height: 28px;
   padding: 4px 8px;
 }
 
-.trifffleets-plan {
+.wraithfleets-plan {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.trifffleets-plan-box {
+.wraithfleets-plan-box {
   min-height: 82px;
   border: 1px solid var(--tv-border);
   background: var(--tv-control-bg-alt);
   padding: 10px;
 }
 
-.trifffleets-plan-box h3 {
+.wraithfleets-plan-box h3 {
   margin: 0 0 8px;
   color: var(--tv-text-strong);
   font-size: 15px;
 }
 
-.trifffleets-plan-box p {
+.wraithfleets-plan-box p {
   margin: 4px 0;
   color: var(--tv-text);
   font-size: 13px;
 }
 
-.trifffleets-plan-box .is-muted {
+.wraithfleets-plan-box .is-muted {
   color: var(--tv-muted);
 }
 
-.trifffleets-plan-box.is-danger {
+.wraithfleets-plan-box.is-danger {
   border-color: var(--tv-danger-border);
   background: rgba(var(--tv-danger-bg-rgb), 0.16);
 }
 
-.trifffleets-plan-box.is-danger h3,
-.trifffleets-plan-box.is-danger p {
+.wraithfleets-plan-box.is-danger h3,
+.wraithfleets-plan-box.is-danger p {
   color: var(--tv-danger-text);
 }
 
-.trifffleets-plan-box.is-warning {
+.wraithfleets-plan-box.is-warning {
   border-color: var(--tv-warning-border);
   background: var(--tv-warning-bg);
 }
 
-.trifffleets-plan-box.is-warning h3,
-.trifffleets-plan-box.is-warning p {
+.wraithfleets-plan-box.is-warning h3,
+.wraithfleets-plan-box.is-warning p {
   color: var(--tv-warning-text);
 }
 
-.trifffleets-result-list {
+.wraithfleets-result-list {
   display: grid;
   gap: 6px;
 }
 
-.trifffleets-result-row {
+.wraithfleets-result-row {
   display: grid;
   grid-template-columns: 90px minmax(160px, 1fr) 150px minmax(220px, 1.4fr);
   gap: 8px;
@@ -4385,41 +4463,41 @@ button:disabled {
   padding: 8px 10px;
 }
 
-.trifffleets-result-row span {
+.wraithfleets-result-row span {
   color: var(--tv-muted);
   font-weight: 700;
   text-transform: uppercase;
 }
 
-.trifffleets-result-row strong {
+.wraithfleets-result-row strong {
   color: var(--tv-text-strong);
 }
 
-.trifffleets-result-row em {
+.wraithfleets-result-row em {
   color: var(--tv-text);
   font-style: normal;
   font-weight: 800;
   text-transform: uppercase;
 }
 
-.trifffleets-result-row em.is-success {
+.wraithfleets-result-row em.is-success {
   color: var(--tv-success-text);
 }
 
-.trifffleets-result-row em.is-warning {
+.wraithfleets-result-row em.is-warning {
   color: var(--tv-warning-text);
 }
 
-.trifffleets-result-row em.is-danger {
+.wraithfleets-result-row em.is-danger {
   color: var(--tv-danger-text);
 }
 
-.trifffleets-result-row p {
+.wraithfleets-result-row p {
   margin: 0;
   color: var(--tv-muted);
 }
 
-.trifffleets :is(input, textarea, select) {
+.wraithfleets :is(input, textarea, select) {
   width: 100%;
   min-height: 34px;
   border: 1px solid var(--tv-border);
@@ -4430,34 +4508,34 @@ button:disabled {
   font-weight: 700;
 }
 
-.trifffleets select option,
-.trifffleets select optgroup {
+.wraithfleets select option,
+.wraithfleets select optgroup {
   background: var(--tv-bg);
   color: var(--tv-text);
 }
 
-.trifffleets :is(input, textarea, select):focus {
+.wraithfleets :is(input, textarea, select):focus {
   border-color: var(--tv-accent);
   outline: 1px solid rgba(var(--tv-accent-rgb), 0.7);
   outline-offset: -1px;
 }
 
-.trifffleets :is(input, textarea)::selection {
+.wraithfleets :is(input, textarea)::selection {
   background: rgba(var(--tv-accent-rgb), 0.32);
   color: var(--tv-selection-text);
 }
 
 @media (max-width: 980px) {
-  .trifffleets-two-col,
-  .trifffleets-profile-head,
-  .trifffleets-tree-head,
-  .trifffleets-plan {
+  .wraithfleets-two-col,
+  .wraithfleets-profile-head,
+  .wraithfleets-tree-head,
+  .wraithfleets-plan {
     grid-template-columns: 1fr;
   }
 
-  .trifffleets-stat-grid,
-  .trifffleets-result-row,
-  .trifffleets-member-row {
+  .wraithfleets-stat-grid,
+  .wraithfleets-result-row,
+  .wraithfleets-member-row {
     grid-template-columns: 1fr;
   }
 }

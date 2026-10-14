@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text;
 
-namespace TriffView.Eve;
+namespace WraithView.Eve;
 
 internal static class AtomicFile
 {

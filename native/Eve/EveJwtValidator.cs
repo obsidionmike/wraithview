@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.IdentityModel.Tokens;
 
-namespace TriffView.Eve;
+namespace WraithView.Eve;
 
 internal sealed partial class EveJwtValidator
 {

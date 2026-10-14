@@ -4,21 +4,22 @@ import alarmSoundUrl from "./assets/sounds/alarm.ogg";
 import dingSoundUrl from "./assets/sounds/ding.ogg";
 import sirenSoundUrl from "./assets/sounds/siren.ogg";
 import woopSoundUrl from "./assets/sounds/woop.ogg";
-import TriffViewSettings from "./tools/TriffViewSettings.jsx";
+import WraithViewSettings from "./tools/WraithViewSettings.jsx";
 
 const EveSettings = React.lazy(() => import("./tools/EveSettings.tsx"));
-const TriffFleets = React.lazy(() => import("./tools/TriffFleets.tsx"));
-const TriffSkills = React.lazy(() => import("./tools/TriffSkills.tsx"));
+const WraithFleets = React.lazy(() => import("./tools/WraithFleets.tsx"));
+const WraithSkills = React.lazy(() => import("./tools/WraithSkills.tsx"));
 
 const NAV_ITEMS = [
-  { id: "triffview", label: "TriffView" },
+  { id: "wraithview", label: "WraithView" },
   { id: "eve-settings", label: "EVE Settings" },
   { id: "fleet-manager", label: "Fleet Manager" },
   { id: "skill-planner", label: "Skill Planner" },
 ];
-const THEME_STORAGE_KEY = "triffview.guiTheme";
+const THEME_STORAGE_KEY = "wraithview.guiTheme";
 const GUI_THEMES = [
-  { id: "triff-tools", name: "Triff.Tools", swatches: ["#53B6FF", "#2EE6A6", "#0B111D"] },
+  { id: "void", name: "Void", swatches: ["#A77BFF", "#FF6FAE", "#110F1B"] },
+  { id: "wraith-tools", name: "Classic", swatches: ["#53B6FF", "#2EE6A6", "#0B111D"] },
   { id: "amarr", name: "Amarr", swatches: ["#C8A86A", "#F2E58B", "#F28C57"] },
   { id: "caldari", name: "Caldari", swatches: ["#8FD8E8", "#41B9B2", "#D88B24"] },
   { id: "carbon", name: "Carbon", swatches: ["#D6D6D6", "#8E9297", "#F28C57"] },
@@ -89,13 +90,13 @@ function UpdateNotice({ update, onDismiss, onIgnore }) {
   const versionLabel = update.latestTag || `v${update.latestVersion}`;
   const openUpdate = () => {
     if (!postNative({ type: "update:open" })) {
-      openExternalUrl(update.releaseUrl || "https://github.com/NarcisussX/TriffView/releases");
+      openExternalUrl(update.releaseUrl || "https://github.com/obsidionmike/wraithview/releases");
     }
   };
 
   return (
-    <div className="triffview-update-pill" data-hud-input-region="update">
-      <span className="triffview-update-copy">
+    <div className="wraithview-update-pill" data-hud-input-region="update">
+      <span className="wraithview-update-copy">
         <strong>Update available</strong>
         <em>{versionLabel}</em>
       </span>
@@ -113,7 +114,7 @@ function UpdateNotice({ update, onDismiss, onIgnore }) {
 }
 
 export default function App() {
-  const [activeTool, setActiveTool] = useState("triffview");
+  const [activeTool, setActiveTool] = useState("wraithview");
   const [themeId, setThemeId] = useState(readSavedTheme);
   const [updateInfo, setUpdateInfo] = useState(null);
   const [dismissedUpdateVersion, setDismissedUpdateVersion] = useState("");
@@ -170,7 +171,7 @@ export default function App() {
         }
       } else if (message?.type === "update-state") {
         setUpdateInfo(message.update || null);
-      } else if (message?.type === "triffview:state") {
+      } else if (message?.type === "wraithview:state") {
         playAlertSound(message);
       }
     });
@@ -207,19 +208,19 @@ export default function App() {
   }, []);
 
   return (
-    <main className="triffview-standalone-root hud-root" data-theme={activeTheme.id} data-theme-name={activeTheme.name} ref={rootRef}>
-      <header className="triffview-standalone-topbar" data-hud-input-region="topbar">
-        <div className="triffview-brand-block">
-          <strong>TriffView</strong>
+    <main className="wraithview-standalone-root hud-root" data-theme={activeTheme.id} data-theme-name={activeTheme.name} ref={rootRef}>
+      <header className="wraithview-standalone-topbar" data-hud-input-region="topbar">
+        <div className="wraithview-brand-block">
+          <strong>WraithView</strong>
           <span>Previews, fleets, and EVE settings</span>
-          <label className="triffview-theme-picker">
-            <span className="triffview-theme-swatches" aria-hidden="true">
+          <label className="wraithview-theme-picker">
+            <span className="wraithview-theme-swatches" aria-hidden="true">
               {activeTheme.swatches.map((color) => (
                 <i key={color} style={{ backgroundColor: color }} />
               ))}
             </span>
             <select
-              className="triffview-theme-select"
+              className="wraithview-theme-select"
               value={activeTheme.id}
               onChange={(event) => setThemeId(event.target.value)}
               aria-label="GUI theme"
@@ -256,21 +257,21 @@ export default function App() {
         </nav>
       </header>
 
-      <section className="triffview-standalone-panel" data-hud-input-region="panel">
-        {activeTool === "triffview" ? <TriffViewSettings open /> : null}
+      <section className="wraithview-standalone-panel" data-hud-input-region="panel">
+        {activeTool === "wraithview" ? <WraithViewSettings open /> : null}
         {activeTool === "eve-settings" ? (
-          <Suspense fallback={<div className="triffview-standalone-loading">Loading EVE Settings...</div>}>
+          <Suspense fallback={<div className="wraithview-standalone-loading">Loading EVE Settings...</div>}>
             <EveSettings />
           </Suspense>
         ) : null}
         {activeTool === "fleet-manager" ? (
-          <Suspense fallback={<div className="triffview-standalone-loading">Loading Fleet Manager...</div>}>
-            <TriffFleets />
+          <Suspense fallback={<div className="wraithview-standalone-loading">Loading Fleet Manager...</div>}>
+            <WraithFleets />
           </Suspense>
         ) : null}
         {activeTool === "skill-planner" ? (
-          <Suspense fallback={<div className="triffview-standalone-loading">Loading Skill Planner...</div>}>
-            <TriffSkills />
+          <Suspense fallback={<div className="wraithview-standalone-loading">Loading Skill Planner...</div>}>
+            <WraithSkills />
           </Suspense>
         ) : null}
       </section>

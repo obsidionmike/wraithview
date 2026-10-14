@@ -159,8 +159,8 @@ function ConfirmModal({
   eveRunning: boolean;
 }) {
   return (
-    <div className="triffview-modal-backdrop eve-settings-modal-backdrop">
-      <section className="triffview-hotkey-modal eve-settings-modal">
+    <div className="wraithview-modal-backdrop eve-settings-modal-backdrop">
+      <section className="wraithview-hotkey-modal eve-settings-modal">
         <header>
           <div>
             <h3>{action.title}</h3>
@@ -172,13 +172,13 @@ function ConfirmModal({
         </header>
         <div className="eve-settings-modal-body" data-hud-scroll>
           {eveRunning ? (
-            <div className="triffview-warning">
+            <div className="wraithview-warning">
               <strong>EVE is running.</strong>
               <span>These files are safest to copy or restore while the EVE client is fully closed.</span>
             </div>
           ) : null}
           <p>
-            TriffHUD will create a backup before overwriting or deleting live settings. The original `.dat` files are copied
+            WraithView will create a backup before overwriting or deleting live settings. The original `.dat` files are copied
             as-is; the HUD does not parse or modify their contents.
           </p>
         </div>
@@ -213,8 +213,8 @@ function FileCopyPanel({
   onCopy: () => void;
 }) {
   return (
-    <div className="triffview-band eve-settings-copy-panel">
-      <div className="triffview-band-top">
+    <div className="wraithview-band eve-settings-copy-panel">
+      <div className="wraithview-band-top">
         <div>
           <h2>{label} copy</h2>
           <p>Copy one settings file over another in the selected settings set.</p>
@@ -224,7 +224,7 @@ function FileCopyPanel({
         </button>
       </div>
       <div className="eve-settings-copy-grid">
-        <label className="triffview-field">
+        <label className="wraithview-field">
           <span>Source</span>
           <select value={source} onChange={(event) => onSource(event.target.value)}>
             {files.map((file) => (
@@ -234,7 +234,7 @@ function FileCopyPanel({
             ))}
           </select>
         </label>
-        <label className="triffview-field">
+        <label className="wraithview-field">
           <span>Target</span>
           <select value={target} onChange={(event) => onTarget(event.target.value)}>
             {files.map((file) => (
@@ -338,15 +338,15 @@ function CharacterCopyPanel({
   }
 
   return (
-    <div className="triffview-band eve-settings-copy-panel eve-settings-character-copy">
-      <div className="triffview-band-top">
+    <div className="wraithview-band eve-settings-copy-panel eve-settings-character-copy">
+      <div className="wraithview-band-top">
         <div>
           <h2>Character copy</h2>
           <p>Copy one character's settings to selected characters, or to every other character in this settings set.</p>
         </div>
       </div>
       <div className="eve-settings-bulk-copy-grid">
-        <label className="triffview-field">
+        <label className="wraithview-field">
           <span>Source character</span>
           <select value={source} onChange={(event) => onSource(event.target.value)}>
             {files.map((file) => (
@@ -357,7 +357,7 @@ function CharacterCopyPanel({
           </select>
         </label>
 
-        <div className="triffview-field eve-settings-target-picker">
+        <div className="wraithview-field eve-settings-target-picker">
           <div className="eve-settings-target-picker-head">
             <div>
               <span>Target characters</span>
@@ -493,7 +493,7 @@ export default function EveSettings() {
   const [selectedCharacterTargets, setSelectedCharacterTargets] = useState<string[]>([]);
   const [accountSource, setAccountSource] = useState("");
   const [accountTarget, setAccountTarget] = useState("");
-  const [profileName, setProfileName] = useState("TriffHUD");
+  const [profileName, setProfileName] = useState("WraithView");
   const [renameName, setRenameName] = useState("");
   const pendingSuccessRef = useRef("");
   const successTimerRef = useRef<number | null>(null);
@@ -634,13 +634,13 @@ export default function EveSettings() {
 
     return (
       <>
-        <div className="triffview-band">
-          <div className="triffview-band-top">
+        <div className="wraithview-band">
+          <div className="wraithview-band-top">
             <div>
               <h2>Folder</h2>
               <p>{state.rootPath || "No EVE settings folder selected."}</p>
             </div>
-            <div className="triffview-actions">
+            <div className="wraithview-actions">
               <button type="button" onClick={() => send("eve-settings:select-folder")}>
                 Select folder
               </button>
@@ -655,14 +655,14 @@ export default function EveSettings() {
         </div>
 
         {state.eveRunning ? (
-          <div className="triffview-warning">
+          <div className="wraithview-warning">
             <strong>EVE client detected.</strong>
             <span>Backups and browsing are fine. Copy, restore, rename, and delete actions are safest after closing EVE.</span>
           </div>
         ) : null}
 
-        <div className="triffview-grid">
-          <label className="triffview-field">
+        <div className="wraithview-grid">
+          <label className="wraithview-field">
             <span>Server</span>
             <select
               value={selectedServer?.path || ""}
@@ -678,7 +678,7 @@ export default function EveSettings() {
             </select>
           </label>
           {hasMultipleSettingsSets ? (
-            <label className="triffview-field">
+            <label className="wraithview-field">
               <span>Settings set</span>
               <select
                 value={selectedProfile?.path || ""}
@@ -693,7 +693,7 @@ export default function EveSettings() {
               </select>
             </label>
           ) : (
-            <div className="triffview-field eve-settings-readonly-field">
+            <div className="wraithview-field eve-settings-readonly-field">
               <span>Settings set</span>
               <strong>{selectedProfile ? profileLabel(selectedProfile) : "No settings sets found"}</strong>
               <small>{selectedProfile ? `${selectedProfile.fileCount} settings files` : "Use Advanced if you need to create one."}</small>
@@ -745,7 +745,7 @@ export default function EveSettings() {
           onBackup={(file) =>
             ask({
               title: "Backup character settings",
-              body: `${file.name} will be copied into a TriffHUD backup ZIP.`,
+              body: `${file.name} will be copied into a WraithView backup ZIP.`,
               button: "Back up",
               message: { type: "eve-settings:backup-file", filePath: file.path },
             })
@@ -774,7 +774,7 @@ export default function EveSettings() {
           onBackup={(file) =>
             ask({
               title: "Backup account settings",
-              body: `${file.name} will be copied into a TriffHUD backup ZIP.`,
+              body: `${file.name} will be copied into a WraithView backup ZIP.`,
               button: "Back up",
               message: { type: "eve-settings:backup-file", filePath: file.path },
             })
@@ -788,8 +788,8 @@ export default function EveSettings() {
   function renderSettingsSets() {
     return (
       <>
-        <div className="triffview-grid">
-          <label className="triffview-field">
+        <div className="wraithview-grid">
+          <label className="wraithview-field">
             <span>Create settings set</span>
             <div className="eve-settings-input-action">
               <input value={profileName} onChange={(event) => setProfileName(event.target.value)} />
@@ -798,7 +798,7 @@ export default function EveSettings() {
               </button>
             </div>
           </label>
-          <label className="triffview-field">
+          <label className="wraithview-field">
             <span>Rename selected settings set</span>
             <div className="eve-settings-input-action">
               <input value={renameName} disabled={!selectedProfile} onChange={(event) => setRenameName(event.target.value)} />
@@ -850,7 +850,7 @@ export default function EveSettings() {
                         onClick={() =>
                           ask({
                             title: "Duplicate settings set",
-                            body: `${profileLabel(profile)} will be copied into a new settings set named ${profileName || "TriffHUD"}.`,
+                            body: `${profileLabel(profile)} will be copied into a new settings set named ${profileName || "WraithView"}.`,
                             button: "Duplicate",
                             message: { type: "eve-settings:duplicate-profile", profilePath: profile.path, name: profileName },
                           })
@@ -863,7 +863,7 @@ export default function EveSettings() {
                         onClick={() =>
                           ask({
                             title: "Backup settings set",
-                            body: `${profileLabel(profile)} will be copied into a TriffHUD backup ZIP.`,
+                            body: `${profileLabel(profile)} will be copied into a WraithView backup ZIP.`,
                             button: "Back up",
                             message: { type: "eve-settings:backup-profile", profilePath: profile.path },
                           })
@@ -947,7 +947,7 @@ export default function EveSettings() {
                       onClick={() =>
                         ask({
                           title: "Delete backup",
-                          body: `${backup.label || "This backup"} will be permanently removed from TriffHUD backups.`,
+                          body: `${backup.label || "This backup"} will be permanently removed from WraithView backups.`,
                           button: "Delete",
                           danger: true,
                           message: { type: "eve-settings:delete-backup", backupPath: backup.path },
@@ -1006,8 +1006,8 @@ export default function EveSettings() {
   function renderAdvanced() {
     return (
       <>
-        <div className="triffview-band eve-settings-advanced-intro">
-          <div className="triffview-band-top">
+        <div className="wraithview-band eve-settings-advanced-intro">
+          <div className="wraithview-band-top">
             <div>
               <h2>Advanced EVE settings folders</h2>
               <p>
@@ -1018,8 +1018,8 @@ export default function EveSettings() {
           </div>
         </div>
 
-        <div className="triffview-band eve-settings-advanced-section">
-          <div className="triffview-band-top">
+        <div className="wraithview-band eve-settings-advanced-section">
+          <div className="wraithview-band-top">
             <div>
               <h2>Settings sets</h2>
               <p>Create, duplicate, back up, reveal, or delete EVE settings folders.</p>
@@ -1028,8 +1028,8 @@ export default function EveSettings() {
           <div className="eve-settings-advanced-body">{renderSettingsSets()}</div>
         </div>
 
-        <div className="triffview-band eve-settings-advanced-section">
-          <div className="triffview-band-top">
+        <div className="wraithview-band eve-settings-advanced-section">
+          <div className="wraithview-band-top">
             <div>
               <h2>Saved notes</h2>
               <p>Local labels attached to characters, accounts, backups, and settings sets.</p>
@@ -1050,10 +1050,10 @@ export default function EveSettings() {
   }
 
   return (
-    <div className="triffview-settings eve-settings" data-hud-scroll data-hud-select-text-controls="true">
-      <section className="triffview-settings-shell">
-        <aside className="triffview-side-nav">
-          <div className="triffview-nav-brand">
+    <div className="wraithview-settings eve-settings" data-hud-scroll data-hud-select-text-controls="true">
+      <section className="wraithview-settings-shell">
+        <aside className="wraithview-side-nav">
+          <div className="wraithview-nav-brand">
             <h2>EVE Settings</h2>
             <p>Local EVE character, account, and settings file management.</p>
           </div>
@@ -1064,7 +1064,7 @@ export default function EveSettings() {
               </button>
             ))}
           </nav>
-          <div className="triffview-nav-actions">
+          <div className="wraithview-nav-actions">
             <button type="button" onClick={() => send("eve-settings:refresh")}>
               Refresh
             </button>
@@ -1074,8 +1074,8 @@ export default function EveSettings() {
           </div>
         </aside>
 
-        <section className="triffview-section-content" data-hud-scroll>
-          <header className="triffview-section-header eve-settings-header">
+        <section className="wraithview-section-content" data-hud-scroll>
+          <header className="wraithview-section-header eve-settings-header">
             <div>
               <h2>{SECTIONS.find(([id]) => id === section)?.[1] || "Overview"}</h2>
               <p>
@@ -1089,7 +1089,7 @@ export default function EveSettings() {
           </header>
 
           {error ? (
-            <div className="triffview-warning">
+            <div className="wraithview-warning">
               <strong>Action failed.</strong>
               <span>{error}</span>
             </div>
@@ -1103,8 +1103,8 @@ export default function EveSettings() {
           ) : null}
 
           {!state.rootPath ? (
-            <div className="triffview-band">
-              <div className="triffview-band-top">
+            <div className="wraithview-band">
+              <div className="wraithview-band-top">
                 <div>
                   <h2>Select your EVE settings folder</h2>
                   <p>Default path: {state.defaultRoot || "%LOCALAPPDATA%\\CCP\\EVE"}</p>

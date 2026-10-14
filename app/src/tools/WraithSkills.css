@@ -1,0 +1,1049 @@
+.wraithskills {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+.wraithskills .wraithview-settings-shell {
+  min-height: 0;
+  grid-template-columns: 214px minmax(0, 1fr);
+}
+
+.wraithskills .wraithview-side-nav {
+  min-height: 0;
+  gap: 13px;
+  overflow: hidden;
+  padding: 15px 12px 13px;
+}
+
+.wraithskills .wraithview-nav-brand h2 {
+  color: var(--tv-accent);
+  font-size: 14px;
+}
+
+.wraithskills .wraithview-nav-brand p {
+  font-variant-numeric: tabular-nums;
+}
+
+.wraithskills .wraithskills-rail-actions {
+  flex: 0 0 auto;
+  gap: 5px;
+}
+
+.wraithskills button,
+.wraithskills input,
+.wraithskills textarea {
+  border: 1px solid var(--tv-border);
+  border-radius: 0;
+  background: var(--tv-control-bg);
+  color: var(--tv-text);
+  font: inherit;
+}
+
+.wraithskills button {
+  min-height: 28px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.wraithskills button:hover:not(:disabled),
+.wraithskills button:focus-visible {
+  border-color: var(--tv-accent);
+  color: var(--tv-white);
+}
+
+.wraithskills button:focus-visible {
+  outline: 1px solid var(--tv-accent);
+  outline-offset: 1px;
+}
+
+.wraithskills button:disabled,
+.wraithskills input:disabled,
+.wraithskills textarea:disabled {
+  cursor: not-allowed;
+  color: var(--tv-disabled);
+  opacity: 0.7;
+}
+
+.wraithskills button.primary-action {
+  border-color: var(--tv-accent);
+  background: var(--tv-accent-bg);
+}
+
+.wraithskills button.danger-action {
+  border-color: var(--tv-danger-border-soft);
+  background: rgba(var(--tv-danger-bg-rgb), 0.28);
+  color: var(--tv-danger-text);
+}
+
+.wraithskills .wraithskills-rail-status {
+  margin: -5px 0 0;
+  color: var(--tv-accent-text);
+  font-size: 11px;
+}
+
+.wraithskills .wraithskills-sso-warning {
+  gap: 3px;
+  padding: 7px 8px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.wraithskills .wraithskills-sso-warning strong,
+.wraithskills .wraithskills-sso-warning span {
+  display: block;
+}
+
+.wraithskills .wraithskills-legend {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--tv-border-soft);
+  padding-top: 11px;
+  color: var(--tv-muted);
+  font-size: 11px;
+}
+
+.wraithskills .wraithskills-legend h3 {
+  margin: 0 0 2px;
+  color: var(--tv-text-strong);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wraithskills .wraithskills-legend > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.wraithskills .wraithskills-legend p {
+  margin: 3px 0 0;
+  color: var(--tv-muted);
+  line-height: 1.35;
+}
+
+.wraithskills .is-ready { color: var(--tv-success-text); }
+.wraithskills .is-training { color: var(--tv-accent-text); }
+.wraithskills .is-locked { color: var(--tv-warning-text); }
+.wraithskills .is-missing { color: var(--tv-muted); }
+.wraithskills .is-unknown { color: var(--tv-danger-text); }
+.wraithskills .is-unscored { color: var(--tv-muted); }
+
+.wraithskills .wraithskills-progress-mark {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  border: 1px solid currentColor;
+  background: linear-gradient(
+    to top,
+    currentColor 0 calc(var(--tv-fill, 0) * 100%),
+    transparent calc(var(--tv-fill, 0) * 100%) 100%
+  );
+  box-sizing: border-box;
+}
+
+.wraithskills .wraithskills-progress-mark.is-unknown {
+  border-radius: 50%;
+  background: transparent;
+}
+
+.wraithskills .wraithskills-progress-mark.is-unscored {
+  width: 4px;
+  height: 4px;
+  border: 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.wraithskills .wraithview-section-content {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  grid-template-rows: auto minmax(0, auto) minmax(0, 1fr);
+  gap: 9px;
+  padding: 16px 18px 17px;
+}
+
+.wraithskills .wraithskills-header {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.wraithskills .wraithskills-header p {
+  margin: 4px 0 0;
+  color: var(--tv-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.wraithskills .wraithskills-plans-stamp {
+  flex: 0 0 auto;
+  color: var(--tv-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.wraithskills .wraithskills-notices {
+  display: flex;
+  max-height: 104px;
+  min-height: 0;
+  flex-direction: column;
+  gap: 5px;
+  overflow: auto;
+}
+
+.wraithskills .wraithskills-notices.is-empty {
+  display: none;
+}
+
+.wraithskills .wraithskills-notice {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--tv-border-soft);
+  background: var(--tv-control-bg-alt);
+  padding: 6px 8px;
+  color: var(--tv-warning-text);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.wraithskills .wraithskills-notice.is-error {
+  border-color: var(--tv-danger-border-soft);
+  background: rgba(var(--tv-danger-bg-rgb), 0.25);
+  color: var(--tv-danger-text);
+}
+
+.wraithskills .wraithskills-notice button {
+  min-height: 24px;
+  padding: 2px 7px;
+  font-size: 11px;
+}
+
+.wraithskills .wraithskills-issues {
+  display: block;
+}
+
+.wraithskills .wraithskills-issues summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.wraithskills .wraithskills-issues div {
+  margin-top: 5px;
+  color: var(--tv-text);
+}
+
+.wraithskills .wraithskills-issues p {
+  margin: 2px 0 0 10px;
+  color: var(--tv-muted);
+}
+
+.wraithskills .wraithskills-workspace {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 27vw, 340px);
+  gap: 10px;
+}
+
+.wraithskills .wraithskills-matrix-pane {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.wraithskills .wraithskills-empty {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  border: 1px dashed var(--tv-border-dashed);
+  padding: 18px;
+  color: var(--tv-muted);
+}
+
+.wraithskills .wraithskills-empty p {
+  margin: 0;
+}
+
+.wraithskills .wraithskills-empty strong {
+  color: var(--tv-text-strong);
+}
+
+.wraithskills .wraithskills-matrix-scroll {
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: auto;
+  border: 1px solid var(--tv-border-soft);
+  background: rgba(var(--tv-bg-rgb), 0.88);
+  scrollbar-gutter: stable;
+}
+
+.wraithskills .wraithskills-matrix {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: 11px;
+}
+
+.wraithskills .wraithskills-plan-col { width: 208px; }
+.wraithskills .wraithskills-total-col { width: 50px; }
+.wraithskills .wraithskills-character-col { width: 32px; }
+
+.wraithskills .wraithskills-matrix th,
+.wraithskills .wraithskills-matrix td {
+  height: 28px;
+  border-right: 1px solid var(--tv-border-muted);
+  border-bottom: 1px solid var(--tv-border-muted);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.wraithskills .wraithskills-character-head-row th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: 118px;
+  background: var(--tv-table-head-bg);
+  vertical-align: bottom;
+}
+
+.wraithskills .wraithskills-plan-heading,
+.wraithskills .wraithskills-matrix tbody th,
+.wraithskills .wraithskills-totals-row th {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  width: 208px;
+  min-width: 208px;
+  max-width: 208px;
+  background: var(--tv-control-bg-alt);
+  text-align: left;
+}
+
+.wraithskills .wraithskills-character-head-row .wraithskills-plan-heading {
+  z-index: 8;
+  padding: 8px 9px;
+  vertical-align: bottom;
+}
+
+.wraithskills .wraithskills-plan-heading span,
+.wraithskills .wraithskills-plan-heading small {
+  display: block;
+}
+
+.wraithskills .wraithskills-plan-heading span {
+  color: var(--tv-text-strong);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.wraithskills .wraithskills-plan-heading small {
+  margin-top: 2px;
+  color: var(--tv-muted);
+  font-weight: 600;
+}
+
+.wraithskills .wraithskills-plan-total-heading,
+.wraithskills .wraithskills-plan-total,
+.wraithskills .wraithskills-totals-row > td:first-of-type {
+  position: sticky;
+  left: 208px;
+  z-index: 4;
+  width: 50px;
+  min-width: 50px;
+  background: var(--tv-table-head-bg);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.wraithskills .wraithskills-character-head-row .wraithskills-plan-total-heading {
+  z-index: 7;
+}
+
+.wraithskills .wraithskills-plan-total-heading span {
+  display: block;
+  padding: 5px 2px;
+  color: var(--tv-muted);
+  font-size: 10px;
+  font-weight: 800;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.wraithskills .wraithskills-character-heading {
+  width: 32px;
+  min-width: 32px;
+}
+
+.wraithskills .wraithskills-character-heading[draggable="true"] {
+  cursor: grab;
+}
+
+.wraithskills .wraithskills-character-heading.is-dragging {
+  opacity: 0.45;
+}
+
+.wraithskills .wraithskills-character-heading.is-drag-target {
+  box-shadow: inset 2px 0 0 var(--tv-accent), inset -2px 0 0 var(--tv-accent);
+}
+
+.wraithskills .wraithskills-character-heading > button {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  align-items: center;
+  justify-content: flex-start;
+  border: 0;
+  background: transparent;
+  padding: 6px 0;
+  color: var(--tv-text-strong);
+}
+
+.wraithskills .wraithskills-character-heading > button span {
+  display: block;
+  overflow: hidden;
+  margin: 0 auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.wraithskills .wraithskills-character-heading > button:hover,
+.wraithskills .wraithskills-character-heading > button:focus-visible,
+.wraithskills .wraithskills-character-heading > button.is-selected {
+  background: rgba(var(--tv-accent-rgb), 0.18);
+  color: var(--tv-white);
+}
+
+.wraithskills .wraithskills-totals-row th,
+.wraithskills .wraithskills-totals-row td {
+  position: sticky;
+  top: 118px;
+  z-index: 3;
+  height: 28px;
+  background: var(--tv-control-bg-alt);
+  color: var(--tv-muted);
+  text-align: center;
+}
+
+.wraithskills .wraithskills-totals-row th {
+  z-index: 7;
+  padding: 0 8px;
+  color: var(--tv-text-strong);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wraithskills .wraithskills-totals-row > td:first-of-type {
+  z-index: 6;
+}
+
+.wraithskills .wraithskills-totals-row strong,
+.wraithskills .wraithskills-plan-total strong {
+  color: var(--tv-text-strong);
+}
+
+.wraithskills .wraithskills-totals-row small,
+.wraithskills .wraithskills-plan-total small {
+  color: var(--tv-muted);
+  font-size: 9px;
+}
+
+.wraithskills .wraithskills-matrix tbody th {
+  z-index: 2;
+}
+
+.wraithskills .wraithskills-matrix tbody th > button {
+  display: flex;
+  width: 100%;
+  height: 27px;
+  min-height: 27px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  padding: 3px 8px;
+  color: var(--tv-text-strong);
+  text-align: left;
+}
+
+.wraithskills .wraithskills-matrix tbody th > button:hover,
+.wraithskills .wraithskills-matrix tbody th > button:focus-visible,
+.wraithskills .wraithskills-matrix tbody th > button.is-selected {
+  background: rgba(var(--tv-accent-rgb), 0.18);
+  color: var(--tv-white);
+}
+
+.wraithskills .wraithskills-matrix tbody th strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wraithskills .wraithskills-matrix tbody th small {
+  flex: 0 0 auto;
+  color: var(--tv-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wraithskills .wraithskills-plan-total {
+  z-index: 1;
+  background: var(--tv-control-bg-alt);
+}
+
+.wraithskills .wraithskills-matrix tbody > tr > td:not(.wraithskills-plan-total) {
+  width: 32px;
+  min-width: 32px;
+  background: var(--tv-control-bg);
+}
+
+.wraithskills .wraithskills-cell-button {
+  display: flex;
+  width: 100%;
+  height: 27px;
+  min-height: 27px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.wraithskills .wraithskills-cell-button:hover,
+.wraithskills .wraithskills-cell-button:focus-visible,
+.wraithskills .wraithskills-cell-button.is-selected {
+  background: rgba(var(--tv-accent-rgb), 0.18);
+  color: inherit;
+  outline: 1px solid var(--tv-accent);
+  outline-offset: -2px;
+}
+
+.wraithskills .wraithskills-character-heading.is-degraded,
+.wraithskills .wraithskills-totals-row td.is-degraded,
+.wraithskills .wraithskills-matrix tbody td.is-degraded {
+  background-color: rgba(var(--tv-danger-bg-rgb), 0.1);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0,
+    transparent 6px,
+    rgba(var(--tv-danger-bg-rgb), 0.08) 6px,
+    rgba(var(--tv-danger-bg-rgb), 0.08) 9px
+  );
+}
+
+.wraithskills .wraithskills-character-heading.is-degraded {
+  box-shadow: inset 0 3px 0 var(--tv-danger-border-soft);
+}
+
+.wraithskills .wraithskills-matrix tbody td.is-degraded .wraithskills-progress-mark {
+  opacity: 0.62;
+}
+
+.wraithskills .wraithskills-detail-pane {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--tv-border-soft);
+  background: var(--tv-control-bg-alt);
+  padding: 10px 12px 13px;
+  color: var(--tv-text);
+  scrollbar-gutter: stable;
+}
+
+.wraithskills .wraithskills-detail-pane.is-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tv-muted);
+  text-align: center;
+}
+
+.wraithskills .wraithskills-detail-pane.is-empty > div {
+  max-width: 230px;
+}
+
+.wraithskills .wraithskills-detail-pane.is-empty h3 {
+  color: var(--tv-text-strong);
+}
+
+.wraithskills .wraithskills-detail-pane.is-empty p {
+  margin: 5px 0 0;
+  line-height: 1.4;
+}
+
+.wraithskills .wraithskills-detail-head {
+  position: sticky;
+  top: -10px;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin: -10px -12px 10px;
+  border-bottom: 1px solid var(--tv-border-muted);
+  background: var(--tv-control-bg-alt);
+  padding: 10px 12px 8px;
+}
+
+.wraithskills .wraithskills-detail-head h3,
+.wraithskills .wraithskills-detail-pane h3 {
+  margin: 0;
+  color: var(--tv-text-strong);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.wraithskills .wraithskills-detail-head p {
+  overflow: hidden;
+  margin: 2px 0 0;
+  color: var(--tv-muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wraithskills .wraithskills-detail-dismiss {
+  min-height: 24px;
+  flex: 0 0 auto;
+  padding: 2px 7px;
+  font-size: 10px;
+}
+
+.wraithskills .wraithskills-selected-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.wraithskills .wraithskills-selected-status .wraithskills-progress-mark {
+  width: 17px;
+  height: 17px;
+}
+
+.wraithskills .wraithskills-selected-status > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.wraithskills .wraithskills-selected-status strong {
+  color: currentColor;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.wraithskills .wraithskills-selected-status small,
+.wraithskills .wraithskills-detail-pane small {
+  color: var(--tv-muted);
+  font-size: 10px;
+}
+
+.wraithskills .wraithskills-counts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-bottom: 10px;
+  border-top: 1px solid var(--tv-border-muted);
+  border-bottom: 1px solid var(--tv-border-muted);
+}
+
+.wraithskills .wraithskills-counts span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 2px;
+  color: var(--tv-muted);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.wraithskills .wraithskills-counts b {
+  color: var(--tv-text-strong);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wraithskills .wraithskills-detail-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 7px 0;
+  color: var(--tv-muted);
+  font-size: 11px;
+}
+
+.wraithskills .wraithskills-detail-meta strong {
+  color: var(--tv-text-strong);
+  text-align: right;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wraithskills .wraithskills-detail-flag {
+  margin: 7px 0;
+  border: 1px solid var(--tv-warning-border);
+  background: var(--tv-warning-bg);
+  padding: 6px 7px;
+  color: var(--tv-warning-text);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.wraithskills .wraithskills-detail-flag.is-error {
+  border-color: var(--tv-danger-border-soft);
+  background: rgba(var(--tv-danger-bg-rgb), 0.25);
+  color: var(--tv-danger-text);
+}
+
+.wraithskills .wraithskills-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.wraithskills .wraithskills-forget-confirm {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--tv-danger-border-soft);
+  background: rgba(var(--tv-danger-bg-rgb), 0.22);
+  padding: 7px;
+  color: var(--tv-danger-text);
+  font-size: 11px;
+}
+
+.wraithskills .wraithskills-forget-confirm > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.wraithskills .wraithskills-detail-groups,
+.wraithskills .wraithskills-requirement-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-top: 10px;
+}
+
+.wraithskills .wraithskills-detail-groups section,
+.wraithskills .wraithskills-requirement-groups section {
+  min-width: 0;
+}
+
+.wraithskills .wraithskills-detail-groups h4,
+.wraithskills .wraithskills-requirement-groups h4 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 4px;
+  border-bottom: 1px solid var(--tv-border-muted);
+  padding-bottom: 4px;
+  color: currentColor;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wraithskills .wraithskills-detail-groups h4 .wraithskills-progress-mark {
+  width: 9px;
+  height: 9px;
+}
+
+.wraithskills .wraithskills-detail-groups h4 span,
+.wraithskills .wraithskills-requirement-groups h4 span {
+  margin-left: auto;
+  color: var(--tv-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.wraithskills .wraithskills-detail-groups ul,
+.wraithskills .wraithskills-requirement-groups ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wraithskills .wraithskills-detail-groups li button {
+  display: flex;
+  width: 100%;
+  min-height: 25px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  border: 0;
+  border-bottom: 1px solid var(--tv-border-faint);
+  background: transparent;
+  padding: 3px 1px;
+  color: var(--tv-text);
+  text-align: left;
+}
+
+.wraithskills .wraithskills-detail-groups li button:hover,
+.wraithskills .wraithskills-detail-groups li button:focus-visible {
+  background: rgba(var(--tv-accent-rgb), 0.12);
+}
+
+.wraithskills .wraithskills-detail-groups li button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wraithskills .wraithskills-detail-groups li button small {
+  flex: 0 0 auto;
+}
+
+.wraithskills .wraithskills-detail-loading {
+  margin: 12px 0 0;
+  color: var(--tv-muted);
+  font-size: 11px;
+}
+
+.wraithskills .wraithskills-requirement-groups section.is-active { color: var(--tv-success-text); }
+.wraithskills .wraithskills-requirement-groups section.is-trainedinactive { color: var(--tv-warning-text); }
+.wraithskills .wraithskills-requirement-groups section.is-queued { color: var(--tv-accent-text); }
+.wraithskills .wraithskills-requirement-groups section.is-missing { color: var(--tv-muted); }
+.wraithskills .wraithskills-requirement-groups section.is-unknown { color: var(--tv-danger-text); }
+
+.wraithskills .wraithskills-requirement-groups li {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px 8px;
+  border-bottom: 1px solid var(--tv-border-faint);
+  padding: 5px 1px;
+}
+
+.wraithskills .wraithskills-requirement-groups li > div:first-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.wraithskills .wraithskills-requirement-groups li strong {
+  overflow: hidden;
+  color: var(--tv-text-strong);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wraithskills .wraithskills-levels {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  color: var(--tv-muted);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wraithskills .wraithskills-requirement-groups li > small {
+  grid-column: 1 / -1;
+}
+
+.wraithskills .wraithskills-modal-backdrop {
+  z-index: 20;
+}
+
+.wraithskills .wraithskills-import-modal {
+  display: flex;
+  width: min(680px, calc(100% - 42px));
+  max-height: calc(100% - 42px);
+  flex-direction: column;
+}
+
+.wraithskills .wraithskills-import-modal header {
+  flex: 0 0 auto;
+}
+
+.wraithskills .wraithskills-import-modal header button {
+  flex: 0 0 auto;
+}
+
+.wraithskills .wraithskills-import-body {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 9px;
+  overflow: auto;
+  padding: 12px;
+}
+
+.wraithskills .wraithskills-import-body label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wraithskills .wraithskills-import-body label > span {
+  color: var(--tv-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wraithskills .wraithskills-import-body input,
+.wraithskills .wraithskills-import-body textarea {
+  width: 100%;
+  padding: 6px 7px;
+  box-sizing: border-box;
+}
+
+.wraithskills .wraithskills-import-body textarea {
+  min-height: 120px;
+  max-height: 260px;
+  resize: vertical;
+  line-height: 1.35;
+}
+
+.wraithskills .wraithskills-import-body input:focus,
+.wraithskills .wraithskills-import-body textarea:focus {
+  border-color: var(--tv-accent);
+  outline: none;
+}
+
+.wraithskills .wraithskills-import-body > small {
+  color: var(--tv-muted);
+}
+
+.wraithskills .wraithskills-import-error,
+.wraithskills .wraithskills-collision {
+  border: 1px solid var(--tv-danger-border-soft);
+  background: rgba(var(--tv-danger-bg-rgb), 0.24);
+  padding: 7px 8px;
+  color: var(--tv-danger-text);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.wraithskills .wraithskills-preview {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--tv-border-muted);
+  background: rgba(var(--tv-surface-rgb), 0.55);
+  padding: 8px;
+}
+
+.wraithskills .wraithskills-preview.is-valid { border-color: var(--tv-success-border); }
+.wraithskills .wraithskills-preview.is-invalid { border-color: var(--tv-danger-border-soft); color: var(--tv-danger-text); }
+
+.wraithskills .wraithskills-preview > strong {
+  color: var(--tv-text-strong);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.wraithskills .wraithskills-preview ul {
+  max-height: 160px;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wraithskills .wraithskills-preview li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--tv-border-faint);
+  padding: 3px 1px;
+  color: var(--tv-text);
+}
+
+.wraithskills .wraithskills-preview.is-invalid li {
+  display: block;
+  color: var(--tv-danger-text);
+}
+
+.wraithskills .wraithskills-import-actions {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  gap: 7px;
+  border-top: 1px solid var(--tv-border-muted);
+  padding: 10px 12px;
+}
+
+@media (max-width: 900px) {
+  .wraithskills .wraithskills-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(230px, 1fr) minmax(190px, 0.58fr);
+  }
+
+  .wraithskills .wraithskills-plan-col,
+  .wraithskills .wraithskills-plan-heading,
+  .wraithskills .wraithskills-matrix tbody th,
+  .wraithskills .wraithskills-totals-row th {
+    width: 178px;
+    min-width: 178px;
+    max-width: 178px;
+  }
+
+  .wraithskills .wraithskills-plan-total-heading,
+  .wraithskills .wraithskills-plan-total,
+  .wraithskills .wraithskills-totals-row > td:first-of-type {
+    left: 178px;
+  }
+}
+
+@media (max-width: 700px) {
+  .wraithskills .wraithview-settings-shell {
+    grid-template-columns: 178px minmax(0, 1fr);
+  }
+
+  .wraithskills .wraithview-side-nav {
+    padding-right: 9px;
+    padding-left: 9px;
+  }
+
+  .wraithskills .wraithview-section-content {
+    padding: 12px;
+  }
+
+  .wraithskills .wraithskills-header {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .wraithskills .wraithskills-plans-stamp {
+    white-space: normal;
+  }
+}

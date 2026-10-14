@@ -1,6 +1,6 @@
 {
-  "name": "triffview",
-  "version": "2.1.1",
+  "name": "wraithview",
+  "version": "0.9.0",
   "private": true,
   "license": "GPL-3.0-only",
   "type": "module",

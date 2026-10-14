@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace TriffView.Eve;
+namespace WraithView.Eve;
 
 internal sealed record PkceValues(string State, string Verifier, string Challenge)
 {

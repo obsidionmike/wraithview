@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace TriffView.Eve;
+namespace WraithView.Eve;
 
 internal sealed record EveSsoOptions(
     string ClientId,

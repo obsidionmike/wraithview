@@ -1,9 +1,9 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace TriffView.Preview;
+namespace WraithView.Preview;
 
-// Only translate TriffView's older display syntax. AHK itself validates hotkey syntax.
+// Only translate WraithView's older display syntax. AHK itself validates hotkey syntax.
 internal static class AhkGesture
 {
     public static string UpgradeLegacyVirtualKey(string gesture)

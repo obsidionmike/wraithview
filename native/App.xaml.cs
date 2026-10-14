@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Threading;
 
-namespace TriffView;
+namespace WraithView;
 
 public partial class App : System.Windows.Application
 {
@@ -12,11 +12,13 @@ public partial class App : System.Windows.Application
     {
         base.OnStartup(e);
 
-        if (IsTriffHudRunning())
+        LegacyImport.Run();
+
+        if (IsTriffViewRunning())
         {
             System.Windows.MessageBox.Show(
-                "TriffHUD is already running. Quit TriffHUD before starting standalone TriffView so both apps do not compete for previews, hotkeys, and shared settings.",
-                "TriffView",
+                "TriffView is running. Quit TriffView before starting WraithView so the two apps don't compete for previews and hotkeys.",
+                "WraithView",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning
             );
@@ -24,13 +26,13 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        _singleInstanceMutex = new Mutex(initiallyOwned: true, "TriffView.Standalone.SingleInstance", out var createdNew);
+        _singleInstanceMutex = new Mutex(initiallyOwned: true, "WraithView.Standalone.SingleInstance", out var createdNew);
         _ownsSingleInstanceMutex = createdNew;
         if (!createdNew)
         {
             System.Windows.MessageBox.Show(
-                "TriffView is already running.",
-                "TriffView",
+                "WraithView is already running.",
+                "WraithView",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information
             );
@@ -51,9 +53,10 @@ public partial class App : System.Windows.Application
         base.OnExit(e);
     }
 
-    internal static bool IsTriffHudRunning()
+    internal static bool IsTriffViewRunning()
     {
-        return System.Diagnostics.Process.GetProcessesByName("TriffHud")
+        return System.Diagnostics.Process.GetProcessesByName("TriffView")
+            .Concat(System.Diagnostics.Process.GetProcessesByName("TriffHud"))
             .Any(process =>
             {
                 try

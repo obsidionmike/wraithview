@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace TriffView.Eve;
+namespace WraithView.Eve;
 
 internal sealed record OAuthCallback(string? Code, string? Error);
 
@@ -156,9 +156,9 @@ internal static class EveLoopbackCallback
     private static async Task WriteReplyAsync(Stream stream, bool success, CancellationToken cancellationToken)
     {
         var message = success
-            ? "Authentication complete. You can close this tab and return to TriffView."
-            : "Authentication was not accepted. You can close this tab and return to TriffView.";
-        var html = $"<!doctype html><html><head><meta charset=\"utf-8\"><title>TriffView</title></head><body><p>{message}</p></body></html>";
+            ? "Authentication complete. You can close this tab and return to WraithView."
+            : "Authentication was not accepted. You can close this tab and return to WraithView.";
+        var html = $"<!doctype html><html><head><meta charset=\"utf-8\"><title>WraithView</title></head><body><p>{message}</p></body></html>";
         var body = Encoding.UTF8.GetBytes(html);
         var headers = Encoding.ASCII.GetBytes($"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {body.Length}\r\nConnection: close\r\nCache-Control: no-store\r\n\r\n");
         try

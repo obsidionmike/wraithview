@@ -2,7 +2,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$project = Join-Path $root "native\TriffView.csproj"
+$project = Join-Path $root "native\WraithView.csproj"
 $localDotnet = Join-Path $root ".dotnet\dotnet.exe"
 $dotnet = if (Test-Path $localDotnet) { $localDotnet } else { "dotnet" }
 

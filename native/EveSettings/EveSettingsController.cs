@@ -9,11 +9,11 @@ using System.Text.Json.Nodes;
 using System.Windows.Threading;
 using Forms = System.Windows.Forms;
 
-namespace TriffView.EveSettings;
+namespace WraithView.EveSettings;
 
 internal sealed class EveSettingsController
 {
-    private const string BackupManifestName = "triffhud-eve-settings-backup.json";
+    private const string BackupManifestName = "wraithhud-eve-settings-backup.json";
     private static readonly HttpClient Http = new()
     {
         Timeout = TimeSpan.FromSeconds(8),
@@ -458,7 +458,7 @@ internal sealed class EveSettingsController
         {
             var backup = ValidateBackupPath(backupPath);
             using var archive = ZipFile.OpenRead(backup);
-            var manifest = ReadManifest(archive) ?? throw new InvalidDataException("This backup has no TriffHUD manifest.");
+            var manifest = ReadManifest(archive) ?? throw new InvalidDataException("This backup has no WraithView manifest.");
             if (string.Equals(manifest.Kind, "profile", StringComparison.OrdinalIgnoreCase))
             {
                 var target = ValidateDirectoryUnderRoot(manifest.SourcePath, allowMissing: true);
@@ -651,7 +651,8 @@ internal sealed class EveSettingsController
 
     private static EveSettingsBackupManifest? ReadManifest(ZipArchive archive)
     {
-        var entry = archive.GetEntry(BackupManifestName);
+        // Backups made by TriffView use its manifest name.
+        var entry = archive.GetEntry(BackupManifestName) ?? archive.GetEntry("triffhud-eve-settings-backup.json");
         if (entry == null) return null;
         using var stream = entry.Open();
         return JsonSerializer.Deserialize<EveSettingsBackupManifest>(stream, JsonOptions);
@@ -868,8 +869,8 @@ internal sealed class EveSettingsController
     {
         var full = FullPath(path);
         if (!File.Exists(full)) throw new FileNotFoundException("Backup not found.", full);
-        if (!IsUnder(full, BackupRoot())) throw new InvalidOperationException("That backup is outside TriffHUD's EVE settings backup folder.");
-        if (!full.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("Only TriffHUD ZIP backups are supported.");
+        if (!IsUnder(full, BackupRoot())) throw new InvalidOperationException("That backup is outside WraithView's EVE settings backup folder.");
+        if (!full.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("Only WraithView ZIP backups are supported.");
         return full;
     }
 
@@ -1028,11 +1029,11 @@ internal sealed class EveSettingsController
     private static string CleanProfileName(string? rawName)
     {
         var value = (rawName ?? "").Trim();
-        if (string.IsNullOrWhiteSpace(value)) value = "TriffHUD";
+        if (string.IsNullOrWhiteSpace(value)) value = "WraithView";
         var invalid = Path.GetInvalidFileNameChars();
         var clean = new string(value.Select(ch => invalid.Contains(ch) ? '-' : ch).ToArray()).Trim();
         clean = clean.Replace("settings_", "", StringComparison.OrdinalIgnoreCase).Trim(' ', '.', '-');
-        return string.IsNullOrWhiteSpace(clean) ? "TriffHUD" : clean;
+        return string.IsNullOrWhiteSpace(clean) ? "WraithView" : clean;
     }
 
     private static string CleanFileSegment(string? rawName)
@@ -1093,7 +1094,7 @@ internal sealed class EveSettingsController
 
     private static string BackupRoot()
     {
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TriffHud", "EveSettings", "backups");
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WraithView", "EveSettings", "backups");
     }
 
     private void PostError(string action, string message)
@@ -1116,7 +1117,7 @@ internal sealed class EveSettingsLocalState
 
     private static string SettingsPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "TriffHud",
+        "WraithView",
         "eve-settings.json"
     );
 

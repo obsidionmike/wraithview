@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using Microsoft.IdentityModel.Tokens;
 
-namespace TriffView.Eve;
+namespace WraithView.Eve;
 
 internal interface IEveSigningKeySource
 {

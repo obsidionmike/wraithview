@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
-namespace TriffView.Eve;
+namespace WraithView.Eve;
 
 internal interface ICredentialStore
 {
@@ -72,7 +72,7 @@ internal sealed class WindowsCredentialStore : ICredentialStore
                 CredentialBlobSize = (uint)bytes.Length,
                 CredentialBlob = blob,
                 Persist = CredPersistLocalMachine,
-                UserName = "TriffView",
+                UserName = "WraithView",
             };
 
             if (!CredWrite(ref credential, 0))

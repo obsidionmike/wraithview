@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace TriffView.Eve;
+namespace WraithView.Eve;
 
 internal sealed record EsiResponse<T>(HttpStatusCode StatusCode, T? Value, string Error, string Method, string Path)
 {

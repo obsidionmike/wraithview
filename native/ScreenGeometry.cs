@@ -4,7 +4,7 @@ using System.Windows.Media;
 using Drawing = System.Drawing;
 using Forms = System.Windows.Forms;
 
-namespace TriffView;
+namespace WraithView;
 
 internal static class ScreenGeometry
 {

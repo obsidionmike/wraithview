@@ -4,6 +4,8 @@
 # Keep README files public; other Markdown notes stay local
 *.md
 !README.md
+!HANDOFF.md
+!native/Hotkeys/README.md
 
 # Web app dependencies and build output
 /app/node_modules/
@@ -19,12 +21,12 @@ pnpm-debug.log*
 # Native build output
 /native/bin/
 /native/obj/
-/native/TriffView.Tests/bin/
-/native/TriffView.Tests/obj/
-/native/TriffView.PreviewPositionTests/bin/
-/native/TriffView.PreviewPositionTests/obj/
+/native/WraithView.Tests/bin/
+/native/WraithView.Tests/obj/
+/native/WraithView.PreviewPositionTests/bin/
+/native/WraithView.PreviewPositionTests/obj/
 /native/Assets/overlay-dist.zip
-/tests/TriffView.CycleTests/
+/tests/WraithView.CycleTests/
 /tests/**/bin/
 /tests/**/obj/
 *.user

@@ -1,5 +1,5 @@
 const listeners = new Set();
-export const HUD_OPEN_LINK_EVENT = "triff:hud-open-link";
+export const HUD_OPEN_LINK_EVENT = "wraith:hud-open-link";
 
 function hasWebViewBridge() {
   return Boolean(window.chrome?.webview?.postMessage);
@@ -216,16 +216,16 @@ function interactiveElementFromTarget(target) {
 
 function setHudHover(element) {
   if (hoveredInteractiveElement === element) return;
-  hoveredInteractiveElement?.classList?.remove("triff-hud-hover");
+  hoveredInteractiveElement?.classList?.remove("wraith-hud-hover");
   hoveredInteractiveElement = element;
-  hoveredInteractiveElement?.classList?.add("triff-hud-hover");
+  hoveredInteractiveElement?.classList?.add("wraith-hud-hover");
 }
 
 function setHudPressed(element) {
   if (pressedInteractiveElement === element) return;
-  pressedInteractiveElement?.classList?.remove("triff-hud-active");
+  pressedInteractiveElement?.classList?.remove("wraith-hud-active");
   pressedInteractiveElement = element;
-  pressedInteractiveElement?.classList?.add("triff-hud-active");
+  pressedInteractiveElement?.classList?.add("wraith-hud-active");
 }
 
 function clearHudPointerFeedback() {
@@ -235,8 +235,8 @@ function clearHudPointerFeedback() {
 
 function pulseHudClick(element) {
   if (!element || element.disabled || element.getAttribute?.("aria-disabled") === "true") return;
-  element.classList.add("triff-hud-clicked");
-  window.setTimeout(() => element.classList.remove("triff-hud-clicked"), 180);
+  element.classList.add("wraith-hud-clicked");
+  window.setTimeout(() => element.classList.remove("wraith-hud-clicked"), 180);
 }
 
 function currentTextControl() {
@@ -799,7 +799,7 @@ function shouldDropCoarsePointerMove(target) {
   return false;
 }
 
-window.triffHudDispatchInput = (input) => {
+window.wraithHudDispatchInput = (input) => {
   const type = input?.type;
   if (!type) return;
 
@@ -1036,7 +1036,7 @@ function copyTextFromControl(element, cut = false) {
     try {
       void navigator.clipboard?.writeText?.(text);
     } catch {
-      // Native clipboard is the normal path inside TriffHUD.
+      // Native clipboard is the normal path inside WraithView.
     }
   }
 
@@ -1064,15 +1064,15 @@ window.chrome?.webview?.addEventListener?.("message", (event) => {
   for (const listener of listeners) listener(message);
 });
 
-window.triffHudDispatchText = (input) => {
+window.wraithHudDispatchText = (input) => {
   const element = activeTextControl();
   if (!element || !input?.text) return;
   replaceSelection(element, input.text);
 };
 
-window.triffHudDispatchKey = (input) => {
+window.wraithHudDispatchKey = (input) => {
   try {
-    const event = new CustomEvent("triff:hud-keydown", {
+    const event = new CustomEvent("wraith:hud-keydown", {
       cancelable: true,
       detail: input,
     });
@@ -1194,7 +1194,7 @@ textCaretCleanupObserver.observe(document.documentElement, {
 document.addEventListener("scroll", () => updateTextCaret(), true);
 window.addEventListener("resize", () => updateTextCaret());
 
-window.triffHud = {
+window.wraithHud = {
   postNative,
   setClickThrough: setNativeClickThrough,
   toggleClickThrough: toggleNativeClickThrough,

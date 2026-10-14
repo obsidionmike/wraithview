@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Forms = System.Windows.Forms;
 
-namespace TriffView.Preview;
+namespace WraithView.Preview;
 
 internal sealed class AhkWindowTransport : Forms.NativeWindow, IAhkTransport
 {
@@ -43,7 +43,7 @@ internal sealed class AhkWindowTransport : Forms.NativeWindow, IAhkTransport
         if (Environment.TickCount64 < _retryAfter) return;
         try
         {
-            if (Handle == 0) CreateHandle(new Forms.CreateParams { Caption = "TriffView hotkey IPC", Parent = new nint(-3) });
+            if (Handle == 0) CreateHandle(new Forms.CreateParams { Caption = "WraithView hotkey IPC", Parent = new nint(-3) });
             var directory = _runtimeDirectory ?? AhkRuntime.Extract();
             var start = new ProcessStartInfo(Path.Combine(directory, "AutoHotkey64.exe"))
             {
@@ -55,7 +55,7 @@ internal sealed class AhkWindowTransport : Forms.NativeWindow, IAhkTransport
                 WorkingDirectory = directory,
             };
             start.ArgumentList.Add("/ErrorStdOut=UTF-8");
-            start.ArgumentList.Add(Path.Combine(directory, "TriffViewHotkeys.ahk"));
+            start.ArgumentList.Add(Path.Combine(directory, "WraithViewHotkeys.ahk"));
             start.ArgumentList.Add(Handle.ToInt64().ToString());
             start.ArgumentList.Add(Environment.ProcessId.ToString());
             lock (_errors) _errors.Clear();
@@ -86,7 +86,7 @@ internal sealed class AhkWindowTransport : Forms.NativeWindow, IAhkTransport
     {
         if (message.Msg == ReadyMessage && !_disposed && _process is { HasExited: false })
         {
-            TriffViewNativeMethods.GetWindowThreadProcessId(message.WParam, out var pid);
+            WraithViewNativeMethods.GetWindowThreadProcessId(message.WParam, out var pid);
             if (pid == _process.Id && message.LParam == 2)
             {
                 _helperWindow = message.WParam;
@@ -180,17 +180,17 @@ internal static class AhkRuntime
     internal static string Extract(string? root = null)
     {
         var assembly = typeof(AhkRuntime).Assembly;
-        var names = new[] { "AutoHotkey64.exe", "TriffViewHotkeys.ahk", "license.txt", "AutoHotkey-source.zip", "EVE-X-LICENSE.txt" };
+        var names = new[] { "AutoHotkey64.exe", "WraithViewHotkeys.ahk", "license.txt", "AutoHotkey-source.zip", "EVE-X-LICENSE.txt" };
         var resources = names.Select(name =>
         {
-            using var stream = assembly.GetManifestResourceStream("TriffView.Hotkeys." + name)
+            using var stream = assembly.GetManifestResourceStream("WraithView.Hotkeys." + name)
                 ?? throw new IOException($"Missing bundled hotkey component: {name}");
             using var buffer = new MemoryStream();
             stream.CopyTo(buffer);
             return (Name: name, Bytes: buffer.ToArray());
         }).ToArray();
         var bundleHash = Convert.ToHexString(SHA256.HashData(resources.SelectMany(file => SHA256.HashData(file.Bytes)).ToArray()));
-        var directory = Path.Combine(root ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TriffView", "Hotkeys"), bundleHash[..20]);
+        var directory = Path.Combine(root ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WraithView", "Hotkeys"), bundleHash[..20]);
         Directory.CreateDirectory(directory);
         foreach (var file in resources)
         {

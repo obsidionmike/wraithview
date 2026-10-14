@@ -3,7 +3,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Threading;
 
-namespace TriffView;
+namespace WraithView;
 
 public partial class InputOverlayWindow : Window
 {
