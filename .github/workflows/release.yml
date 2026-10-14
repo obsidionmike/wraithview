@@ -1,0 +1,83 @@
+name: Release
+
+# Push a tag like v0.9.0 to build WraithView.exe on Windows and publish it as a GitHub release.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build and release (e.g. v0.9.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: "22.17.1"
+          package-manager-cache: false
+
+      - name: Build web UI
+        working-directory: app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Bundle overlay UI
+        shell: pwsh
+        run: Compress-Archive -Path app/dist/* -DestinationPath native/Assets/overlay-dist.zip -Force
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1
+        with:
+          dotnet-version: "8.0.421"
+
+      - name: Run native tests
+        run: dotnet test native/WraithView.Tests/WraithView.Tests.csproj --configuration Release
+
+      - name: Publish self-contained single-file exe
+        run: >
+          dotnet publish native/WraithView.csproj -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true -p:DebugType=embedded -p:PublishReadyToRun=false
+          -o release
+
+      - name: Hash
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash release/WraithView.exe -Algorithm SHA256).Hash.ToLower()
+          "$hash  WraithView.exe" | Out-File -Encoding ascii release/WraithView.exe.sha256
+          "SHA256=$hash" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+
+      - name: Create release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $notes = @"
+          WraithView $env:TAG for Windows 10/11 x64. A single self-contained file: download WraithView.exe and run it.
+
+          SHA-256: ``$env:SHA256``
+
+          The build is unsigned, so Windows SmartScreen may warn: choose More info, then Run anyway.
+          WraithView is a fork of TriffView (GPL-3.0-only); the source for this build is this tag.
+          "@
+          $ghArgs = @('release', 'create', $env:TAG, 'release/WraithView.exe', 'release/WraithView.exe.sha256',
+            '--repo', $env:GITHUB_REPOSITORY, '--title', "WraithView $env:TAG", '--notes', $notes)
+          if ($env:TAG -match '-|^v0\.') { $ghArgs += '--prerelease' }
+          gh @ghArgs

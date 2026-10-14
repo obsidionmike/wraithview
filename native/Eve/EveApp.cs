@@ -4,11 +4,11 @@ namespace WraithView.Eve;
 /// WraithView's EVE SSO application (developers.eveonline.com). Fleet Manager and Skill Planner share it.
 /// Register it with callback http://127.0.0.1:51777/wraithfleets/callback/ and the scopes
 /// esi-fleets.read_fleet.v1, esi-fleets.write_fleet.v1, esi-skills.read_skills.v1, esi-skills.read_skillqueue.v1.
-/// While ClientId is empty, both tools show sign-in as not configured. WRAITHVIEW_EVE_CLIENT_ID overrides it.
+/// WRAITHVIEW_EVE_CLIENT_ID overrides it.
 /// </summary>
 internal static class EveApp
 {
-    private const string BuiltInClientId = "";
+    private const string BuiltInClientId = "66ce217a8228469bbedd1f97f484c744";
 
     public static readonly string ClientId = Environment.GetEnvironmentVariable("WRAITHVIEW_EVE_CLIENT_ID")?.Trim() is { Length: > 0 } value
         ? value

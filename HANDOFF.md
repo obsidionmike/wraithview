@@ -50,14 +50,18 @@ Done (commit "Fork TriffView 2.1.1 as WraithView"):
 - Full rename (tokens Triff→Wraith across code, CSS, file names). User-facing "TriffHUD" text became WraithView. The app checks for a running **TriffView** and stands down.
 - Settings in `%APPDATA%\WraithView`. `native/LegacyImport.cs` copies an existing TriffView setup once (marker file `imported-from-triffview.txt`). EVE Settings restore accepts TriffView backup manifests.
 - Void theme (default) plus Classic. New preview profiles get a violet active border. New icon at `native/Assets/WraithView.ico` and `.svg`.
-- `native/Eve/EveApp.cs` holds the **single EVE SSO client ID (currently empty)**, so sign-in shows "not configured". The env var `WRAITHVIEW_EVE_CLIENT_ID` overrides it. The callback is `http://127.0.0.1:51777/wraithfleets/callback/`. Scopes: `esi-fleets.read_fleet.v1 esi-fleets.write_fleet.v1 esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1`.
+- `native/Eve/EveApp.cs` holds the **single EVE SSO client ID**: `66ce217a8228469bbedd1f97f484c744` (WraithView's own EVE developer app, registered by the user on 2026-10-14; a client ID isn't secret). The env var `WRAITHVIEW_EVE_CLIENT_ID` overrides it. The callback is `http://127.0.0.1:51777/wraithfleets/callback/`. Scopes: `esi-fleets.read_fleet.v1 esi-fleets.write_fleet.v1 esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1`.
 - The update checker points at `obsidionmike/wraithview` releases. Version 0.9.0.
 - It builds on Linux. The UI was checked in a browser (demo mode). **Not yet run on Windows.**
 
+Done since:
+- Public repo **github.com/obsidionmike/wraithview** created; `main` pushed with full upstream history (remote `upstream` = TriffView).
+- CI (`.github/workflows/ci.yml`, from upstream) builds and runs the xunit tests on windows-latest for every push to main and every PR. Use this as the Windows test signal.
+- `.github/workflows/release.yml`: push a tag `vX.Y.Z` (or run it manually) to build the self-contained exe on Windows, run the tests, and publish a GitHub release with `WraithView.exe` and its SHA-256. Tags starting `v0.` or containing `-` are marked as pre-releases.
+
 Waiting on the user:
-1. Create the public GitHub repo `obsidionmike/wraithview` (the cloud session can't create repos). Push this repo there (`git remote add origin …; git push -u origin main`). Upstream stays as remote `upstream`.
-2. Register the EVE developer app (details above) and put the client ID in `EveApp.cs`.
-3. Test the build on Windows: previews, hotkeys, alerts, the TriffView import.
+1. Test the build on Windows: previews, hotkeys, alerts, the TriffView import, and EVE SSO sign-in for Fleet Manager and Skill Planner.
+2. Agree on what "improve on it" should cover.
 
 Next ideas ("improve on it"): agree them with the user first.
 - A releases workflow: GitHub Actions on windows-latest building and attaching the self-contained exe, since chat can't send files over 30 MB.
