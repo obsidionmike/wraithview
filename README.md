@@ -121,6 +121,9 @@ WraithView started from TriffView 2.1.1 (commit `5ef7561`, 2026). Modified by th
 - Warns and stands down if TriffView is running at the same time, so the two don't fight over previews and hotkeys.
 - Updates are checked against this repository's releases.
 - Can be cross-built on Linux (`scripts/build-linux.sh`).
+- Preview snapping rewritten (`native/WraithView/PreviewSnapping.cs`, with tests). The closest edge wins. Previews stack (top to bottom) and sit side by side (left to right) as well as lining up, and only snap to previews actually beside them. Resizing snaps the dragged edge. Outer screen edges hold a preview, then let it slide off-screen if you keep pushing (at least 24 px always stays visible). Seams between monitors don't hold.
+- Dragging a preview no longer smears its frame or label behind the cursor.
+- New "Edge outline" option (on by default): a faint light line around each preview, so its edge shows against dark scenes.
 
 ## Building
 

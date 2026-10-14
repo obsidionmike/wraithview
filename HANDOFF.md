@@ -59,6 +59,15 @@ Done since:
 - CI (`.github/workflows/ci.yml`, from upstream) builds and runs the xunit tests on windows-latest for every push to main and every PR. Use this as the Windows test signal.
 - `.github/workflows/release.yml`: push a tag `vX.Y.Z` (or run it manually) to build the self-contained exe on Windows, run the tests, and publish a GitHub release with `WraithView.exe` and its SHA-256. Tags starting `v0.` or containing `-` are marked as pre-releases.
 
+v0.9.1 (from the user's first test, 2026-10-14):
+- Their verdict: previews, alerts and switching work.
+- Snapping rewritten as `PreviewSnapping` (pure, xunit-tested in `PreviewSnappingTests`). The old code only matched same edges (top↔top), so dragging a preview up snapped it onto the other's top. It never snapped side by side, applied the last match rather than the closest, and clamped everything to the screen.
+- Off-screen parking (a user request): outer screen edges hold for `BreakoutFor(snap)` = max(40, 3×snap) px, then follow the cursor. `KeepOnDesktop` keeps 24 px visible, including for saved layouts after a monitor change.
+- Drag smear fixed: `ApplyDragFrame` paints the GDI frame synchronously before moving the DWM thumbnail. The transparent-label overlay is hidden during a drag.
+- `EdgeOutline` profile option (default on), with the "Edge outline" toggle in Preview layout.
+- Not yet tried by the user: cycle groups, Fleet Manager, Skill Planner.
+- They asked about an unknown character (2122885899) in EVE Settings. It comes from a `core_char_<id>.dat` in their own EVE settings folder (the name is resolved via ESI). An idea, not done: show each file's last-modified date in the character list.
+
 Waiting on the user:
 1. Test the build on Windows: previews, hotkeys, alerts, the TriffView import, and EVE SSO sign-in for Fleet Manager and Skill Planner.
 2. Agree on what "improve on it" should cover.

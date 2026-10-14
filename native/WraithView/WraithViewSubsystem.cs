@@ -926,6 +926,9 @@ internal sealed class WraithViewController : IDisposable
                 case "showInactiveBorders":
                     profile.ShowInactiveBorders = value?.GetValue<bool>() == true;
                     break;
+                case "edgeOutline":
+                    profile.EdgeOutline = value?.GetValue<bool>() == true;
+                    break;
                 case "lockPreviews":
                     profile.LockPreviews = value?.GetValue<bool>() == true;
                     break;
@@ -2656,11 +2659,8 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         {
             var next = _mouseStartRect;
             next.Offset(deltaX, deltaY);
-            _mousePreview.FrameRect = Snap(next, _mousePreview);
-            UpdateThumbnail(_mousePreview);
-            UpdateWindowRegion();
-            RefreshLabelOverlay();
-            Invalidate();
+            _mousePreview.FrameRect = PreviewSnapping.Move(next, OtherPreviewFrames(_mousePreview), MonitorBounds(), _virtualDesktop, _profile.SnapEnabled, _profile.SnapDistance);
+            ApplyDragFrame(_mousePreview);
         }
         else if (_mouseMode == MouseMode.Resize)
         {
@@ -2673,12 +2673,32 @@ internal sealed class WraithViewOverlayForm : Forms.Form
                 next.Height + deltaY,
                 WraithViewPreviewDimensions.Minimum,
                 WraithViewPreviewDimensions.Maximum);
-            _mousePreview.FrameRect = Snap(next, _mousePreview);
-            UpdateThumbnail(_mousePreview);
-            UpdateWindowRegion();
-            RefreshLabelOverlay();
-            Invalidate();
+            _mousePreview.FrameRect = PreviewSnapping.Resize(
+                next,
+                OtherPreviewFrames(_mousePreview),
+                MonitorBounds(),
+                _virtualDesktop,
+                _profile.SnapEnabled,
+                _profile.SnapDistance,
+                WraithViewPreviewDimensions.Minimum,
+                WraithViewPreviewDimensions.Maximum);
+            ApplyDragFrame(_mousePreview);
         }
+    }
+
+    /// <summary>
+    /// One drag step. The frame (border, label strip) is painted synchronously before the live thumbnail moves,
+    /// so the two never separate on screen; previously the thumbnail moved at once while the frame repainted
+    /// later, which smeared the label bar behind the cursor. The transparent-label overlay is a full-desktop
+    /// layered window that is slow to repaint, so it's hidden for the drag and redrawn on release.
+    /// </summary>
+    private void ApplyDragFrame(PreviewState preview)
+    {
+        UpdateWindowRegion();
+        Invalidate();
+        Update();
+        UpdateThumbnail(preview);
+        RefreshLabelOverlay();
     }
 
     protected override void OnMouseUp(Forms.MouseEventArgs e)
@@ -2690,6 +2710,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         Capture = false;
         _mousePreview = null;
         _mouseMode = MouseMode.None;
+        if (mode is MouseMode.Move or MouseMode.Resize) RefreshLabelOverlay();
 
         if (mode is MouseMode.Move or MouseMode.Resize)
         {
@@ -2785,14 +2806,18 @@ internal sealed class WraithViewOverlayForm : Forms.Form
                 rect.Y += sameTitleIndex * (rect.Height + 10);
             }
 
-            titleFallback = ClampToVirtualDesktop(rect);
+            titleFallback = PreviewSnapping.KeepOnDesktop(rect, _virtualDesktop);
         }
 
-        return WraithViewPreviewPositionMemory.Resolve(
-            savedForCurrentKey,
-            rememberedForClient,
-            titleFallback,
-            DefaultStackRect(index));
+        // Previews may sit partly off-screen (parked half off the top, say), but never somewhere they can't be
+        // reached, such as on a monitor that has since been unplugged.
+        return PreviewSnapping.KeepOnDesktop(
+            WraithViewPreviewPositionMemory.Resolve(
+                savedForCurrentKey,
+                rememberedForClient,
+                titleFallback,
+                DefaultStackRect(index)),
+            _virtualDesktop);
     }
 
     private Rectangle DefaultStackRect(int index)
@@ -2830,6 +2855,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
     {
         if (!Visible
             || _suppressLabelOverlay
+            || _mouseMode is MouseMode.Move or MouseMode.Resize
             || !_profile.ShowLabels
             || !_profile.LabelBackgroundTransparent)
         {
@@ -2904,6 +2930,13 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         {
             Alignment = PenAlignment.Inset,
         };
+        if (_profile.EdgeOutline && !(state.Active && _profile.ShowActiveHighlight))
+        {
+            // Outermost pixel only; the coloured border (if any) is drawn over it.
+            using var outlinePen = new Pen(Color.FromArgb(96, 230, 225, 242), 1) { Alignment = PenAlignment.Inset };
+            graphics.DrawPath(outlinePen, framePath);
+        }
+
         if (borderColor.A > 0)
         {
             graphics.DrawPath(borderPen, framePath);
@@ -3025,50 +3058,14 @@ internal sealed class WraithViewOverlayForm : Forms.Form
             && clientPoint.Y <= frame.Bottom;
     }
 
-    private Rectangle Snap(Rectangle rect, PreviewState moving)
+    private Rectangle[] OtherPreviewFrames(PreviewState moving)
     {
-        rect = ClampToVirtualDesktop(rect);
-        if (!_profile.SnapEnabled || _profile.SnapDistance <= 0) return rect;
-
-        var snap = Math.Max(0, _profile.SnapDistance);
-        foreach (var other in _previews.Values.Where(state => state != moving && state.Visible))
-        {
-            rect = SnapAxis(rect, other.FrameRect, snap);
-        }
-
-        var screen = _virtualDesktop;
-        rect = SnapToLine(rect, screen.Left, Edge.Left, snap);
-        rect = SnapToLine(rect, screen.Right, Edge.Right, snap);
-        rect = SnapToLine(rect, screen.Top, Edge.Top, snap);
-        rect = SnapToLine(rect, screen.Bottom, Edge.Bottom, snap);
-        return ClampToVirtualDesktop(rect);
+        return _previews.Values.Where(state => state != moving && state.Visible).Select(state => state.FrameRect).ToArray();
     }
 
-    private Rectangle ClampToVirtualDesktop(Rectangle rect)
+    private static Rectangle[] MonitorBounds()
     {
-        if (rect.Left < _virtualDesktop.Left) rect.X = _virtualDesktop.Left;
-        if (rect.Top < _virtualDesktop.Top) rect.Y = _virtualDesktop.Top;
-        if (rect.Right > _virtualDesktop.Right) rect.X = _virtualDesktop.Right - rect.Width;
-        if (rect.Bottom > _virtualDesktop.Bottom) rect.Y = _virtualDesktop.Bottom - rect.Height;
-        return rect;
-    }
-
-    private static Rectangle SnapAxis(Rectangle rect, Rectangle other, int snap)
-    {
-        rect = SnapToLine(rect, other.Left, Edge.Left, snap);
-        rect = SnapToLine(rect, other.Right, Edge.Right, snap);
-        rect = SnapToLine(rect, other.Top, Edge.Top, snap);
-        rect = SnapToLine(rect, other.Bottom, Edge.Bottom, snap);
-        return rect;
-    }
-
-    private static Rectangle SnapToLine(Rectangle rect, int line, Edge edge, int snap)
-    {
-        if (edge == Edge.Left && Math.Abs(rect.Left - line) <= snap) rect.X = line;
-        if (edge == Edge.Right && Math.Abs(rect.Right - line) <= snap) rect.X = line - rect.Width;
-        if (edge == Edge.Top && Math.Abs(rect.Top - line) <= snap) rect.Y = line;
-        if (edge == Edge.Bottom && Math.Abs(rect.Bottom - line) <= snap) rect.Y = line - rect.Height;
-        return rect;
+        return Forms.Screen.AllScreens.Select(screen => screen.Bounds).ToArray();
     }
 
     internal static string HotkeySignature(WraithViewProfile profile, IReadOnlyList<EveClientWindow> clients, bool suspended)
@@ -3165,14 +3162,6 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         PendingClick,
         Move,
         Resize,
-    }
-
-    private enum Edge
-    {
-        Left,
-        Right,
-        Top,
-        Bottom,
     }
 }
 
@@ -3639,6 +3628,8 @@ internal sealed class WraithViewProfile
     public bool ShowLabels { get; set; } = true;
     public bool ShowActiveHighlight { get; set; } = true;
     public bool ShowInactiveBorders { get; set; } = true;
+    /// <summary>A faint light line around every preview so its edge shows against dark EVE scenes.</summary>
+    public bool EdgeOutline { get; set; } = true;
     public bool LockPreviews { get; set; }
     public int BorderThickness { get; set; } = 2;
     public bool SnapEnabled { get; set; } = true;
@@ -3741,6 +3732,7 @@ internal sealed class WraithViewProfile
             showLabels = ShowLabels,
             showActiveHighlight = ShowActiveHighlight,
             showInactiveBorders = ShowInactiveBorders,
+            edgeOutline = EdgeOutline,
             lockPreviews = LockPreviews,
             borderThickness = BorderThickness,
             snapEnabled = SnapEnabled,
