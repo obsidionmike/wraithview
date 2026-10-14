@@ -125,6 +125,7 @@ WraithView started from TriffView 2.1.1 (commit `5ef7561`, 2026). Modified by th
 - Dragging a preview no longer smears its frame or label behind the cursor.
 - The main window's edge (Windows 11 window border) uses the theme's soft accent colour instead of a near-black, so the window stays visible on dark desktops.
 - Optional "Edge outline" for previews (off by default): a faint light line around each one.
+- Preview borders are drawn as solid strips, so a 1 px border is complete. Labels no longer flash at the old position after a drag. Previews parked off-screen can be pushed further without jumping back. The Opacity field accepts typed values.
 
 ## Building
 

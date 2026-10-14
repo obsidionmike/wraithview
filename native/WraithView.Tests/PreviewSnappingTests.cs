@@ -75,6 +75,21 @@ public class PreviewSnappingTests
     }
 
     [Fact]
+    public void ADragThatStartsParkedOffScreenFollowsTheCursorExactly()
+    {
+        // Reported: grabbing a preview already half off the top and pushing further jutted it back on-screen,
+        // because the edge's hold offset was applied again at the start of the new drag.
+        var parked = new Rectangle(100, -90, 320, 180);
+        var further = PreviewSnapping.Move(new Rectangle(100, -100, 320, 180), Array.Empty<Rectangle>(), OneMonitor, Screen, true, Snap, parked);
+        Assert.Equal(-100, further.Top);
+        var back = PreviewSnapping.Move(new Rectangle(100, -60, 320, 180), Array.Empty<Rectangle>(), OneMonitor, Screen, true, Snap, parked);
+        Assert.Equal(-60, back.Top);
+        // Brought back inside, it snaps to the edge as usual.
+        var inside = PreviewSnapping.Move(new Rectangle(100, 5, 320, 180), Array.Empty<Rectangle>(), OneMonitor, Screen, true, Snap, parked);
+        Assert.Equal(0, inside.Top);
+    }
+
+    [Fact]
     public void SomeOfThePreviewAlwaysStaysOnScreen()
     {
         var moved = Move(new Rectangle(100, -5000, 320, 180));

@@ -22,7 +22,9 @@ internal static class PreviewSnapping
     /// <summary>How far past a screen edge you push before the preview leaves the screen.</summary>
     public static int BreakoutFor(int snap) => Math.Max(40, snap * 3);
 
-    public static Rectangle Move(Rectangle raw, IReadOnlyList<Rectangle> others, IReadOnlyList<Rectangle> monitors, Rectangle desktop, bool snapEnabled, int snap)
+    /// <param name="dragStart">Where the preview was when the drag began. An edge it already sat past at
+    /// that point doesn't hold it again (it was parked off-screen on purpose), so it moves freely there.</param>
+    public static Rectangle Move(Rectangle raw, IReadOnlyList<Rectangle> others, IReadOnlyList<Rectangle> monitors, Rectangle desktop, bool snapEnabled, int snap, Rectangle? dragStart = null)
     {
         var result = raw;
         var screen = MonitorFor(raw, monitors, desktop);
@@ -41,8 +43,11 @@ internal static class PreviewSnapping
         var topOuter = !Beyond(cx, screen.Top - 1);
         var bottomOuter = !Beyond(cx, screen.Bottom);
 
-        var (sx, xEdge) = ScreenDelta(raw.Left, raw.Right, screen.Left, screen.Right, leftOuter, rightOuter, snap, breakout, snapEnabled);
-        var (sy, yEdge) = ScreenDelta(raw.Top, raw.Bottom, screen.Top, screen.Bottom, topOuter, bottomOuter, snap, breakout, snapEnabled);
+        var start = dragStart ?? screen; // no start given: treat the drag as having begun on-screen
+        var (sx, xEdge) = ScreenDelta(raw.Left, raw.Right, screen.Left, screen.Right, leftOuter, rightOuter, snap, breakout, snapEnabled,
+            startedPastStart: start.Left < screen.Left, startedPastEnd: start.Right > screen.Right);
+        var (sy, yEdge) = ScreenDelta(raw.Top, raw.Bottom, screen.Top, screen.Bottom, topOuter, bottomOuter, snap, breakout, snapEnabled,
+            startedPastStart: start.Top < screen.Top, startedPastEnd: start.Bottom > screen.Bottom);
 
         result.X += Pick(dx, sx, xEdge);
         result.Y += Pick(dy, sy, yEdge);
@@ -126,7 +131,7 @@ internal static class PreviewSnapping
     }
 
     /// <summary>Screen edge handling for one axis: the move to apply and what the edge is doing.</summary>
-    private static (int? delta, EdgeState state) ScreenDelta(int start, int end, int edgeStart, int edgeEnd, bool startOuter, bool endOuter, int snap, int breakout, bool snapEnabled)
+    private static (int? delta, EdgeState state) ScreenDelta(int start, int end, int edgeStart, int edgeEnd, bool startOuter, bool endOuter, int snap, int breakout, bool snapEnabled, bool startedPastStart = false, bool startedPastEnd = false)
     {
         var pastStart = edgeStart - start; // > 0: pushed past the start edge
         var pastEnd = end - edgeEnd;       // > 0: pushed past the end edge
@@ -138,6 +143,8 @@ internal static class PreviewSnapping
             if (!endOuter && snap > 0 && Math.Abs(pastEnd) <= snap && (line is null || Math.Abs(pastEnd) < Math.Abs(line.Value))) line = -pastEnd;
             return (line, line is null ? EdgeState.None : EdgeState.Near);
         }
+        // Began this drag already parked past the edge: follow the cursor exactly while it stays out there.
+        if ((pastStart > 0 && startedPastStart) || (pastEnd > 0 && startedPastEnd)) return (0, EdgeState.Past);
         if (pastStart > 0)
         {
             if (!snapEnabled) return (0, EdgeState.Past);

@@ -64,6 +64,11 @@ v0.9.1 (from the user's first test, 2026-10-14):
 - Snapping rewritten as `PreviewSnapping` (pure, xunit-tested in `PreviewSnappingTests`). The old code only matched same edges (top↔top), so dragging a preview up snapped it onto the other's top. It never snapped side by side, applied the last match rather than the closest, and clamped everything to the screen.
 - Off-screen parking (a user request): outer screen edges hold for `BreakoutFor(snap)` = max(40, 3×snap) px, then follow the cursor. `KeepOnDesktop` keeps 24 px visible, including for saved layouts after a monitor change.
 - Drag smear fixed: `ApplyDragFrame` paints the GDI frame synchronously before moving the DWM thumbnail. The transparent-label overlay is hidden during a drag.
+- v0.9.3 (second test round):
+  - A drag that starts with the preview already parked past an edge moves freely (the hold offset used to re-apply and jump it 40 px back on-screen). See `dragStart` in `PreviewSnapping.Move` and its test.
+  - The label overlay is wiped before hiding and painted on show (it used to flash the stale frame at the old position after a drag).
+  - Borders, alert flashes and the outline are drawn as four filled strips (`FillFrameEdges`). The 1 px rounded path was clipped by the window region and covered by the thumbnail.
+  - The Opacity field keeps a typed draft and applies it on Enter or blur (it used to clamp each keystroke to 20).
 - `EdgeOutline` profile option (default **off**: the user only wanted the settings window's edge, the previews were fine), with the "Edge outline" toggle in Preview layout.
 - v0.9.2: the settings window's DWM border colour (Windows 11 only; `DWMWA_BORDER_COLOR`) comes from `--tv-border-accent-soft` (Void #4b3878) instead of `--tv-border-topbar` (#241f37, invisible on dark desktops). See `currentNativeTheme` in `app/src/App.jsx`.
 - Not yet tried by the user: cycle groups, Fleet Manager, Skill Planner.

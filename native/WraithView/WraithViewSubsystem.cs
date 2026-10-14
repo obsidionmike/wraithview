@@ -2659,7 +2659,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         {
             var next = _mouseStartRect;
             next.Offset(deltaX, deltaY);
-            _mousePreview.FrameRect = PreviewSnapping.Move(next, OtherPreviewFrames(_mousePreview), MonitorBounds(), _virtualDesktop, _profile.SnapEnabled, _profile.SnapDistance);
+            _mousePreview.FrameRect = PreviewSnapping.Move(next, OtherPreviewFrames(_mousePreview), MonitorBounds(), _virtualDesktop, _profile.SnapEnabled, _profile.SnapDistance, _mouseStartRect);
             ApplyDragFrame(_mousePreview);
         }
         else if (_mouseMode == MouseMode.Resize)
@@ -2925,21 +2925,15 @@ internal sealed class WraithViewOverlayForm : Forms.Form
 
         if (!state.Active && !_profile.ShowInactiveBorders) borderColor = Color.Transparent;
 
-        using var framePath = RoundedRect(frame, 6);
-        using var borderPen = new Pen(borderColor, borderThickness)
-        {
-            Alignment = PenAlignment.Inset,
-        };
         if (_profile.EdgeOutline && !(state.Active && _profile.ShowActiveHighlight))
         {
             // Outermost pixel only; the coloured border (if any) is drawn over it.
-            using var outlinePen = new Pen(Color.FromArgb(96, 230, 225, 242), 1) { Alignment = PenAlignment.Inset };
-            graphics.DrawPath(outlinePen, framePath);
+            FillFrameEdges(graphics, frame, 1, Color.FromArgb(96, 230, 225, 242));
         }
 
         if (borderColor.A > 0)
         {
-            graphics.DrawPath(borderPen, framePath);
+            FillFrameEdges(graphics, frame, borderThickness, borderColor);
         }
 
         if (_profile.ShowLabels && labelHeight > 0)
@@ -2960,6 +2954,9 @@ internal sealed class WraithViewOverlayForm : Forms.Form
             };
             var textRect = new RectangleF(labelRect.Left + 8, labelRect.Top, Math.Max(1, labelRect.Width - 36), labelRect.Height);
             graphics.DrawString(text, labelFont, textBrush, textRect, format);
+
+            // The label strip is painted over the frame; put the border back on top of it.
+            if (borderColor.A > 0) FillFrameEdges(graphics, frame, borderThickness, borderColor);
         }
 
         var activeAlert = state.ActiveAlert(DateTime.UtcNow);
@@ -2981,13 +2978,25 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         var progress = Math.Min(1, elapsed / Math.Max(1, alert.DurationMs));
         var wave = (Math.Sin(progress * alert.PulseCount * Math.PI * 2) + 1) / 2;
         var alpha = (int)Math.Max(90, Math.Min(255, 110 + wave * 145));
-        using var path = RoundedRect(frame, 6);
-        using var pen = new Pen(Color.FromArgb(alpha, baseColor), Math.Max(1, alert.Thickness))
-        {
-            Alignment = PenAlignment.Inset,
-            LineJoin = LineJoin.Round,
-        };
-        graphics.DrawPath(pen, path);
+        FillFrameEdges(graphics, frame, Math.Max(1, alert.Thickness), Color.FromArgb(alpha, baseColor));
+    }
+
+    /// <summary>
+    /// Border as four filled strips just inside the frame. It used to be a 1 px rounded path, which GDI+
+    /// draws partly outside the window region (right and bottom edges) and under the square DWM thumbnail
+    /// (the corners), so a thin border came out broken.
+    /// </summary>
+    private static void FillFrameEdges(Graphics graphics, Rectangle frame, int thickness, Color color)
+    {
+        var t = Math.Max(1, Math.Min(thickness, Math.Min(frame.Width, frame.Height) / 2));
+        var smoothing = graphics.SmoothingMode;
+        graphics.SmoothingMode = SmoothingMode.None;
+        using var brush = new SolidBrush(color);
+        graphics.FillRectangle(brush, frame.Left, frame.Top, frame.Width, t);
+        graphics.FillRectangle(brush, frame.Left, frame.Bottom - t, frame.Width, t);
+        graphics.FillRectangle(brush, frame.Left, frame.Top + t, t, frame.Height - 2 * t);
+        graphics.FillRectangle(brush, frame.Right - t, frame.Top + t, t, frame.Height - 2 * t);
+        graphics.SmoothingMode = smoothing;
     }
 
     private void TickAlertFlashes()
@@ -3078,17 +3087,6 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         return $"{profile.Id}|{profile.HotkeysRequireEveForeground}|{direct}|{cycles}|{characterOrder}|{clientKeys}";
     }
 
-    private static GraphicsPath RoundedRect(Rectangle rect, int radius)
-    {
-        var path = new GraphicsPath();
-        var diameter = radius * 2;
-        path.AddArc(rect.Left, rect.Top, diameter, diameter, 180, 90);
-        path.AddArc(rect.Right - diameter, rect.Top, diameter, diameter, 270, 90);
-        path.AddArc(rect.Right - diameter, rect.Bottom - diameter, diameter, diameter, 0, 90);
-        path.AddArc(rect.Left, rect.Bottom - diameter, diameter, diameter, 90, 90);
-        path.CloseFigure();
-        return path;
-    }
 
     private static Color ColorFromString(string value, Color fallback)
     {
@@ -3251,7 +3249,15 @@ internal sealed class WraithViewLabelOverlayForm : Forms.Form
         _items = items;
         if (_items.Count == 0)
         {
-            if (Visible) Hide();
+            if (Visible)
+            {
+                // Wipe the surface before hiding. A layered window keeps its last frame, and Windows shows
+                // that frame again the moment it's re-shown, which flashed labels at their old positions
+                // (e.g. above a preview just dragged down) before the next paint moved them.
+                Invalidate();
+                Update();
+                Hide();
+            }
             return;
         }
 
@@ -3260,11 +3266,13 @@ internal sealed class WraithViewLabelOverlayForm : Forms.Form
         {
             Show();
             ApplyTopmostPolicy(force: true);
+            // Paint the new positions now rather than on the next message loop pass.
+            Invalidate();
+            Update();
+            return;
         }
-        else
-        {
-            ApplyTopmostPolicy();
-        }
+
+        ApplyTopmostPolicy();
 
         // Repainting is all-or-nothing here: this form is layered (WS_EX_LAYERED plus a
         // TransparencyKey), and a partial Invalidate(rect) does not reach the composited

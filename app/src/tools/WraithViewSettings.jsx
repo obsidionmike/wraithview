@@ -845,6 +845,15 @@ function HotkeyEditorModal({ editor, gestures, recording, onRecord, onEdit, onCl
 function OpacityControl({ value, onCommit }) {
   const percent = Math.round(Math.max(0.2, Math.min(1, Number(value) || 1)) * 100);
   const setPercent = (next) => onCommit(Math.max(20, Math.min(100, next)) / 100);
+  // Typed values are kept as a draft and applied on Enter or blur; clamping every keystroke turned
+  // the first digit of "90" into 20.
+  const [draft, setDraft] = useState(null);
+  const commitDraft = () => {
+    if (draft === null) return;
+    const parsed = parseInteger(draft);
+    setDraft(null);
+    if (parsed !== undefined && parsed !== percent) setPercent(parsed);
+  };
 
   return (
     <div className="wraithview-field">
@@ -852,11 +861,13 @@ function OpacityControl({ value, onCommit }) {
       <div className="wraithview-stepper">
         <button type="button" onClick={() => setPercent(percent - 5)}>-</button>
         <input
-          value={percent}
+          value={draft ?? percent}
           inputMode="numeric"
-          onChange={(event) => {
-            const parsed = parseInteger(event.target.value);
-            if (parsed !== undefined) setPercent(parsed);
+          onChange={(event) => setDraft(event.target.value.replace(/[^0-9]/g, "").slice(0, 3))}
+          onBlur={commitDraft}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") { event.preventDefault(); event.currentTarget.blur(); }
+            if (event.key === "Escape") { setDraft(null); event.currentTarget.blur(); }
           }}
         />
         <span>%</span>
