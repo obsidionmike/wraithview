@@ -79,6 +79,12 @@ internal sealed class EveSettingsController
             case "eve-settings:copy-file-to-targets":
                 CopyFileToTargets(message?["sourcePath"]?.GetValue<string>(), message?["targetPaths"] as JsonArray);
                 return true;
+            case "eve-settings:copy-character-and-account":
+                CopyCharacterAndAccount(message?["sourcePath"]?.GetValue<string>(), message?["targetPaths"] as JsonArray);
+                return true;
+            case "eve-settings:set-account-link":
+                SetAccountLink(message?["characterId"]?.GetValue<string>(), message?["accountId"]?.GetValue<string>());
+                return true;
             case "eve-settings:restore-backup":
                 RestoreBackup(message?["backupPath"]?.GetValue<string>());
                 return true;
@@ -142,6 +148,10 @@ internal sealed class EveSettingsController
 
         await ResolveCharacterNamesAsync(characterIds);
 
+        var logoutPairs = EveAccountLinks.CleanLogoutPairs(Stamped(characterFiles), Stamped(accountFiles));
+        if (EveAccountLinks.Learn(_settings.AccountLinks, logoutPairs)) _settings.Save();
+        var accountIds = accountFiles.Select(file => file.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
         return new
         {
             type = "eve-settings:state",
@@ -173,6 +183,9 @@ internal sealed class EveSettingsController
                 size = file.Size,
                 modifiedUtc = file.ModifiedUtc,
                 note = NoteFor("character", file.Id),
+                accountId = LinkFor(file.Id, accountIds)?.AccountId ?? "",
+                accountSource = LinkFor(file.Id, accountIds)?.Source ?? "",
+                pairedAccountId = logoutPairs.FirstOrDefault(pair => pair.CharacterId == file.Id)?.AccountId ?? "",
             }).ToArray(),
             accounts = accountFiles.Select(file => new
             {
@@ -182,6 +195,10 @@ internal sealed class EveSettingsController
                 size = file.Size,
                 modifiedUtc = file.ModifiedUtc,
                 note = NoteFor("account", file.Id),
+                characterIds = characterFiles
+                    .Where(character => string.Equals(LinkFor(character.Id, accountIds)?.AccountId, file.Id, StringComparison.OrdinalIgnoreCase))
+                    .Select(character => character.Id)
+                    .ToArray(),
             }).ToArray(),
             backups = EnumerateBackups().Select(backup => new
             {
@@ -442,14 +459,123 @@ internal sealed class EveSettingsController
             }
         }
 
-        foreach (var target in targets)
+        CopyWithBackups(targets.Select(target => (source, target)).ToArray(), BackupRoot());
+        return targets.Length;
+    }
+
+    /// <summary>
+    /// Copies a character's settings to other characters, and its account settings to each of their accounts.
+    /// Accounts come from the saved character → account links. The source's account must be known; a target
+    /// without one gets its character file only (the confirmation lists those).
+    /// </summary>
+    private void CopyCharacterAndAccount(string? sourcePath, JsonArray? targetPaths)
+    {
+        try
         {
-            if (File.Exists(target)) BackupFileInternal(target);
+            var source = ValidateFileUnderRoot(sourcePath);
+            if (CoreSettingsFileKind(source) != "character") throw new InvalidOperationException("Choose a character settings file as the source.");
+            var profile = Path.GetDirectoryName(source)!;
+
+            var targets = (targetPaths ?? new JsonArray())
+                .Select(node => node?.GetValue<string>())
+                .Where(path => !string.IsNullOrWhiteSpace(path))
+                .Select(path => ValidateFileUnderRoot(path, mustExist: false))
+                .Where(target => !PathsEqual(source, target))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            if (targets.Length == 0) throw new InvalidOperationException("Choose at least one target character.");
+            if (targets.Any(target => CoreSettingsFileKind(target) != "character" || !PathsEqual(Path.GetDirectoryName(target), profile)))
+            {
+                throw new InvalidOperationException("Targets must be character settings files in the same settings set as the source.");
+            }
+
+            var accountIds = EnumerateSettingsFiles(profile, "core_user_*.dat", "account")
+                .Select(file => file.Id)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var plan = EveAccountLinks.PlanAccountCopy(CoreId(source), targets.Select(CoreId), _settings.AccountLinks, accountIds);
+            if (plan.SourceAccountId == null)
+            {
+                throw new InvalidOperationException($"Pick the account for {CharacterLabel(CoreId(source))} in the character table first.");
+            }
+
+            var sourceAccount = AccountFilePath(profile, plan.SourceAccountId);
+            var copies = targets.Select(target => (source, target))
+                .Concat(plan.TargetAccountIds.Select(account => (sourceAccount, AccountFilePath(profile, account))))
+                .ToArray();
+            CopyWithBackups(copies, BackupRoot());
+            _ = PostStateAsync(force: true);
+        }
+        catch (Exception ex)
+        {
+            PostError("copy-character-and-account", ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Copies each source over its target. Every existing target is backed up before any file is overwritten, so a
+    /// failure part way never leaves an overwritten file without a backup.
+    /// </summary>
+    internal static void CopyWithBackups(IReadOnlyList<(string Source, string Target)> copies, string backupRoot)
+    {
+        foreach (var (_, target) in copies)
+        {
+            if (File.Exists(target)) BackupFileTo(target, backupRoot);
+        }
+        foreach (var (source, target) in copies)
+        {
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             File.Copy(source, target, overwrite: true);
         }
+    }
 
-        return targets.Length;
+    private void SetAccountLink(string? characterId, string? accountId)
+    {
+        try
+        {
+            var character = (characterId ?? "").Trim();
+            var account = (accountId ?? "").Trim();
+            if (!IsDigits(character)) throw new InvalidOperationException("Unknown character.");
+            if (account.Length > 0 && !IsDigits(account)) throw new InvalidOperationException("Unknown account.");
+            // An empty manual link means "not this account"; it also stops logouts from re-learning a link the user removed.
+            _settings.AccountLinks[character] = new EveAccountLink { AccountId = account, Source = EveAccountLinks.Manual, SeenUtc = DateTime.UtcNow };
+            _settings.Save();
+            _ = PostStateAsync(force: true);
+        }
+        catch (Exception ex)
+        {
+            PostError("set-account-link", ex.Message);
+        }
+    }
+
+    private EveAccountLink? LinkFor(string characterId, ISet<string> accountIds)
+    {
+        return _settings.AccountLinks.TryGetValue(characterId, out var link) && accountIds.Contains(link.AccountId) ? link : null;
+    }
+
+    private string CharacterLabel(string characterId)
+    {
+        return long.TryParse(characterId, out var id) && _characterNames.TryGetValue(id, out var name) ? name : $"character {characterId}";
+    }
+
+    private static StampedFile[] Stamped(IEnumerable<EveSettingsFileInfo> files)
+    {
+        return files.Select(file => new StampedFile(file.Id, file.ModifiedUtc)).ToArray();
+    }
+
+    private static string CoreId(string path)
+    {
+        var fileName = Path.GetFileName(path);
+        return TryExtractCoreId(fileName, "character", out var id) || TryExtractCoreId(fileName, "account", out id) ? id : "";
+    }
+
+    private static string AccountFilePath(string profilePath, string accountId)
+    {
+        return Path.Combine(profilePath, $"core_user_{accountId}.dat");
+    }
+
+    private static bool IsDigits(string value)
+    {
+        return value.Length > 0 && value.All(char.IsAsciiDigit);
     }
 
     private void RestoreBackup(string? backupPath)
@@ -624,10 +750,12 @@ internal sealed class EveSettingsController
         if (changed) _settings.Save();
     }
 
-    private string BackupFileInternal(string filePath)
+    private static string BackupFileInternal(string filePath) => BackupFileTo(filePath, BackupRoot());
+
+    internal static string BackupFileTo(string filePath, string backupRoot)
     {
         var source = FullPath(filePath);
-        var backupPath = NewBackupPath("file", Path.GetFileName(source));
+        var backupPath = NewBackupPath("file", Path.GetFileName(source), backupRoot);
         using var archive = ZipFile.Open(backupPath, ZipArchiveMode.Create);
         var manifest = new EveSettingsBackupManifest
         {
@@ -695,12 +823,16 @@ internal sealed class EveSettingsController
         }
     }
 
-    private static string NewBackupPath(string kind, string sourceName)
+    private static string NewBackupPath(string kind, string sourceName, string? backupRoot = null)
     {
-        var backupRoot = BackupRoot();
+        backupRoot ??= BackupRoot();
         Directory.CreateDirectory(backupRoot);
         var cleanName = CleanFileSegment(sourceName);
-        return Path.Combine(backupRoot, $"{DateTime.UtcNow:yyyyMMdd-HHmmss}-{kind}-{cleanName}.zip");
+        var stem = $"{DateTime.UtcNow:yyyyMMdd-HHmmss}-{kind}-{cleanName}";
+        var path = Path.Combine(backupRoot, $"{stem}.zip");
+        // Two backups of one file in the same second (Backup, then Copy) must not collide.
+        for (var index = 2; File.Exists(path); index++) path = Path.Combine(backupRoot, $"{stem}-{index}.zip");
+        return path;
     }
 
     private IReadOnlyList<EveSettingsServerInfo> EnumerateServers(string rootPath)
@@ -1114,6 +1246,8 @@ internal sealed class EveSettingsLocalState
     public string SelectedServerPath { get; set; } = "";
     public string SelectedProfilePath { get; set; } = "";
     public Dictionary<string, string> Notes { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>Character ID → the account (core_user ID) it belongs to.</summary>
+    public Dictionary<string, EveAccountLink> AccountLinks { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     private static string SettingsPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -1149,6 +1283,9 @@ internal sealed class EveSettingsLocalState
         Notes = Notes == null
             ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             : new Dictionary<string, string>(Notes, StringComparer.OrdinalIgnoreCase);
+        AccountLinks = AccountLinks == null
+            ? new Dictionary<string, EveAccountLink>(StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, EveAccountLink>(AccountLinks.Where(entry => entry.Value != null), StringComparer.OrdinalIgnoreCase);
         return this;
     }
 }

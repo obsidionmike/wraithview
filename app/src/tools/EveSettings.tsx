@@ -23,6 +23,12 @@ type SettingsFileInfo = {
   size: number;
   modifiedUtc: string;
   note?: string;
+  /** Characters: the linked account ID ("" if unknown), how it was linked, and the account the last logout points to. */
+  accountId?: string;
+  accountSource?: "manual" | "seen" | "";
+  pairedAccountId?: string;
+  /** Accounts: the characters linked to this account. */
+  characterIds?: string[];
 };
 
 type BackupInfo = {
@@ -55,6 +61,10 @@ type PendingAction = {
   message: Record<string, unknown>;
   danger?: boolean;
   success?: string;
+  /** Files the action will overwrite, listed in the confirmation. */
+  details?: string[];
+  /** Overwrites live settings files, which a running client would undo when it exits. */
+  closeEve?: boolean;
 };
 
 const EMPTY_STATE: EveSettingsState = {
@@ -122,6 +132,48 @@ function fileIdLabel(file: SettingsFileInfo) {
   return file.id || pathLeaf(file.path).replace(/^core_(char|user)_/i, "").replace(/\.dat$/i, "") || "-";
 }
 
+function accountLabel(account: SettingsFileInfo | undefined, characters: SettingsFileInfo[] = []) {
+  if (!account) return "Unknown account";
+  const base = account.note ? `${account.note} (${fileIdLabel(account)})` : account.name || `Account ${fileIdLabel(account)}`;
+  const names = characters.filter((file) => account.characterIds?.includes(file.id)).map((file) => file.name);
+  return names.length ? `${base} · ${names.join(", ")}` : base;
+}
+
+type AccountPlan = {
+  source: SettingsFileInfo | null;
+  sourceAccount: SettingsFileInfo | null;
+  accounts: SettingsFileInfo[];
+  unlinked: SettingsFileInfo[];
+};
+
+/** The account files a character copy also overwrites: one per target account, skipping the source's own. */
+function planAccountCopy(characters: SettingsFileInfo[], accounts: SettingsFileInfo[], sourcePath: string, targetPaths: string[]): AccountPlan {
+  const byId = new Map(accounts.map((account) => [account.id, account]));
+  const linked = (file?: SettingsFileInfo) => (file?.accountId ? byId.get(file.accountId) || null : null);
+  const source = characters.find((file) => file.path === sourcePath) || null;
+  const sourceAccount = linked(source || undefined);
+  const plan: AccountPlan = { source, sourceAccount, accounts: [], unlinked: [] };
+  characters
+    .filter((file) => targetPaths.includes(file.path) && file.path !== sourcePath)
+    .forEach((file) => {
+      const account = linked(file);
+      if (!account) plan.unlinked.push(file);
+      else if (account.id !== sourceAccount?.id && !plan.accounts.includes(account)) plan.accounts.push(account);
+    });
+  return plan;
+}
+
+function accountPlanProblem(plan: AccountPlan) {
+  if (!plan.sourceAccount) return `Pick the account for ${plan.source ? `${plan.source.name} (${plan.source.id})` : "the source character"} in the table below.`;
+  return "";
+}
+
+function unlinkedNote(plan: AccountPlan) {
+  if (!plan.unlinked.length) return "";
+  const names = plan.unlinked.map((file) => `${file.name} (${file.id})`).join(", ");
+  return `No account picked for ${names}: only the character file is copied. Pick one in the table below to include it.`;
+}
+
 function NoteInput({
   type,
   id,
@@ -177,6 +229,19 @@ function ConfirmModal({
               <span>These files are safest to copy or restore while the EVE client is fully closed.</span>
             </div>
           ) : null}
+          {action.closeEve ? (
+            <p className="eve-settings-modal-strong">
+              Close every EVE client first. A client saves its character and account files when it exits, which would undo
+              this.
+            </p>
+          ) : null}
+          {action.details?.length ? (
+            <ul className="eve-settings-modal-list">
+              {action.details.map((detail, index) => (
+                <li key={index}>{detail}</li>
+              ))}
+            </ul>
+          ) : null}
           <p>
             WraithView will create a backup before overwriting or deleting live settings. The original `.dat` files are copied
             as-is; the HUD does not parse or modify their contents.
@@ -203,6 +268,7 @@ function FileCopyPanel({
   onSource,
   onTarget,
   onCopy,
+  optionLabel = (file) => `${file.name || pathLeaf(file.path)} (${fileIdLabel(file)})`,
 }: {
   label: string;
   files: SettingsFileInfo[];
@@ -211,6 +277,7 @@ function FileCopyPanel({
   onSource: (value: string) => void;
   onTarget: (value: string) => void;
   onCopy: () => void;
+  optionLabel?: (file: SettingsFileInfo) => string;
 }) {
   return (
     <div className="wraithview-band eve-settings-copy-panel">
@@ -229,7 +296,7 @@ function FileCopyPanel({
           <select value={source} onChange={(event) => onSource(event.target.value)}>
             {files.map((file) => (
               <option key={file.path} value={file.path}>
-                {file.name || pathLeaf(file.path)} ({fileIdLabel(file)})
+                {optionLabel(file)}
               </option>
             ))}
           </select>
@@ -239,7 +306,7 @@ function FileCopyPanel({
           <select value={target} onChange={(event) => onTarget(event.target.value)}>
             {files.map((file) => (
               <option key={file.path} value={file.path}>
-                {file.name || pathLeaf(file.path)} ({fileIdLabel(file)})
+                {optionLabel(file)}
               </option>
             ))}
           </select>
@@ -251,18 +318,24 @@ function FileCopyPanel({
 
 function CharacterCopyPanel({
   files,
+  accounts,
   source,
   selectedTargets,
+  includeAccounts,
   onSource,
   onTargets,
+  onIncludeAccounts,
   onCopySelected,
   onCopyAll,
 }: {
   files: SettingsFileInfo[];
+  accounts: SettingsFileInfo[];
   source: string;
   selectedTargets: string[];
+  includeAccounts: boolean;
   onSource: (value: string) => void;
   onTargets: (value: string[]) => void;
+  onIncludeAccounts: (value: boolean) => void;
   onCopySelected: () => void;
   onCopyAll: () => void;
 }) {
@@ -282,6 +355,8 @@ function CharacterCopyPanel({
   const visibleTargetPaths = visibleTargetFiles.map((file) => file.path);
   const selectedCount = selectedSet.size;
   const visibleSelectedCount = visibleTargetPaths.filter((path) => selectedSet.has(path)).length;
+  const plan = planAccountCopy(files, accounts, source, Array.from(selectedSet));
+  const problem = includeAccounts ? accountPlanProblem(plan) : "";
 
   function applyTargets(paths: Iterable<string>) {
     const next = new Set(paths);
@@ -342,20 +417,48 @@ function CharacterCopyPanel({
       <div className="wraithview-band-top">
         <div>
           <h2>Character copy</h2>
-          <p>Copy one character's settings to selected characters, or to every other character in this settings set.</p>
+          <p>
+            Copy one character's settings to selected characters, or to every other character in this settings set. The
+            account-wide UI (window layout, shortcuts and more) is in the account file, so copy that too.
+          </p>
         </div>
       </div>
       <div className="eve-settings-bulk-copy-grid">
-        <label className="wraithview-field">
-          <span>Source character</span>
-          <select value={source} onChange={(event) => onSource(event.target.value)}>
-            {files.map((file) => (
-              <option key={file.path} value={file.path}>
-                {file.name || pathLeaf(file.path)} ({fileIdLabel(file)})
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="eve-settings-copy-source">
+          <label className="wraithview-field">
+            <span>Source character</span>
+            <select value={source} onChange={(event) => onSource(event.target.value)}>
+              {files.map((file) => (
+                <option key={file.path} value={file.path}>
+                  {file.name || pathLeaf(file.path)} ({fileIdLabel(file)})
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="wraithview-toggle">
+            <input type="checkbox" checked={includeAccounts} onChange={(event) => onIncludeAccounts(event.target.checked)} />
+            <span>Also copy account settings (core_user)</span>
+          </label>
+          <div className="eve-settings-account-plan">
+            {!includeAccounts ? (
+              <span>Only the character files (core_char) will be copied.</span>
+            ) : problem ? (
+              <span className="is-warning">{problem}</span>
+            ) : (
+              <>
+                <span>Source account: {accountLabel(plan.sourceAccount || undefined, files)}</span>
+                {!selectedCount ? <span>Select targets to see which account files change.</span> : null}
+                {plan.accounts.map((account) => (
+                  <span key={account.path}>Overwrites {accountLabel(account, files)}</span>
+                ))}
+                {selectedCount && !plan.accounts.length && !plan.unlinked.length ? (
+                  <span>The selected characters share the source's account; no account file changes.</span>
+                ) : null}
+                {unlinkedNote(plan) ? <span className="is-warning">{unlinkedNote(plan)}</span> : null}
+              </>
+            )}
+          </div>
+        </div>
 
         <div className="wraithview-field eve-settings-target-picker">
           <div className="eve-settings-target-picker-head">
@@ -430,11 +533,17 @@ function CharacterCopyPanel({
 function SettingsFileTable({
   files,
   kind,
+  accounts = [],
+  characters = [],
   onBackup,
   onReveal,
 }: {
   files: SettingsFileInfo[];
   kind: "character" | "account";
+  /** For character tables: the accounts to link to. */
+  accounts?: SettingsFileInfo[];
+  /** For account tables: the characters linked to each account. */
+  characters?: SettingsFileInfo[];
   onBackup: (file: SettingsFileInfo) => void;
   onReveal: (path: string) => void;
 }) {
@@ -449,6 +558,7 @@ function SettingsFileTable({
           <tr>
             <th>Name</th>
             <th>ID</th>
+            <th>{kind === "character" ? "Account" : "Characters"}</th>
             <th>Modified</th>
             <th>Size</th>
             <th>Note</th>
@@ -460,6 +570,7 @@ function SettingsFileTable({
             <tr key={file.path}>
               <td>{file.name}</td>
               <td>{fileIdLabel(file)}</td>
+              <td>{kind === "character" ? <AccountLinkCell file={file} accounts={accounts} /> : linkedNames(file, characters)}</td>
               <td>{formatDate(file.modifiedUtc)}</td>
               <td>{formatBytes(file.size)}</td>
               <td>
@@ -483,6 +594,38 @@ function SettingsFileTable({
   );
 }
 
+function linkedNames(account: SettingsFileInfo, characters: SettingsFileInfo[]) {
+  const names = characters.filter((file) => account.characterIds?.includes(file.id)).map((file) => file.name);
+  return names.length ? names.join(", ") : <span className="eve-settings-muted">None linked</span>;
+}
+
+function AccountLinkCell({ file, accounts }: { file: SettingsFileInfo; accounts: SettingsFileInfo[] }) {
+  const accountId = file.accountId || "";
+  const paired = file.pairedAccountId && file.pairedAccountId !== accountId ? file.pairedAccountId : "";
+  return (
+    <div className="eve-settings-account-cell">
+      <select
+        value={accountId}
+        aria-label={`Account for ${file.name}`}
+        onChange={(event) => send("eve-settings:set-account-link", { characterId: file.id, accountId: event.target.value })}
+      >
+        <option value="">Not linked</option>
+        {accounts.map((account) => (
+          <option key={account.path} value={account.id}>
+            {accountLabel(account)}
+          </option>
+        ))}
+      </select>
+      {file.accountSource === "seen" ? (
+        <small title="EVE wrote this character's file and this account file together when the character last logged out.">
+          From logout
+        </small>
+      ) : null}
+      {paired ? <small className="is-warning">Last logout wrote {paired}</small> : null}
+    </div>
+  );
+}
+
 export default function EveSettings() {
   const [state, setState] = useState<EveSettingsState>(EMPTY_STATE);
   const [section, setSection] = useState<(typeof SECTIONS)[number][0]>("overview");
@@ -491,6 +634,7 @@ export default function EveSettings() {
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
   const [characterSource, setCharacterSource] = useState("");
   const [selectedCharacterTargets, setSelectedCharacterTargets] = useState<string[]>([]);
+  const [includeAccounts, setIncludeAccounts] = useState(true);
   const [accountSource, setAccountSource] = useState("");
   const [accountTarget, setAccountTarget] = useState("");
   const [profileName, setProfileName] = useState("WraithView");
@@ -604,12 +748,15 @@ export default function EveSettings() {
     const source = files.find((file) => file.path === sourcePath);
     const target = files.find((file) => file.path === targetPath);
     const labelText = label.charAt(0).toUpperCase() + label.slice(1);
+    const name = (file?: SettingsFileInfo) => (label === "account" ? accountLabel(file, state.characters) : file?.name);
     ask({
       title: `Copy ${label} settings`,
       body: "The target settings file will be backed up, then overwritten with the source file.",
       button: "Copy settings",
       danger: true,
-      success: `${labelText} settings copied from ${source?.name || "source"} to ${target?.name || "target"}.`,
+      closeEve: true,
+      details: [`Overwrites ${name(target) || "the target"}`],
+      success: `${labelText} settings copied from ${name(source) || "source"} to ${name(target) || "target"}.`,
       message: { type: "eve-settings:copy-file", sourcePath, targetPath },
     });
   }
@@ -618,14 +765,43 @@ export default function EveSettings() {
     const targets = targetPaths.filter((path) => path && path !== characterSource);
     const source = state.characters.find((file) => file.path === characterSource);
     if (!source || !targets.length) return;
+    const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? "" : "s"}`;
+    const targetNames = state.characters.filter((file) => targets.includes(file.path)).map((file) => `Overwrites ${file.name} (${file.id})`);
 
+    if (!includeAccounts) {
+      ask({
+        title: "Copy character settings",
+        body: `${source.name || "The source character"} will overwrite ${plural(targets.length, "target character")}.`,
+        button: targets.length === 1 ? "Copy settings" : `Copy to ${targets.length}`,
+        danger: true,
+        closeEve: true,
+        details: targetNames,
+        success: `${source.name || "Character settings"} copied to ${plural(targets.length, "target character")}.`,
+        message: { type: "eve-settings:copy-file-to-targets", sourcePath: characterSource, targetPaths: targets },
+      });
+      return;
+    }
+
+    const plan = planAccountCopy(state.characters, state.accounts, characterSource, targets);
+    const problem = accountPlanProblem(plan);
+    if (problem) {
+      setSuccess("");
+      setError(problem);
+      return;
+    }
     ask({
-      title: "Copy character settings",
-      body: `${source.name || "The source character"} will overwrite ${targets.length} target character${targets.length === 1 ? "" : "s"}.`,
+      title: "Copy character and account settings",
+      body: `${source.name} will overwrite ${plural(targets.length, "character")}, and ${accountLabel(plan.sourceAccount || undefined)} will overwrite ${plural(plan.accounts.length, "account")}. Account settings are shared by every character on that account.`,
       button: targets.length === 1 ? "Copy settings" : `Copy to ${targets.length}`,
       danger: true,
-      success: `${source.name || "Character settings"} copied to ${targets.length} target character${targets.length === 1 ? "" : "s"}.`,
-      message: { type: "eve-settings:copy-file-to-targets", sourcePath: characterSource, targetPaths: targets },
+      closeEve: true,
+      details: [
+        ...targetNames,
+        ...plan.accounts.map((account) => `Overwrites ${accountLabel(account, state.characters)}`),
+        ...plan.unlinked.map((file) => `No account picked for ${file.name} (${file.id}): character file only`),
+      ],
+      success: `${source.name} copied to ${plural(targets.length, "character")} and ${plural(plan.accounts.length, "account")}.`,
+      message: { type: "eve-settings:copy-character-and-account", sourcePath: characterSource, targetPaths: targets },
     });
   }
 
@@ -732,16 +908,20 @@ export default function EveSettings() {
       <>
         <CharacterCopyPanel
           files={state.characters}
+          accounts={state.accounts}
           source={characterSource}
           selectedTargets={selectedCharacterTargets}
+          includeAccounts={includeAccounts}
           onSource={setCharacterSource}
           onTargets={setSelectedCharacterTargets}
+          onIncludeAccounts={setIncludeAccounts}
           onCopySelected={() => copyCharacterTargets(selectedCharacterTargets)}
           onCopyAll={() => copyCharacterTargets(allTargets)}
         />
         <SettingsFileTable
           kind="character"
           files={state.characters}
+          accounts={state.accounts}
           onBackup={(file) =>
             ask({
               title: "Backup character settings",
@@ -767,10 +947,12 @@ export default function EveSettings() {
           onSource={setAccountSource}
           onTarget={setAccountTarget}
           onCopy={() => copyFile(accountSource, accountTarget, "account")}
+          optionLabel={(file) => accountLabel(file, state.characters)}
         />
         <SettingsFileTable
           kind="account"
           files={state.accounts}
+          characters={state.characters}
           onBackup={(file) =>
             ask({
               title: "Backup account settings",
@@ -933,6 +1115,7 @@ export default function EveSettings() {
                           body: `${backup.label || "This backup"} will be restored to its original EVE settings path.`,
                           button: "Restore",
                           danger: true,
+                          closeEve: true,
                           message: { type: "eve-settings:restore-backup", backupPath: backup.path },
                         })
                       }

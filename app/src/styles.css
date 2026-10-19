@@ -3841,6 +3841,62 @@ button:disabled {
   font-size: 11px;
 }
 
+.eve-settings-copy-source {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.eve-settings-account-plan {
+  display: grid;
+  gap: 3px;
+  color: var(--tv-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.eve-settings-account-plan .is-warning,
+.eve-settings-account-cell .is-warning {
+  color: var(--tv-danger-text);
+}
+
+.eve-settings-account-cell {
+  display: grid;
+  gap: 3px;
+}
+
+.eve-settings-account-cell small,
+.eve-settings-muted {
+  color: var(--tv-muted);
+  font-size: 10px;
+}
+
+.eve-settings-table select {
+  width: 100%;
+  min-width: 150px;
+  height: 28px;
+  border: 1px solid var(--tv-border);
+  border-radius: 0;
+  background: var(--tv-bg);
+  color: var(--tv-text);
+  padding: 0 6px;
+  font: inherit;
+}
+
+.eve-settings-modal-list {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--tv-text);
+  font-size: 12px;
+}
+
+.eve-settings-modal-body p.eve-settings-modal-strong {
+  color: var(--tv-text-strong);
+  font-weight: 700;
+}
+
 .eve-settings-table-wrap {
   min-height: 0;
   overflow: auto;
