@@ -57,7 +57,7 @@ Done (commit "Fork TriffView 2.1.1 as WraithView"):
 Done since:
 - Public repo **github.com/obsidionmike/wraithview** created; `main` pushed with full upstream history (remote `upstream` = TriffView).
 - CI (`.github/workflows/ci.yml`, from upstream) builds and runs the xunit tests on windows-latest for every push to main and every PR. Use this as the Windows test signal.
-- `.github/workflows/release.yml`: push a tag `vX.Y.Z` (or run it manually) to build the self-contained exe on Windows, run the tests, and publish a GitHub release with `WraithView.exe` and its SHA-256. Tags starting `v0.` or containing `-` are marked as pre-releases.
+- `.github/workflows/release.yml`: push a tag `vX.Y.Z` (or run it manually) to build the self-contained exe on Windows, run the tests, and publish a GitHub release with `WraithView.exe` and its SHA-256. Only tags containing `-` (e.g. `v1.0.0-beta`) are marked as pre-releases. Until 0.9.5, every `v0.` tag was a pre-release, and the in-app update check (`/releases/latest`, which skips pre-releases) never found one. v0.9.5 was switched to a full release by hand on 2026-10-19.
 
 v0.9.1 (from the user's first test, 2026-10-14):
 - Their verdict: previews, alerts and switching work.
