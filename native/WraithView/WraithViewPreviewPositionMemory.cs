@@ -10,6 +10,9 @@ internal readonly record struct PreviewClientIdentity(nint Handle, uint ProcessI
 internal sealed class WraithViewPreviewPositionMemory
 {
     private readonly Dictionary<PreviewClientIdentity, Rectangle> _positions = new();
+    // Clients the user moved or resized at character select. Their layout can't be saved until the
+    // client has a character name, so it is carried over (and saved) when they log in.
+    private readonly HashSet<PreviewClientIdentity> _adjustedWhileNameless = new();
     private string _profileId = "";
     private int _previewWidth;
     private int _previewHeight;
@@ -41,6 +44,7 @@ internal sealed class WraithViewPreviewPositionMemory
         if (!changed) return false;
 
         _positions.Clear();
+        _adjustedWhileNameless.Clear();
         _profileId = profileId;
         _previewWidth = previewWidth;
         _previewHeight = previewHeight;
@@ -65,14 +69,35 @@ internal sealed class WraithViewPreviewPositionMemory
         {
             _positions.Remove(identity);
         }
+
+        _adjustedWhileNameless.RemoveWhere(identity => !liveIdentities.Contains(identity));
     }
+
+    /// <summary>
+    /// The default size for new previews changed because the user resized one. Keep the remembered
+    /// positions: they are the user's own placements, not default-stack slots that need redoing.
+    /// </summary>
+    public void AdoptPreviewSize(int previewWidth, int previewHeight)
+    {
+        if (!_hasContext) return;
+        _previewWidth = previewWidth;
+        _previewHeight = previewHeight;
+    }
+
+    public void MarkAdjustedWhileNameless(PreviewClientIdentity identity) => _adjustedWhileNameless.Add(identity);
+
+    /// <summary>True once per character-select adjustment, for the client that has just logged in.</summary>
+    public bool TakeAdjustedWhileNameless(PreviewClientIdentity identity)
+        => _positions.ContainsKey(identity) && _adjustedWhileNameless.Remove(identity);
 
     public static Rectangle Resolve(
         Rectangle? savedForCurrentKey,
         Rectangle? rememberedForClient,
         Rectangle? titleFallback,
-        Rectangle defaultStack)
+        Rectangle defaultStack,
+        bool preferRemembered = false)
     {
+        if (preferRemembered && rememberedForClient != null) return rememberedForClient.Value;
         return savedForCurrentKey
             ?? rememberedForClient
             ?? titleFallback

@@ -68,6 +68,7 @@ internal sealed class WraithViewController : IDisposable
         _overlay.ActivateRequested += ActivateClient;
         _overlay.MinimizeRequested += MinimizeClient;
         _overlay.PreviewLayoutChanged += SavePreviewLayout;
+        _overlay.PreviewSizeChosen += AdoptPreviewSize;
         _overlay.HotkeyPressed += HandleHotkey;
         _overlay.HotkeyStatusChanged += () => PostState();
         _alerts.AlertTriggered += OnAlertTriggered;
@@ -561,6 +562,21 @@ internal sealed class WraithViewController : IDisposable
     {
         var profile = Settings.ActiveProfile();
         profile.PreviewLayouts[key] = rect;
+        Settings.Save();
+        PostState();
+    }
+
+    /// <summary>
+    /// New previews (a fresh client at character select) open at the size of the last preview you resized,
+    /// instead of the profile's original default. Unlike editing Preview width/height in settings, this
+    /// leaves every other saved preview's size alone.
+    /// </summary>
+    private void AdoptPreviewSize(System.Drawing.Size size)
+    {
+        var profile = Settings.ActiveProfile();
+        profile.PreviewWidth = Math.Clamp(size.Width, WraithViewPreviewDimensions.Minimum, WraithViewPreviewDimensions.Maximum);
+        profile.PreviewHeight = Math.Clamp(size.Height, WraithViewPreviewDimensions.Minimum, WraithViewPreviewDimensions.Maximum);
+        _overlay.AdoptPreviewSize(profile);
         Settings.Save();
         PostState();
     }
@@ -2281,10 +2297,13 @@ internal sealed class WraithViewOverlayForm : Forms.Form
     private IReadOnlyList<EveClientWindow> _clients = Array.Empty<EveClientWindow>();
     private bool? _appliedTopmost;
     private bool _suppressLabelOverlay;
+    private long _stackCounter;
 
     public event Action<EveClientWindow>? ActivateRequested;
     public event Action<EveClientWindow>? MinimizeRequested;
     public event Action<string, WraithViewRect>? PreviewLayoutChanged;
+    /// <summary>The user resized a preview; new previews should open at this size.</summary>
+    public event Action<Size>? PreviewSizeChosen;
     public event Action<WraithViewHotkeyCommand>? HotkeyPressed;
     public event Action? HotkeyStatusChanged;
 
@@ -2393,6 +2412,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         }
 
         var visibleIndex = 0;
+        var carriedOver = new List<PreviewState>();
         foreach (var client in clients)
         {
             if (profile.HideActivePreview && client.Handle == highlightHandle) continue;
@@ -2401,17 +2421,20 @@ internal sealed class WraithViewOverlayForm : Forms.Form
             if (!_previews.TryGetValue(client.Handle, out var state) || state.Identity != identity)
             {
                 if (state != null) state.Thumbnail.Dispose();
-                state = new PreviewState(client, CreateThumbnail(client.Handle));
+                state = NewPreviewState(client);
                 _previews[client.Handle] = state;
             }
 
             state.Client = client;
-            state.FrameRect = ResolveFrameRect(client, visibleIndex++);
+            state.FrameRect = ResolveFrameRect(client, visibleIndex++, out var fromCharacterSelect);
+            if (fromCharacterSelect) carriedOver.Add(state);
             _positionMemory.Remember(identity, state.FrameRect);
             state.Active = client.Handle == highlightHandle;
             state.Visible = DwmAvailable;
             UpdateThumbnail(state);
         }
+
+        SaveCarriedOverLayouts(carriedOver);
 
         var shouldHideForLostFocus = profile.HideOnLostFocus && !suppressLostFocusHide && clients.All(client => client.Handle != foreground);
         Opacity = shouldHideForLostFocus ? 0 : Math.Max(0.2, Math.Min(1, profile.Opacity));
@@ -2529,6 +2552,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         var liveIdentities = _clients.Select(PreviewClientIdentity.From).ToHashSet();
         _positionMemory.PurgeExcept(liveIdentities);
         var visibleIndex = 0;
+        var carriedOver = new List<PreviewState>();
         foreach (var client in _clients)
         {
             if (client.Handle == activeHandle) continue;
@@ -2537,10 +2561,9 @@ internal sealed class WraithViewOverlayForm : Forms.Form
             if (!_previews.TryGetValue(client.Handle, out var state) || state.Identity != identity)
             {
                 if (state != null) state.Thumbnail.Dispose();
-                state = new PreviewState(client, CreateThumbnail(client.Handle))
-                {
-                    FrameRect = ResolveFrameRect(client, visibleIndex),
-                };
+                state = NewPreviewState(client);
+                state.FrameRect = ResolveFrameRect(client, visibleIndex, out var fromCharacterSelect);
+                if (fromCharacterSelect) carriedOver.Add(state);
                 _previews[client.Handle] = state;
             }
 
@@ -2552,6 +2575,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
             visibleIndex++;
         }
 
+        SaveCarriedOverLayouts(carriedOver);
         UpdateWindowRegion(_suppressLabelOverlay);
         RefreshLabelOverlay();
         Invalidate();
@@ -2627,7 +2651,8 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
         e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
-        foreach (var state in _previews.Values)
+        // Bottom to top, so where previews overlap the upper one's border is drawn last, as its thumbnail is.
+        foreach (var state in _previews.Values.OrderBy(state => state.StackOrder))
         {
             if (!state.Visible) continue;
             DrawPreviewChrome(e.Graphics, state);
@@ -2680,6 +2705,8 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         {
             _mouseMode = MouseMode.Move;
         }
+
+        if (_mouseMode is MouseMode.Move or MouseMode.Resize) BringToFront(_mousePreview);
 
         if (_mouseMode == MouseMode.Move)
         {
@@ -2758,12 +2785,19 @@ internal sealed class WraithViewOverlayForm : Forms.Form
                 return;
             }
 
-            _positionMemory.Remember(PreviewClientIdentity.From(preview.Client), preview.FrameRect);
+            var identity = PreviewClientIdentity.From(preview.Client);
+            _positionMemory.Remember(identity, preview.FrameRect);
+            if (mode == MouseMode.Resize) PreviewSizeChosen?.Invoke(preview.FrameRect.Size);
 
             // A client at character select has no name, so its StableKey is the window handle in hex.
             // Persisting under that key would write an orphan into settings that can never match again
-            // and is never pruned. The remembered frame above still honours the drag on screen.
-            if (string.IsNullOrWhiteSpace(preview.Client.CharacterName)) return;
+            // and is never pruned. The remembered frame above honours the drag on screen, and the mark
+            // makes it win over the character's saved layout and get saved once the client logs in.
+            if (string.IsNullOrWhiteSpace(preview.Client.CharacterName))
+            {
+                _positionMemory.MarkAdjustedWhileNameless(identity);
+                return;
+            }
 
             PreviewLayoutChanged?.Invoke(preview.Client.StableKey, WraithViewRect.FromRectangle(preview.FrameRect));
             return;
@@ -2803,8 +2837,15 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         }
     }
 
-    private Rectangle ResolveFrameRect(EveClientWindow client, int index)
+    /// <param name="fromCharacterSelect">True when the client has just logged in and the user moved or resized
+    /// its preview at character select: that placement wins over the character's saved layout and should now
+    /// be saved under the character's name.</param>
+    private Rectangle ResolveFrameRect(EveClientWindow client, int index, out bool fromCharacterSelect)
     {
+        var identity = PreviewClientIdentity.From(client);
+        fromCharacterSelect = !string.IsNullOrWhiteSpace(client.CharacterName)
+            && _positionMemory.TakeAdjustedWhileNameless(identity);
+
         Rectangle? savedForCurrentKey = null;
         if (_profile.PreviewLayouts.TryGetValue(client.StableKey, out var saved) && saved.IsUsable)
         {
@@ -2812,7 +2853,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
         }
 
         Rectangle? rememberedForClient = null;
-        if (_positionMemory.TryGet(PreviewClientIdentity.From(client), out var remembered))
+        if (_positionMemory.TryGet(identity, out var remembered))
         {
             rememberedForClient = remembered;
         }
@@ -2842,7 +2883,8 @@ internal sealed class WraithViewOverlayForm : Forms.Form
                 savedForCurrentKey,
                 rememberedForClient,
                 titleFallback,
-                DefaultStackRect(index)),
+                DefaultStackRect(index),
+                preferRemembered: fromCharacterSelect),
             _virtualDesktop);
     }
 
@@ -2891,6 +2933,7 @@ internal sealed class WraithViewOverlayForm : Forms.Form
 
         var items = _previews.Values
             .Where(state => state.Visible)
+            .OrderBy(state => state.StackOrder)
             .Select(state => new WraithViewLabelOverlayItem(
                 ToClientRect(state.FrameRect),
                 _profile.PreviewLabelFor(state.Client),
@@ -3079,10 +3122,45 @@ internal sealed class WraithViewOverlayForm : Forms.Form
     private PreviewState? HitPreview(Point clientPoint)
     {
         var absolute = new Point(clientPoint.X + _virtualDesktop.Left, clientPoint.Y + _virtualDesktop.Top);
-        return _previews.Values
-            .Where(state => state.Visible && state.FrameRect.Contains(absolute))
-            .OrderByDescending(state => state.Active)
-            .FirstOrDefault();
+        return PreviewStacking.TopmostAt(
+            _previews.Values.Where(state => state.Visible),
+            state => state.FrameRect,
+            state => state.StackOrder,
+            absolute);
+    }
+
+    private PreviewState NewPreviewState(EveClientWindow client)
+    {
+        return new PreviewState(client, CreateThumbnail(client.Handle)) { StackOrder = ++_stackCounter };
+    }
+
+    /// <summary>
+    /// Puts a preview above the others. DWM stacks thumbnails in registration order, so this registers a fresh
+    /// thumbnail (drawn on top) before releasing the old one, which avoids a blank frame in between.
+    /// </summary>
+    private void BringToFront(PreviewState state)
+    {
+        if (state.StackOrder == _stackCounter) return;
+        var old = state.Thumbnail;
+        state.Thumbnail = CreateThumbnail(state.Client.Handle);
+        state.StackOrder = ++_stackCounter;
+        UpdateThumbnail(state);
+        old.Dispose();
+        Invalidate();
+    }
+
+    private void SaveCarriedOverLayouts(IReadOnlyList<PreviewState> carriedOver)
+    {
+        foreach (var state in carriedOver)
+        {
+            PreviewLayoutChanged?.Invoke(state.Client.StableKey, WraithViewRect.FromRectangle(state.FrameRect));
+        }
+    }
+
+    public void AdoptPreviewSize(WraithViewProfile profile)
+    {
+        _profile = profile;
+        _positionMemory.AdoptPreviewSize(profile.PreviewWidth, profile.PreviewHeight);
     }
 
     private static bool HitResizeHandle(Rectangle frame, Point clientPoint)
@@ -3145,7 +3223,9 @@ internal sealed class WraithViewOverlayForm : Forms.Form
 
         public EveClientWindow Client { get; set; }
         public PreviewClientIdentity Identity => PreviewClientIdentity.From(Client);
-        public DwmThumbnail Thumbnail { get; }
+        public DwmThumbnail Thumbnail { get; set; }
+        /// <summary>Thumbnail registration order; higher is drawn on top. See <see cref="PreviewStacking"/>.</summary>
+        public long StackOrder { get; set; }
         public Rectangle FrameRect { get; set; }
         public bool Active { get; set; }
         public bool Visible { get; set; }

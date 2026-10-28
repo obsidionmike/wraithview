@@ -128,6 +128,7 @@ WraithView started from TriffView 2.1.1 (commit `5ef7561`, 2026). Modified by th
 - Clicking a preview to switch no longer drags it by accident (a short hold or a deliberate flick is needed). Previews parked off-screen snap to each other vertically too. "Minimize inactive clients" no longer stalls each switch while the old client minimises.
 - Preview borders are drawn as solid strips, so a 1 px border is complete. Labels no longer flash at the old position after a drag. Previews parked off-screen can be pushed further without jumping back. The Opacity field accepts typed values.
 - EVE Settings links each character to its account file (`core_user_<id>.dat`). Links are learned when one client logs out on its own (its character and account files are written together; several clients closing at once, or copied files, are ignored) and can be set by hand in the character table. Character copy can also copy the source's account settings to each target's account. Every target is backed up before any file is overwritten, and copy confirmations list the files they overwrite and say to close EVE first.
+- Overlapping previews: clicking, dragging or resizing picks the preview drawn on top (it used to grab the one underneath), and a preview you drag or resize comes to the front. A preview moved or resized at character select keeps that spot when the client logs in and is saved under the character (character-select previews can't be saved before then). New previews open at the size of the last preview you resized.
 
 ## Building
 
