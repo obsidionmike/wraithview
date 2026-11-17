@@ -695,6 +695,19 @@ function gestureFromKeyboardEvent(event) {
   return parts.join("+");
 }
 
+// A modifier tapped on its own is recorded on release, so Shift+Tab still records as a combo.
+// AhkGesture.Translate turns these into "~LShift up" hotkeys that only fire when nothing else was pressed.
+const LONE_MODIFIER_GESTURES = {
+  ShiftLeft: "LShift",
+  ShiftRight: "RShift",
+  ControlLeft: "LControl",
+  ControlRight: "RControl",
+  AltLeft: "LAlt",
+  AltRight: "RAlt",
+  MetaLeft: "LWin",
+  MetaRight: "RWin",
+};
+
 function parseDirectHotkeys(profile) {
   const result = {};
 
@@ -835,6 +848,7 @@ function HotkeyEditorModal({ editor, gestures, recording, onRecord, onEdit, onCl
         </div>
         <footer className="wraithview-hotkey-editor-help">
           <p>Add <code>*</code> to allow held modifiers: <code>*F14</code> works while Ctrl or Shift is held; <code>F14</code> does not.</p>
+          <p>A modifier on its own (<code>LShift</code>, <code>RControl</code>) fires when you tap and release it, and Shift still works normally in game.</p>
           <p>Press Enter or leave the field to save.</p>
         </footer>
       </section>
@@ -1274,7 +1288,16 @@ function WraithViewSettings({ open = true }) {
       recordGesture(gesture);
     }
 
+    let pendingModifier = "";
+
     function onBrowserKeyDown(event) {
+      if (LONE_MODIFIER_GESTURES[event.code]) {
+        pendingModifier = event.repeat ? pendingModifier : event.code;
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      pendingModifier = "";
       const gesture = gestureFromKeyboardEvent(event);
       if (!gesture) return;
       event.preventDefault();
@@ -1282,11 +1305,22 @@ function WraithViewSettings({ open = true }) {
       recordGesture(gesture);
     }
 
+    function onBrowserKeyUp(event) {
+      if (!pendingModifier || event.code !== pendingModifier) return;
+      const gesture = LONE_MODIFIER_GESTURES[pendingModifier];
+      pendingModifier = "";
+      event.preventDefault();
+      event.stopPropagation();
+      recordGesture(gesture);
+    }
+
     window.addEventListener("wraith:hud-keydown", onHudKeyDown);
     window.addEventListener("keydown", onBrowserKeyDown, true);
+    window.addEventListener("keyup", onBrowserKeyUp, true);
     return () => {
       window.removeEventListener("wraith:hud-keydown", onHudKeyDown);
       window.removeEventListener("keydown", onBrowserKeyDown, true);
+      window.removeEventListener("keyup", onBrowserKeyUp, true);
     };
   }, [recording, directHotkeys, cycleGroups, profile.selectedCycleGroupId]);
 

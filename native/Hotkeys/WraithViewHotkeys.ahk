@@ -3,7 +3,8 @@
 #NoTrayIcon
 Persistent
 ListLines False
-KeyHistory 0
+; A_PriorKey needs a little key history (lone-modifier hotkeys in Trigger). Kept small, in memory only.
+KeyHistory 10
 SetWinDelay -1
 A_MaxHotkeysPerInterval := 10000
 
@@ -103,6 +104,16 @@ Configure(sender, packet, *) {
 Trigger(id, generation, noRepeat, thisHotkey) {
     if !HotkeyScope()
         return
+    ; Lone modifiers are bound as "~LShift up" (AhkGesture.Translate). Only fire when the
+    ; modifier was tapped by itself, not after Shift-click or Shift+Tab.
+    if SubStr(thisHotkey, -3) = " up" {
+        name := GetKeyName(RegExReplace(SubStr(thisHotkey, 1, -3), "^[*~$<>^!+#]+"))
+        if RegExMatch(name, "i)^[LR]?(Shift|Control|Alt|Win)$") {
+            if A_PriorKey != name && SubStr(A_PriorKey, 2) != name
+                return
+            noRepeat := false
+        }
+    }
     DllCall("PostMessage", "Ptr", HostWindow, "UInt", 0x8052, "Ptr", id, "Ptr", generation)
     if noRepeat {
         key := RegExReplace(thisHotkey, "^[*~$<>^!+#]+")

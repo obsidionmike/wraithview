@@ -59,6 +59,11 @@ internal static class AhkGesture
             "launchmail" => "Launch_Mail", "selectmedia" => "Launch_Media", "launchapplication1" => "Launch_App1", "launchapplication2" => "Launch_App2",
             _ => value,
         };
+        // A modifier on its own ("LShift") fires on release and passes through, so Shift-click
+        // and capitals in EVE still work. The helper script skips it if another key was pressed
+        // while it was held. Anything with other modifier prefixes is left for AHK to judge.
+        if (IsLoneModifier(value) && prefixes.Trim('*', '~', '$').Length == 0)
+            return "~" + value + " up";
         // Preserve AHK vkNN as hexadecimal; legacy VK_ and 0x spellings remain accepted.
         if (Regex.Match(value, @"^(?:VK_(?:0x)?|0x)([0-9a-f]+)$", RegexOptions.IgnoreCase) is { Success: true } vk)
         {
@@ -69,6 +74,10 @@ internal static class AhkGesture
         }
         return prefixes + value;
     }
+
+    private static bool IsLoneModifier(string key) => key.ToLowerInvariant() is
+        "lshift" or "rshift" or "shift" or "lcontrol" or "rcontrol" or "control" or "lctrl" or "rctrl" or "ctrl"
+        or "lalt" or "ralt" or "alt" or "lwin" or "rwin";
 
     public static bool IsNoRepeat(string gesture) => Regex.IsMatch(gesture, @"(?:^[*~$]*|\+)NoRepeat\s*\+", RegexOptions.IgnoreCase);
 

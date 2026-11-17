@@ -25,6 +25,10 @@ public class AhkHotkeyTests
     [InlineData("0x70", "vk70")]
     [InlineData("+", "+")]
     [InlineData("^,", "^,")]
+    [InlineData("LShift", "~LShift up")]
+    [InlineData("*RControl", "~RControl up")]
+    [InlineData("LShiftKey", "~LShift up")]
+    [InlineData("Ctrl+LShift", "^LShift")]
     public void TranslatesLegacyModifiersAndPassesAhkSyntaxThrough(string input, string expected)
         => Assert.Equal(expected, AhkGesture.Translate(input));
 
