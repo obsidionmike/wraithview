@@ -85,6 +85,9 @@ v0.9.1 (from the user's first test, 2026-10-14):
   - Overlap: `PreviewStacking.TopmostAt` picks by `PreviewState.StackOrder` (DWM thumbnail registration order; later is drawn on top). `HitPreview` used to prefer the active client, then dictionary order, so it grabbed the preview underneath. A preview being dragged or resized is raised (`BringToFront` registers a fresh thumbnail, then drops the old one). Chrome and transparent labels paint in stack order.
   - Character select: a nameless client can't be saved (its key is the HWND). A move or resize there now marks it (`MarkAdjustedWhileNameless`); on login `ResolveFrameRect` prefers the remembered rect over the character's saved layout once and saves it under the character name. Before, login jumped the preview to the old saved layout.
   - Resizing any preview sets the profile's Preview width/height (the size new previews open at) without the settings-field side effect of resizing every saved layout; the position memory adopts the size (`AdoptPreviewSize`) so it isn't wiped.
+- v0.9.7 (2026-11-17, from the user's report: L Shift couldn't be set as the backward cycle hotkey; plan is Tab forward, LShift backward):
+  - Recorder (`WraithViewSettings.jsx`): a modifier tapped and released alone records as `LShift`, `RControl`, etc. (`LONE_MODIFIER_GESTURES`, on keyup). Shift+Tab still records as a combo.
+  - `AhkGesture.Translate`: a bare modifier with no other modifier prefixes becomes `~LShift up` (pass-through, fires on release). `WraithViewHotkeys.ahk` `Trigger` skips it unless `A_PriorKey` is that modifier (nothing else pressed while held); `KeyHistory` raised from 0 to 10 for `A_PriorKey`. Not yet tested in game.
 - They asked about an unknown character (2122885899) in EVE Settings. It comes from a `core_char_<id>.dat` in their own EVE settings folder (the name is resolved via ESI). An idea, not done: show each file's last-modified date in the character list.
 
 Waiting on the user:
